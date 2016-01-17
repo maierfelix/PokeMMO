@@ -59,7 +59,7 @@ export default class Engine {
      * Engine scale
      * @type {Number}
      */
-    this.scale = 0;
+    this.scale = 1;
 
     /**
      * Delta timer
@@ -81,17 +81,13 @@ export default class Engine {
      * Camera object
      * @type {Object}
      */
-    this.camera = new math.Point(
-      0, 0
-    );
+    this.camera = new math.Point();
 
     /**
-     * Engine position
+     * Engine rendering position
      * @type {Object}
      */
-    this.position = new math.Point(
-      0, 0
-    );
+    this.position = new math.Point();
 
   }
 

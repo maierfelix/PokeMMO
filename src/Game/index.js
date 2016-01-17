@@ -1,57 +1,134 @@
 "use strict";
 
-import Engine from "./Engine";
-import Renderer from "./Renderer";
+let __dirname = "./src/";
 
-let node = document.querySelector("#main");
+import {
+  ajax as $GET,
+  TextureCache
+} from "../Engine/utils";
 
-window.engine = new Engine(node);
-window.renderer = new Renderer(engine);
+/*$GET(__dirname + "Math.js").then(function() {
+  console.log(1);
+});*/
 
-window.addEventListener('resize', e => renderer.resize(), false);
+import Wheel from "../libs/wheel";
 
-renderer.lightning = true;
-renderer.shadowCasting = true;
+import Engine from "../Engine";
+import Texture from "../Engine/Texture";
+import Renderer from "../Renderer";
 
-engine.addLayer({
-  name: "Collisions",
-  zIndex: 0
-});
+/**
+ * Game
+ * @class Game
+ * @export
+ */
+export default class Game {
 
-engine.addLayer({
-  name: "Background",
-  zIndex: 1
-});
+  /**
+   * @constructor
+   */
+  constructor() {
 
-engine.addLayer({
-  name: "Entities",
-  zIndex: 2,
-  zShadow: 1,
-  shadowCast: true
-});
+    this.node = document.querySelector("#main");
 
-engine.addLayer({
-  name: "Foreground",
-  zIndex: 3,
-  zShadow: 2,
-  shadowCast: true
-});
+    this.engine = new Engine(this.node);
 
-engine.addLayer({
-  name: "Sky",
-  zIndex: 4,
-  zShadow: 3,
-  shadowCast: true
-});
+    this.renderer = new Renderer(this.engine);
 
-engine.addEntity({ zIndex: 1});
-engine.addEntity({ zIndex: 2});
-engine.addEntity({ zIndex: 2});
-engine.addEntity({ zIndex: 2});
-engine.addEntity({ zIndex: 2});
-engine.addEntity({ zIndex: 4});
-engine.addEntity({ zIndex: 4});
-engine.addEntity({ zIndex: 5});
+    this.renderer.dimension = 16;
+    this.renderer.lightning = true;
+    this.renderer.shadowCasting = true;
+    this.renderer.imageSmoothing = false;
 
-renderer.imageSmoothing = false;
-renderer.render();
+    this.addListeners();
+    this.addLayers();
+    this.loadSprites(e => this.addEntities);
+    this.renderer.render();
+
+  }
+
+  /**
+   * Add event listeners
+   */
+  addListeners() {
+
+    window.addEventListener('resize', e => this.renderer.resize(), false);
+
+    Wheel.addWheelListener(this.node, function(e) {
+      this.engine.scale += e.deltaY > 0 ? -.1 : .1;
+    }.bind(this));
+
+  }
+
+  /**
+   * Add layers
+   */
+  addLayers() {
+
+    this.engine.addLayer({
+      name: "Collisions",
+      zIndex: 0
+    });
+
+    this.engine.addLayer({
+      name: "Background",
+      zIndex: 1
+    });
+
+    this.engine.addLayer({
+      name: "Entities",
+      zIndex: 2,
+      zShadow: 1,
+      shadowCast: true
+    });
+
+    this.engine.addLayer({
+      name: "Foreground",
+      zIndex: 3,
+      zShadow: 2,
+      shadowCast: true
+    });
+
+    this.engine.addLayer({
+      name: "Sky",
+      zIndex: 4,
+      zShadow: 3,
+      shadowCast: true
+    });
+
+  }
+
+  /**
+   * Load sprites
+   * @param {Function} resolve
+   */
+  loadSprites(resolve) {
+
+    var sprite1 = null;
+    var sprite2 = null;
+
+    sprite1 = new Texture("assets/0.png", function() {
+      sprite2 = new Texture("assets/200.png", resolve);
+    });
+
+  }
+
+  /**
+   * Add entities
+   */
+  addEntities() {
+
+    this.engine.addEntity({ zIndex: 1, texture: TextureCache["assets/0.png"] });
+    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/0.png"] });
+    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/0.png"] });
+    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/0.png"] });
+    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/200.png"] });
+    this.engine.addEntity({ zIndex: 4, texture: TextureCache["assets/200.png"] });
+    this.engine.addEntity({ zIndex: 4, texture: TextureCache["assets/200.png"] });
+    this.engine.addEntity({ zIndex: 5, texture: TextureCache["assets/200.png"] });
+
+  }
+
+}
+
+let game = new Game();

@@ -1,7 +1,7 @@
 import "../polyfill";
 import math from "../Math";
 import * as layer from "../Engine/layers";
-import { shadow } from "./shadow";
+import { drawGrid } from "./grid";
 
 /**
  * Renderer
@@ -59,6 +59,12 @@ export default class Renderer {
     this.imageSmoothing = false;
 
     /**
+     * Dimension
+     * @type {Number}
+     */
+    this.dimension = 16;
+
+    /**
      * Shadow casting
      * @type {Boolean}
      */
@@ -69,6 +75,18 @@ export default class Renderer {
      * @type {Boolean}
      */
     this.lightning = false;
+
+    /**
+     * Width
+     * @type {Number}
+     */
+    this.width = 0;
+
+    /**
+     * Height
+     * @type {Number}
+     */
+    this.height = 0;
 
     this.resize();
 
@@ -92,7 +110,7 @@ export default class Renderer {
    * Clear
    */
   clear() {
-    this.instance.width = this.instance.width;
+    this.node.width = this.node.width;
     this.context.setImageSmoothing(this.imageSmoothing);
   }
 
@@ -103,6 +121,8 @@ export default class Renderer {
     this.instance.height = window.innerHeight;
     this.node.width  = window.innerWidth;
     this.node.height = window.innerHeight;
+    this.width  = window.innerWidth;
+    this.height = window.innerHeight;
   }
 
   /**
@@ -113,6 +133,16 @@ export default class Renderer {
     this.clear();
 
     this.sort();
+
+    drawGrid(
+      this.context,
+      this.instance.position.x, this.instance.position.y,
+      this.width, this.height,
+      this.dimension,
+      this.instance.scale,
+      .05,
+      "#FFF"
+    );
 
     window.rAF(() => this.render());
 

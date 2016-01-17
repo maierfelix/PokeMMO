@@ -20,8 +20,8 @@ export default class Entity {
     this.id = obj.id;
 
     /**
-     * Entity x
-     * @type {Number}
+     * Size
+     * @type {Object}
      */
     this.size = new math.Point();
 
@@ -29,13 +29,13 @@ export default class Entity {
      * Entity x pos
      * @type {Number}
      */
-    this.x = 0;
+    this.x = Math.floor(Math.random() * 500);
 
     /**
      * Entity y pos
      * @type {Number}
      */
-    this.y = Math.floor(Math.random() * 100);
+    this.y = Math.floor(Math.random() * 500);
 
     /**
      * Z priority
@@ -47,7 +47,7 @@ export default class Entity {
      * Texture
      * @type {String}
      */
-    this.texture = null;
+    this.texture = obj.texture;
 
   }
 
