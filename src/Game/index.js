@@ -1,21 +1,25 @@
 "use strict";
 
-let __dirname = "./src/";
+import math from "../Math";
+
+import {
+  __dirname,
+  MIN_SCALE, MAX_SCALE,
+  DIMENSION
+} from "../cfg";
 
 import {
   ajax as $GET,
   TextureCache
 } from "../Engine/utils";
 
-/*$GET(__dirname + "Math.js").then(function() {
-  console.log(1);
-});*/
-
 import Wheel from "../libs/wheel";
 
 import Engine from "../Engine";
-import Texture from "../Engine/Texture";
+import Input from "../Engine/Input";
 import Renderer from "../Renderer";
+
+import * as Events from "./events.js";
 
 /**
  * Game
@@ -35,15 +39,46 @@ export default class Game {
 
     this.renderer = new Renderer(this.engine);
 
-    this.renderer.dimension = 16;
+    this.input = new Input();
+
+    this.renderer.dimension = DIMENSION;
     this.renderer.lightning = true;
     this.renderer.shadowCasting = true;
     this.renderer.imageSmoothing = false;
 
     this.addListeners();
     this.addLayers();
-    this.loadSprites(e => this.addEntities);
+    this.addEntities();
+    this.registerKeys();
+    this.registerMouse();
     this.renderer.render();
+
+    this.engine.z = MIN_SCALE;
+
+  }
+
+  /**
+   * Register keys
+   */
+  registerKeys() {
+
+    for (let key of Events.keys) {
+      this.input.KeyBoard.registerKey(
+        key.name,
+        key.fire.bind(this)
+      );
+    };
+
+  }
+
+  /**
+   * Register mouse
+   */
+  registerMouse() {
+
+    for (let ev of Events.mouse) {
+      this.input.Mouse.registerEvent(ev, this);
+    };
 
   }
 
@@ -55,7 +90,11 @@ export default class Game {
     window.addEventListener('resize', e => this.renderer.resize(), false);
 
     Wheel.addWheelListener(this.node, function(e) {
-      this.engine.scale += e.deltaY > 0 ? -.1 : .1;
+      let amount = (e.deltaY ? -e.deltaY : e.deltaY);
+      amount = amount / 2 / (math.distance(0, 0, this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(this.engine.z);
+      this.engine.z += amount / 2;
+      if (this.engine.z < MIN_SCALE) this.engine.z = MIN_SCALE;
+      if (this.engine.z > MAX_SCALE) this.engine.z = MAX_SCALE;
     }.bind(this));
 
   }
@@ -99,36 +138,21 @@ export default class Game {
   }
 
   /**
-   * Load sprites
-   * @param {Function} resolve
-   */
-  loadSprites(resolve) {
-
-    var sprite1 = null;
-    var sprite2 = null;
-
-    sprite1 = new Texture("assets/0.png", function() {
-      sprite2 = new Texture("assets/200.png", resolve);
-    });
-
-  }
-
-  /**
    * Add entities
    */
   addEntities() {
 
-    this.engine.addEntity({ zIndex: 1, texture: TextureCache["assets/0.png"] });
-    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/0.png"] });
-    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/0.png"] });
-    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/0.png"] });
-    this.engine.addEntity({ zIndex: 2, texture: TextureCache["assets/200.png"] });
-    this.engine.addEntity({ zIndex: 4, texture: TextureCache["assets/200.png"] });
-    this.engine.addEntity({ zIndex: 4, texture: TextureCache["assets/200.png"] });
-    this.engine.addEntity({ zIndex: 5, texture: TextureCache["assets/200.png"] });
+    this.engine.addEntity({ zIndex: 1, sprite: "assets/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 4, sprite: "assets/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 4, sprite: "assets/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 5, sprite: "assets/200.png", width: 16, height: 16 });
 
   }
 
 }
 
-let game = new Game();
+window.game = new Game();

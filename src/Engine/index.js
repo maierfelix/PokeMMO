@@ -62,6 +62,12 @@ export default class Engine {
     this.scale = 1;
 
     /**
+     * Z scale
+     * @type {Number}
+     */
+    this.z = 1;
+
+    /**
      * Delta timer
      * @type {Number}
      */
@@ -88,6 +94,15 @@ export default class Engine {
      * @type {Object}
      */
     this.position = new math.Point();
+
+    /**
+     * Scene object
+     * @type {Object}
+     */
+    this.scene = {
+      position: new math.Point(),
+      size: new math.Point()
+    };
 
   }
 

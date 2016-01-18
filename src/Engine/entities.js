@@ -1,4 +1,5 @@
-import entity from "./Entity";
+import Entity from "./Entity";
+import { TextureCache } from "./utils";
 
 /**
  * Add a new entity
@@ -7,11 +8,13 @@ import entity from "./Entity";
  */
 export function addEntity(obj) {
 
+  var entity = null;
+
   obj.id = this.uHash(0);
 
-  this.entities.push(
-    new entity(obj)
-  );
+  entity = new Entity(obj);
+
+  this.entities.push(entity);
 
 }
 

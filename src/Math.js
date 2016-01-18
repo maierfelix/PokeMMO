@@ -7,13 +7,13 @@ export default class Math {
 
   constructor() {}
 
-  /**
-   * Point
-   * @class Math.Point
-   */
   static get Point() {
 
     return (
+      /**
+       * Point
+       * @class Point
+       */
       class Point {
 
         /**
@@ -28,6 +28,46 @@ export default class Math {
 
       }
     );
+
+  }
+
+  /**
+   * Zoom scale
+   * @param {Number} factor
+   */
+  static zoomScale(factor) {
+
+    return (
+      factor >= 0 ? factor + 1    :
+      factor < 0  ? -(factor) + 1 :
+      factor + 1
+    );
+
+  }
+
+  /**
+   * Hypotenuse
+   * @param {Number} x
+   * @param {Number} y
+   * @return {Number}
+   */
+  static hypot(x, y) {
+
+    return (window.Math.sqrt((x * x) + (y * y)));
+
+  }
+
+  /**
+   * Distance between two points
+   * @param {Number} x1
+   * @param {Number} y1
+   * @param {Number} x2
+   * @param {Number} y2
+   * @return {Number}
+   */
+  static distance(x1, y1, x2, y2) {
+
+    return (this.hypot(x1 + x2, y1 + y2));
 
   }
 

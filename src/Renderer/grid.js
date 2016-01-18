@@ -12,8 +12,6 @@
  */
 export function drawGrid(ctx, x, y, width, height, dim, scale, ln, color) {
 
-  scale = (scale / Math.pow(2, (Math.log(scale) / Math.PI) << 0));
-
   var ww = dim * scale;
   var hh = dim * scale;
 
@@ -34,6 +32,8 @@ export function drawGrid(ctx, x, y, width, height, dim, scale, ln, color) {
   ctx.lineWidth = ln;
 
   ctx.stroke();
+
+  ctx.closePath();
 
   return void 0;
 
