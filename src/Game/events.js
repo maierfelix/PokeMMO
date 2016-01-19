@@ -63,19 +63,22 @@ export const mouse = [
   {
     name: "mousemove",
     fire: function(root, e) {
-      console.log(1);
+      if (root.engine.dragging) {
+        game.engine.move(e.clientX, e.clientY);
+      }
     }
   },
   {
     name: "mousedown",
     fire: function(root, e) {
-      console.log(root, e);
+      root.engine.dragging = true;
+      root.engine.click(e.clientX, e.clientY);
     }
   },
   {
     name: "mouseup",
     fire: function(root, e) {
-      console.log(root, e);
+      root.engine.dragging = false;
     }
   }
 ];

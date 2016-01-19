@@ -1,8 +1,7 @@
 import "../polyfill";
-import math from "../Math";
-import Texture from "../Engine/Texture";
 import * as layer from "../Engine/layers";
-import { drawGrid } from "./grid";
+import * as render from "./render";
+import { loadSprites }  from "./sprite";
 import { TextureCache } from "../Engine/utils";
 
 /**
@@ -140,55 +139,6 @@ export default class Renderer {
   }
 
   /**
-   * Rendering
-   */
-  render() {
-
-    if (this.spriteQueue.length >= 1) {
-      this.loadSprites(this.spriteQueue, function() {
-        console.log(this.spriteQueue);
-        window.rAF(() => this.render());
-      }.bind(this));
-      return void 0;
-    }
-
-    /** Pixel friendly scaling */
-    this.instance.scale = Math.roundTo(parseFloat(math.zoomScale(this.instance.z)), 0.125);
-
-    this.clear();
-
-    this.sort();
-
-    drawGrid(
-      this.context,
-      this.instance.position.x, this.instance.position.y,
-      this.width, this.height,
-      this.dimension,
-      this.instance.scale,
-      .05,
-      "#FFF"
-    );
-
-    this.context.beginPath();
-
-    /** Draw scene */
-    this.context.strokeStyle = "red";
-    this.context.lineWidth = 1 * this.instance.scale;
-    this.context.strokeRect(
-      this.scene.position.x << 4, this.scene.position.y << 4,
-      this.scene.size.x * this.instance.scale << 0, this.scene.size.y * this.instance.scale << 0
-    );
-    this.context.stroke();
-
-    this.context.closePath();
-
-    this.renderLayers();
-
-    window.rAF(() => this.render());
-
-  }
-
-  /**
    * Sort layers and entities
    */
   sort() {
@@ -249,94 +199,6 @@ export default class Renderer {
 
   }
 
-  /**
-   * Render layers
-   */
-  renderLayers() {
-
-    var ii = 0;
-    var length = 0;
-
-    length = this.layers.length;
-
-    for (; ii < length; ++ii) {
-      this.renderEntities(this.layers[ii].entities);
-    };
-
-  }
-
-  /**
-   * Load sprites
-   * @param {Array}    sprites
-   * @param {Function} resolve
-   */
-  loadSprites(sprites, resolve) {
-
-    var self = this;
-
-    var item = null;
-
-    var ii = 0;
-    var length = 0;
-
-    length = sprites.length;
-
-    for (; ii < length; ++ii) {
-      (function(ii) {
-        item = String(sprites[ii]);
-        TextureCache[item] = new Texture(item, function() {
-          sprites.shift();
-          if (sprites.length <= 0) {
-            resolve();
-            return void 0;
-          }
-        });
-      })(ii);
-    };
-
-    return void 0;
-
-  }
-
-  /**
-   * Render entities
-   * @param {Array} entities
-   */
-  renderEntities(entities) {
-
-    var entity = null;
-
-    var ii = 0;
-    var length = 0;
-
-    length = entities.length;
-
-    for (; ii < length; ++ii) {
-      entity = entities[ii];
-      /** We need to load a texture */
-      if (entity.texture === void 0) {
-        /** Loaded entity texture */
-        if (TextureCache[entity.texture] !== void 0) {
-          entity.texture = TextureCache[entity.texture];
-        }
-        else {
-          /** Sprite already queued */
-          if (this.spriteQueue.find(key => key === entity.sprite) === void 0) {
-            this.spriteQueue.push(entity.sprite);
-          }
-        }
-      }
-
-      this.context.fillStyle = "red";
-      this.context.fillRect(
-        entities[ii].x << 4, entities[ii].y << 4,
-        entities[ii].size.x * this.instance.scale << 0, entities[ii].size.y * this.instance.scale << 0
-      );
-      this.context.fill();
-    };
-
-  }
-
 }
 
 Renderer.prototype.addLayer = layer.addLayer;
@@ -344,3 +206,10 @@ Renderer.prototype.removeLayerByName = layer.removeLayerByName;
 Renderer.prototype.removeLayerByIndex = layer.removeLayerByIndex;
 Renderer.prototype.getLayerByName = layer.getLayerByName;
 Renderer.prototype.getLayerByProperty = layer.getLayerByProperty;
+
+Renderer.prototype.loadSprites = loadSprites;
+
+Renderer.prototype.render = render.render;
+Renderer.prototype.renderLayers = render.renderLayers;
+Renderer.prototype.drawPixelText = render.drawPixelText;
+Renderer.prototype.renderEntities = render.renderEntities;

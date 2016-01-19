@@ -10,8 +10,6 @@ export function addEntity(obj) {
 
   var entity = null;
 
-  obj.id = this.uHash(0);
-
   entity = new Entity(obj);
 
   this.entities.push(entity);

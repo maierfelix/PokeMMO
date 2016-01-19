@@ -4,20 +4,20 @@
  */
 export let TextureCache = {}
 
+let hashIndex = -1;
+let hashes = [];
+
 /**
  * Generate a unique hash
- * @param {Number} index
  * @export
  */
-export function uHash(index) {
+export function uHash() {
 
-  index = index === 0 ? (Math.random() * 1E7) << 0 : index;
+  var index = ++hashIndex;
 
-  if (this.hashes.indexOf(index) > -1) {
-    return (this.uHash((Math.random() * 1E7) << 0));
-  }
+  if (hashes.indexOf(index) > -1) return (this.uHash());
 
-  this.hashes.push(index);
+  hashes.push(index);
 
   return (index);
 

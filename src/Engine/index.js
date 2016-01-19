@@ -1,5 +1,4 @@
 import math from "../Math";
-import { uHash } from "./utils";
 import * as config from "../cfg";
 import * as layer  from "./layers";
 import * as entity from "./entities";
@@ -36,12 +35,6 @@ export default class Engine {
      * @type {Object}
      */
     this.context = this.node.getContext("2d");
-
-    /**
-     * Hashes
-     * @type {Array}
-     */
-    this.hashes = [];
 
     /**
      * Active entities
@@ -104,6 +97,48 @@ export default class Engine {
       size: new math.Point()
     };
 
+    /**
+     * Drag offset
+     * @type {Object}
+     */
+    this.drag = new math.Point();
+
+    /**
+     * Dragging state
+     * @type {Boolean}
+     */
+    this.dragging = false;
+
+    this.scene.size.x = 256;
+    this.scene.size.y = 128;
+
+  }
+
+  /**
+   * Move
+   * @param {Number} x
+   * @param {Number} y
+   */
+  move(x, y) {
+
+    this.position.x += x - this.drag.x;
+    this.position.y += y - this.drag.y;
+
+    this.drag.x = x;
+    this.drag.y = y;
+
+  }
+
+  /**
+   * Click
+   * @param {Number} x
+   * @param {Number} y
+   */
+  click(x, y) {
+
+    this.drag.x = x;
+    this.drag.y = y;
+
   }
 
   /**
@@ -123,8 +158,6 @@ export default class Engine {
   }
 
 }
-
-Engine.prototype.uHash = uHash;
 
 Engine.prototype.addLayer = layer.addLayer;
 Engine.prototype.removeLayerByName = layer.removeLayerByName;

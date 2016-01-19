@@ -900,7 +900,7 @@ export default class Keyboard {
     this.hashes = [];
 
     /** Keyboard hash */
-    this.hash = this.uHash(0);
+    this.hash = uHash();
 
     /** Keyboard fresh rate */
     this.rate = 60;
@@ -1061,5 +1061,3 @@ export default class Keyboard {
   }
 
 }
-
-Keyboard.prototype.uHash = uHash;

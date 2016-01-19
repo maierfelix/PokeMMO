@@ -21,6 +21,8 @@ import Renderer from "../Renderer";
 
 import * as Events from "./events.js";
 
+import * as entities from "./entities";
+
 /**
  * Game
  * @class Game
@@ -34,6 +36,8 @@ export default class Game {
   constructor() {
 
     this.node = document.querySelector("#main");
+
+    this.entities = entities;
 
     this.engine = new Engine(this.node);
 
@@ -95,6 +99,10 @@ export default class Game {
       this.engine.z += amount / 2;
       if (this.engine.z < MIN_SCALE) this.engine.z = MIN_SCALE;
       if (this.engine.z > MAX_SCALE) this.engine.z = MAX_SCALE;
+      if (this.engine.dragging) {
+        this.engine.move(e.clientX, e.clientY);
+      }
+      this.engine.click(e.clientX, e.clientY);
     }.bind(this));
 
   }
@@ -142,14 +150,14 @@ export default class Game {
    */
   addEntities() {
 
-    this.engine.addEntity({ zIndex: 1, sprite: "assets/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/200.png", width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 4, sprite: "assets/200.png", width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 4, sprite: "assets/200.png", width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 5, sprite: "assets/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 1, sprite: "assets/img/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/0.png",   width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 });
+    this.engine.addEntity({ zIndex: 5, sprite: "assets/img/200.png", width: 16, height: 16 });
 
   }
 
