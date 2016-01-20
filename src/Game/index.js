@@ -39,23 +39,26 @@ export default class Game {
 
     this.entities = entities;
 
+    this.input = new Input();
+
     this.engine = new Engine(this.node);
 
-    this.renderer = new Renderer(this.engine);
+    this.engine.sceneWidth = 256;
+    this.engine.sceneHeight = 128;
 
-    this.input = new Input();
+    this.renderer = new Renderer(this.engine);
 
     this.renderer.dimension = DIMENSION;
     this.renderer.lightning = true;
     this.renderer.shadowCasting = true;
     this.renderer.imageSmoothing = false;
+    this.renderer.render();
 
     this.addListeners();
     this.addLayers();
     this.addEntities();
     this.registerKeys();
     this.registerMouse();
-    this.renderer.render();
 
     this.engine.z = MIN_SCALE;
 
@@ -93,18 +96,24 @@ export default class Game {
 
     window.addEventListener('resize', e => this.renderer.resize(), false);
 
-    Wheel.addWheelListener(this.node, function(e) {
-      let amount = (e.deltaY ? -e.deltaY : e.deltaY);
-      amount = amount / 2 / (math.distance(0, 0, this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(this.engine.z);
-      this.engine.z += amount / 2;
-      if (this.engine.z < MIN_SCALE) this.engine.z = MIN_SCALE;
-      if (this.engine.z > MAX_SCALE) this.engine.z = MAX_SCALE;
-      if (this.engine.dragging) {
-        this.engine.move(e.clientX, e.clientY);
-      }
-      this.engine.click(e.clientX, e.clientY);
-    }.bind(this));
+    Wheel.addWheelListener(this.node, e => this.zoom(e));
 
+  }
+
+  /**
+   * Zoom
+   * @param {Object} e
+   */
+  zoom(e) {
+    var amount = (e.deltaY ? -e.deltaY : e.deltaY);
+    amount = amount / 2 / (math.distance(0, 0, this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(this.engine.z);
+    this.engine.z += amount / 2;
+    if (this.engine.z < MIN_SCALE) this.engine.z = MIN_SCALE;
+    if (this.engine.z > MAX_SCALE) this.engine.z = MAX_SCALE;
+    if (this.engine.dragging) {
+      this.engine.move(e.clientX, e.clientY);
+    }
+    this.engine.click(e.clientX, e.clientY);
   }
 
   /**

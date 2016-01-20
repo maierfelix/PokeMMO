@@ -30,13 +30,13 @@ export default class Entity {
      * Entity x pos
      * @type {Number}
      */
-    this.x = Math.roundTo(Math.floor(Math.random() * window.innerWidth / 10), 16);
+    this.x = math.roundTo(Math.floor(Math.random() * window.innerWidth / 10), 16);
 
     /**
      * Entity y pos
      * @type {Number}
      */
-    this.y = Math.roundTo(Math.floor(Math.random() * window.innerHeight / 10), 16);
+    this.y = math.roundTo(Math.floor(Math.random() * window.innerHeight / 10), 16);
 
     /**
      * Z priority

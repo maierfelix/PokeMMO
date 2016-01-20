@@ -8,7 +8,7 @@ import { TextureCache } from "../Engine/utils";
 export function render() {
 
   /** Pixel friendly scaling */
-  this.instance.scale = Math.roundTo(parseFloat(math.zoomScale(this.instance.z)), 0.125);
+  this.instance.scale = math.roundTo(parseFloat(math.zoomScale(this.instance.z)), 0.125);
 
   this.clear();
 

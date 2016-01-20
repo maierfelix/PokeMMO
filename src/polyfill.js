@@ -11,18 +11,6 @@ window.rAF = (function() {
 })();
 
 /**
- * Round integer to its nearst X integer
- * @param  {number} a Number
- * @param  {number} b Round to
- * @method roundTo
- * @return {number} rounded number
- */
-Math.roundTo = function(a, b) {
-  b = 1 / (b);
-  return (Math.round(a * b) / b);
-};
-
-/**
  * @param {Boolean} value
  */
 CanvasRenderingContext2D.prototype.setImageSmoothing = function(value) {

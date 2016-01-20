@@ -109,9 +109,6 @@ export default class Engine {
      */
     this.dragging = false;
 
-    this.scene.size.x = 256;
-    this.scene.size.y = 128;
-
   }
 
   /**
@@ -155,6 +152,24 @@ export default class Engine {
    */
   set height(height) {
     this.size.y = height || 0;
+  }
+
+  /**
+   * Set scene width
+   * @param {Number} width
+   * @setter
+   */
+  set sceneWidth(width) {
+    this.scene.size.x = width;
+  }
+
+  /**
+   * Set scene height
+   * @param {Number} width
+   * @setter
+   */
+  set sceneHeight(height) {
+    this.scene.size.y = height;
   }
 
 }

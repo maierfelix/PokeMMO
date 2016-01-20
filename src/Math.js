@@ -32,6 +32,17 @@ export default class Math {
   }
 
   /**
+   * Round integer to its nearst X integer
+   * @param  {Number} a Number
+   * @param  {Number} b Round to
+   * @return {Number}
+   */
+  static roundTo(a, b) {
+    b = 1 / (b);
+    return (window.Math.round(a * b) / b);
+  }
+
+  /**
    * Zoom scale
    * @param {Number} factor
    */
