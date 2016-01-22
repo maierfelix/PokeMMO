@@ -24,3 +24,22 @@ CanvasRenderingContext2D.prototype.setImageSmoothing = function(value) {
   return void 0;
 
 };
+
+/**
+ * Clear a context
+ * @param {String} color Clear by color
+ */
+CanvasRenderingContext2D.prototype.clear = function (color) {
+
+  if (color) {
+    var original = this.fillStyle;
+    this.fillStyle = color;
+    this.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.fillStyle = original;
+  } else {
+    this.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  return void 0;
+
+};

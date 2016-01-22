@@ -3,14 +3,14 @@ import { TextureCache } from "./utils";
 
 /**
  * Add a new entity
- * @param {Object} obj
+ * @param {Object} entity
  * @export
  */
-export function addEntity(obj) {
+export function addEntity(entity) {
 
-  var entity = null;
-
-  entity = new Entity(obj);
+  if (entity.isLocalPlayer) {
+    this.localEntity = entity;
+  }
 
   this.entities.push(entity);
 
@@ -61,7 +61,7 @@ export function getEntityById(id) {
   var index = 0;
 
   return (
-    (index = this.getEntityByProperty(name, property)) >= 0 ? index : -1
+    (index = this.getEntityByProperty(id, property)) >= 0 ? index : -1
   );
 
 }

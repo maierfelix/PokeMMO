@@ -1,3 +1,7 @@
+import {
+  DIMENSION,
+  LEFT, RIGHT, UP, DOWN
+} from "../../cfg";
 import math from "../../Math";
 import { uHash } from "../utils";
 
@@ -46,9 +50,15 @@ export default class Entity {
 
     /**
      * Texture
-     * @type {String}
+     * @type {Object}
      */
-    this.texture = void 0;
+    this.texture = null;
+
+    /**
+     * Frames
+     * @type {Array}
+     */
+    this.frames = obj.frames || [0];
 
     /**
      * Sprite
@@ -63,6 +73,67 @@ export default class Entity {
     if (obj.height) {
       this.size.y = obj.height;
     }
+  }
+
+  /**
+   * Reverse dir
+   * @param  {Number} dir
+   * @return {Number}
+   */
+  reverseDir(dir) {
+
+    return (
+      dir === LEFT  ? 2 :
+      dir === UP    ? 0 :
+      dir === RIGHT ? 3 :
+      dir === DOWN  ? 1 : 0
+    );
+
+  }
+
+  /**
+   * Get tile position
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} dir
+   */
+  getTilePosition(x, y, dir) {
+
+    var amount = DIMENSION;
+
+    var facing = -1;
+
+    var x = x;
+    var y = y;
+
+    switch (dir) {
+      case LEFT:
+        x -= amount;
+        facing = 3;
+      break;
+      case UP:
+        y -= amount;
+        facing = 1;
+      break;
+      case RIGHT:
+        x += amount;
+        facing = 2;
+      break;
+      case DOWN:
+        y += amount;
+        facing = 0;
+      break;
+      default:
+        facing = 0;
+      break;
+    };
+
+    return ({
+      x: x,
+      y: y,
+      facing: facing
+    });
+
   }
 
 }

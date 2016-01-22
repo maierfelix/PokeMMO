@@ -4,6 +4,8 @@ import {
   imageToCanvas
 } from "../utils";
 
+import * as effect from "./effects";
+
 /**
  * Texture
  * @class Texture
@@ -23,6 +25,18 @@ export default class Texture {
      * @type {Object}
      */
     this.texture = null;
+
+    /**
+     * Shadow texture
+     * @type {Object}
+     */
+    this.texture_shadow = null;
+
+    /**
+     * Effect texture
+     * @type {Object}
+     */
+    this.texture_effect = null;
 
     /**
      * Image url
@@ -80,6 +94,7 @@ export default class Texture {
       this.isLoaded = true;
       TextureCache[url] = this;
       this.texture = imageToCanvas(img);
+      this.buildShadow();
       resolve();
     }.bind(this));
 
@@ -87,4 +102,34 @@ export default class Texture {
 
   }
 
+  /**
+   * Build texture shadow
+   */
+  buildShadow() {
+
+    var width  = this.texture.canvas.width;
+    var height = this.texture.canvas.height;
+
+    var shadow = createCanvasBuffer(width, height);
+
+    shadow.translate(0, height);
+    shadow.scale(1, -1);
+
+    this.drawShadow(
+      this.texture,
+      shadow,
+      0, -height,
+      width, height
+    );
+
+    shadow.setTransform(1, 0, 0, 1, 0, 0);
+
+    this.texture_shadow = shadow;
+
+  }
+
 }
+
+Texture.prototype.drawTint = effect.drawTint;
+Texture.prototype.drawShadow = effect.drawShadow;
+Texture.prototype.colorizePixels = effect.colorizePixels;

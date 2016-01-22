@@ -13,14 +13,11 @@ import {
   TextureCache
 } from "../Engine/utils";
 
-import Wheel from "../libs/wheel";
-
 import Engine from "../Engine";
 import Input from "../Engine/Input";
 import Renderer from "../Renderer";
 
 import * as Events from "./events.js";
-
 import * as entities from "./entities";
 
 /**
@@ -39,7 +36,7 @@ export default class Game {
 
     this.entities = entities;
 
-    this.input = new Input();
+    this.input = new Input(Events, this);
 
     this.engine = new Engine(this.node);
 
@@ -57,35 +54,8 @@ export default class Game {
     this.addListeners();
     this.addLayers();
     this.addEntities();
-    this.registerKeys();
-    this.registerMouse();
 
     this.engine.z = MIN_SCALE;
-
-  }
-
-  /**
-   * Register keys
-   */
-  registerKeys() {
-
-    for (let key of Events.keys) {
-      this.input.KeyBoard.registerKey(
-        key.name,
-        key.fire.bind(this)
-      );
-    };
-
-  }
-
-  /**
-   * Register mouse
-   */
-  registerMouse() {
-
-    for (let ev of Events.mouse) {
-      this.input.Mouse.registerEvent(ev, this);
-    };
 
   }
 
@@ -95,8 +65,6 @@ export default class Game {
   addListeners() {
 
     window.addEventListener('resize', e => this.renderer.resize(), false);
-
-    Wheel.addWheelListener(this.node, e => this.zoom(e));
 
   }
 
@@ -159,14 +127,16 @@ export default class Game {
    */
   addEntities() {
 
-    this.engine.addEntity({ zIndex: 1, sprite: "assets/img/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/0.png",   width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 2, sprite: "assets/img/200.png", width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 });
-    this.engine.addEntity({ zIndex: 5, sprite: "assets/img/200.png", width: 16, height: 16 });
+    var player = this.entities.Player;
+
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, shadow: true, static: true }));
+    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/0.png", width: 16, height: 16, solid: true }));
+    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/0.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/0.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/200.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 5, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, shadowSettings: { zIndex: 2 }}));
 
   }
 

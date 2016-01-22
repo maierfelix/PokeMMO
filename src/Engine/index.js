@@ -109,6 +109,12 @@ export default class Engine {
      */
     this.dragging = false;
 
+    /**
+     * Local entity ref
+     * @type {Object}
+     */
+    this.localEntity = null;
+
   }
 
   /**
@@ -175,13 +181,13 @@ export default class Engine {
 }
 
 Engine.prototype.addLayer = layer.addLayer;
+Engine.prototype.getLayerByName = layer.getLayerByName;
 Engine.prototype.removeLayerByName = layer.removeLayerByName;
 Engine.prototype.removeLayerByIndex = layer.removeLayerByIndex;
-Engine.prototype.getLayerByName = layer.getLayerByName;
 Engine.prototype.getLayerByProperty = layer.getLayerByProperty;
 
 Engine.prototype.addEntity = entity.addEntity;
+Engine.prototype.getEntityById = entity.getEntityById;
 Engine.prototype.removeEntityById = entity.removeEntityById;
 Engine.prototype.removeEntityByIndex = entity.removeEntityByIndex;
-Engine.prototype.getEntityById = entity.getEntityById;
 Engine.prototype.getEntityByProperty = entity.getEntityByProperty;

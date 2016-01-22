@@ -1,5 +1,6 @@
 import "../polyfill";
-import * as layer from "../Engine/layers";
+import * as layer  from "../Engine/layers";
+import * as entity from "../Engine/entities";
 import * as render from "./render";
 import { loadSprites }  from "./sprite";
 import { TextureCache } from "../Engine/utils";
@@ -96,6 +97,12 @@ export default class Renderer {
     this.scene = instance.scene;
 
     /**
+     * Camera ref
+     * @type {Object}
+     */
+    this.camera = instance.camera;
+
+    /**
      * Sprite cache queue
      * @type {Array}
      */
@@ -128,6 +135,24 @@ export default class Renderer {
   }
 
   /**
+   * Update
+   */
+  update() {
+
+    var entity = this.instance.localEntity;
+
+    if (entity === null) return void 0;
+
+    this.scene.position.x = this.width / 2 - (entity.size.x / 2 * this.instance.scale);
+    this.scene.position.y = this.height / 2 - (entity.size.y / 2 * this.instance.scale);
+
+    this.camera.x = this.scene.position.x - (entity.x * this.instance.scale);
+    this.camera.y = this.scene.position.y - (entity.y * this.instance.scale);
+
+  }
+
+  /**
+   * Resize
    */
   resize() {
     this.instance.width  = window.innerWidth;
@@ -201,15 +226,21 @@ export default class Renderer {
 
 }
 
+Renderer.prototype.loadSprites = loadSprites;
+
 Renderer.prototype.addLayer = layer.addLayer;
 Renderer.prototype.removeLayerByName = layer.removeLayerByName;
 Renderer.prototype.removeLayerByIndex = layer.removeLayerByIndex;
 Renderer.prototype.getLayerByName = layer.getLayerByName;
 Renderer.prototype.getLayerByProperty = layer.getLayerByProperty;
 
-Renderer.prototype.loadSprites = loadSprites;
-
 Renderer.prototype.render = render.render;
 Renderer.prototype.renderLayers = render.renderLayers;
 Renderer.prototype.drawPixelText = render.drawPixelText;
 Renderer.prototype.renderEntities = render.renderEntities;
+
+Renderer.prototype.addEntity = entity.addEntity;
+Renderer.prototype.getEntityById = entity.getEntityById;
+Renderer.prototype.removeEntityById = entity.removeEntityById;
+Renderer.prototype.removeEntityByIndex = entity.removeEntityByIndex;
+Renderer.prototype.getEntityByProperty = entity.getEntityByProperty;

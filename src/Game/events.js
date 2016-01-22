@@ -1,4 +1,5 @@
 import {
+  DIMENSION,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 
@@ -12,25 +13,29 @@ export const keys = [
   {
     name: "←",
     fire: function() {
-      console.log(LEFT);
+      var local = this.engine.localEntity;
+      local.move(LEFT);
     }
   },
   {
     name: "→",
     fire: function() {
-      console.log(RIGHT);
+      var local = this.engine.localEntity;
+      local.move(RIGHT);
     }
   },
   {
     name: "↑",
     fire: function() {
-      console.log(UP);
+      var local = this.engine.localEntity;
+      local.move(UP);
     }
   },
   {
     name: "↓",
     fire: function() {
-      console.log(DOWN);
+      var local = this.engine.localEntity;
+      local.move(DOWN);
     }
   },
     {
@@ -62,23 +67,27 @@ export const keys = [
 export const mouse = [
   {
     name: "mousemove",
-    fire: function(root, e) {
-      if (root.engine.dragging) {
-        game.engine.move(e.clientX, e.clientY);
-      }
+    fire: function(e) {
+      this.engine.move(e.clientX, e.clientY);
     }
   },
   {
     name: "mousedown",
-    fire: function(root, e) {
-      root.engine.dragging = true;
-      root.engine.click(e.clientX, e.clientY);
+    fire: function(e) {
+      this.engine.dragging = true;
+      this.engine.click(e.clientX, e.clientY);
     }
   },
   {
     name: "mouseup",
-    fire: function(root, e) {
-      root.engine.dragging = false;
+    fire: function(e) {
+      this.engine.dragging = false;
+    }
+  },
+  {
+    name: "mousewheel",
+    fire: function(e) {
+      this.zoom(e);
     }
   }
 ];

@@ -1,3 +1,5 @@
+import Wheel from "../../libs/wheel";
+
 /**
  * Mouse
  * @class Mouse
@@ -21,9 +23,12 @@ export default class Mouse {
    */
   registerEvent(event, root) {
 
-    window.addEventListener(event.name, e => event.fire(root, e), false);
+    if (event.name === "mousewheel") {
+      Wheel.addWheelListener(document.body, e => event.fire.call(root, e));
+      return void 0;
+    }
 
-    return void 0;
+    window.addEventListener(event.name, e => event.fire.call(root, e), false);
 
   }
 

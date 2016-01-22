@@ -22,7 +22,7 @@ export const MIN_SCALE = 0.0;
  * @constant
  * @type {Number}
  */
-export const MAX_SCALE = 10.0;
+export const MAX_SCALE = 12.5;
 
 /**
  * Version
@@ -36,7 +36,7 @@ export const VERSION = "0.0.1";
  * @constant
  * @type {Number}
  */
-export const DOWN = 0;
+export const LEFT = 3;
 
 /**
  * Direction
@@ -57,4 +57,18 @@ export const RIGHT = 2;
  * @constant
  * @type {Number}
  */
-export const LEFT = 3;
+export const DOWN = 0;
+
+/**
+ * Shadow x scale
+ * @constant
+ * @type {Number}
+ */
+export const SHADOWX = 1.0;
+
+/**
+ * Shadow y scale
+ * @constant
+ * @type {Number}
+ */
+export const SHADOWY = 1.45;
