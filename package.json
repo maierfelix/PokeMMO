@@ -1,7 +1,7 @@
 {
-  "name": "webpack-es6-demo",
-  "version": "1.0.0",
-  "description": "A small demo project that shows how to use webpack for client-side development in ECMAScript 6.",
+  "name": "pokiengine",
+  "version": "0.0.2",
+  "description": "Pokémon Engine",
   "scripts": {
     "watch": "webpack --watch"
   },

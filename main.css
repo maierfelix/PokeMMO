@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: 'AdvoCut';
-  src: url(../fonts/advocut-webfont.eot);
-  src: url(../fonts/advocut-webfont.eot?#iefix) format('embedded-opentype'),
-       url(../fonts/advocut-webfont.woff) format('woff'),
-       url(../fonts/advocut-webfont.ttf) format('truetype'),
-       url(../fonts/advocut-webfont.svg#AndinaRegular) format('svg');
+  src: url(./assets/fonts/advocut-webfont.eot);
+  src: url(./assets/fonts/advocut-webfont.eot?#iefix) format('embedded-opentype'),
+       url(./assets/fonts/advocut-webfont.woff) format('woff'),
+       url(./assets/fonts/advocut-webfont.ttf) format('truetype'),
+       url(./assets/fonts/advocut-webfont.svg#AndinaRegular) format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -22,10 +22,11 @@ html {
 
 body {
   overflow:hidden;
-  -webkit-user-select:none;
-  -moz-user-select:none;margin:0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  margin:0;
   color: white;
-  font-family: "RobotoThin", sans-serif;
+  font-family: 'AdvoCut', sans-serif;
   cursor: default;
 }
 
