@@ -2,8 +2,8 @@ import math from "../Math";
 import Camera from "./Camera";
 import Path from "./Path";
 import * as config from "../cfg";
-import * as layer  from "./layers";
-import * as entity from "./entities";
+import * as layer  from "./Layer/functions";
+import * as entity from "./Entity/functions";
 
 /**
  * Engine

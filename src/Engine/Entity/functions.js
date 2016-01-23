@@ -1,5 +1,5 @@
-import Entity from "./Entity";
-import { TextureCache } from "./utils";
+import Entity from "./index";
+import { TextureCache } from "../utils";
 
 /**
  * Add a new entity

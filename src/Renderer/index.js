@@ -1,8 +1,8 @@
 import "../polyfill";
 import math from "../Math";
 import { DIMENSION } from "../cfg";
-import * as layer  from "../Engine/layers";
-import * as entity from "../Engine/entities";
+import * as layer  from "../Engine/Layer/functions";
+import * as entity from "../Engine/Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
 import { loadSprites }  from "./sprite";

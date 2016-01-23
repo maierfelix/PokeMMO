@@ -1,4 +1,4 @@
-import layer from "./Layer";
+import layer from "./index";
 
 /**
  * Add a new layer
