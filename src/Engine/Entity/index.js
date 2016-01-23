@@ -49,6 +49,12 @@ export default class Entity {
     this.zIndex = obj.zIndex === void 0 ? 0 : obj.zIndex;
 
     /**
+     * Solid
+     * @type {Boolean}
+     */
+    this.solid = false;
+
+    /**
      * Texture
      * @type {Object}
      */
@@ -73,6 +79,22 @@ export default class Entity {
     if (obj.height) {
       this.size.y = obj.height;
     }
+  }
+
+  /**
+   * Shadow facing
+   * @param  {Number} dir
+   * @return {Number}
+   */
+  shadowFacing(dir) {
+
+    return (
+      dir === LEFT  ? 0 :
+      dir === UP    ? 2 :
+      dir === RIGHT ? 1 :
+      dir === DOWN  ? 3 : 2
+    );
+
   }
 
   /**

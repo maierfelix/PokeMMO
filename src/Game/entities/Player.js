@@ -1,4 +1,5 @@
 import Entity from "../../Engine/Entity";
+import Animation from "../../Engine/Animation";
 
 export class Player extends Entity {
 
@@ -63,6 +64,21 @@ export class Player extends Entity {
      * @type {Array}
      */
     this.frames = [0, 1, 0, 2, 3, 4];
+
+    this.walkAnimation = new Animation({
+      width: 16, height: 16,
+      frameTime: .13333,
+      row:       [0, 1, 0],
+      loop:      false
+    });
+
+    /**
+     * Animations
+     * @type {Object}
+     */
+    this.animations = {
+      walk: null
+    };
 
     this.init(obj);
 

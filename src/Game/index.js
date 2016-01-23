@@ -55,7 +55,7 @@ export default class Game {
     this.addLayers();
     this.addEntities();
 
-    this.engine.z = MIN_SCALE;
+    this.engine.camera.scale = MIN_SCALE;
 
   }
 
@@ -73,15 +73,23 @@ export default class Game {
    * @param {Object} e
    */
   zoom(e) {
+
+    var camera = this.engine.camera;
     var amount = (e.deltaY ? -e.deltaY : e.deltaY);
-    amount = amount / 2 / (math.distance(0, 0, this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(this.engine.z);
-    this.engine.z += amount / 2;
-    if (this.engine.z < MIN_SCALE) this.engine.z = MIN_SCALE;
-    if (this.engine.z > MAX_SCALE) this.engine.z = MAX_SCALE;
+
+    amount = amount / 2 / (math.distance(0, 0, this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(camera.scale);
+
+    camera.scale += amount / 2;
+
+    if (camera.scale < MIN_SCALE) camera.scale = MIN_SCALE;
+    if (camera.scale > MAX_SCALE) camera.scale = MAX_SCALE;
+
     if (this.engine.dragging) {
       this.engine.move(e.clientX, e.clientY);
     }
+
     this.engine.click(e.clientX, e.clientY);
+
   }
 
   /**

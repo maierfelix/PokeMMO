@@ -1,4 +1,7 @@
-import { SHADOWX, SHADOWY } from "../cfg";
+import {
+  DEBUG,
+  SHADOWX, SHADOWY
+} from "../cfg";
 import math from "../Math";
 import { drawGrid } from "./grid";
 import { TextureCache } from "../Engine/utils";
@@ -8,14 +11,21 @@ import { TextureCache } from "../Engine/utils";
  */
 export function render() {
 
-  /** Pixel friendly scaling */
-  this.instance.scale = math.roundTo(parseFloat(math.zoomScale(this.instance.z)), 0.125);
-
   this.update();
 
   this.sort();
 
   this.clear();
+
+  drawGrid(
+    this.context,
+    this.camera.position.x, this.camera.position.y,
+    this.width, this.height,
+    this.dimension,
+    this.scale,
+    .05,
+    "#FFF"
+  );
 
   if (this.spriteQueue.length >= 1) {
     this.drawPixelText(
@@ -29,36 +39,39 @@ export function render() {
     return void 0;
   }
 
-  drawGrid(
-    this.context,
-    this.camera.x, this.camera.y,
-    this.width, this.height,
-    this.dimension,
-    this.instance.scale,
-    .05,
-    "#FFF"
-  );
+  if (DEBUG) this.renderScene();
+
+  this.renderLayers();
+
+  if (DEBUG) this.renderDebugScene();
+
+  window.rAF(() => this.render());
+
+}
+
+/**
+ * Render scene
+ */
+export function renderScene() {
+
+  let ln = 1 * this.scale;
 
   this.context.beginPath();
-
-  var ln = 1 * this.instance.scale;
 
   /** Draw scene */
   this.context.strokeStyle = "red";
   this.context.lineWidth = ln;
 
   this.context.strokeRect(
-    this.camera.x + (ln / 2),
-    this.camera.y + (ln / 2),
-    (this.scene.size.x * this.instance.scale) - ln << 0, (this.scene.size.y * this.instance.scale) - ln << 0
+    this.camera.position.x + (ln / 2),
+    this.camera.position.y + (ln / 2),
+    (this.camera.viewport.x * this.scale) - ln << 0,
+    (this.camera.viewport.y * this.scale) - ln << 0
   );
+
   this.context.stroke();
 
   this.context.closePath();
-
-  this.renderLayers();
-
-  window.rAF(() => this.render());
 
 }
 
@@ -67,8 +80,8 @@ export function render() {
  */
 export function renderLayers() {
 
-  var ii = 0;
-  var length = 0;
+  let ii = 0;
+  let length = 0;
 
   length = this.layers.length;
 
@@ -84,35 +97,16 @@ export function renderLayers() {
  */
 export function renderEntities(entities) {
 
-  var entity = null;
+  let entity = null;
 
-  var ii = 0;
-  var length = 0;
+  let ii = 0;
+  let length = 0;
 
   length = entities.length;
-
-  var x = .0;
-  var y = .0;
-
-  var width  = .0;
-  var height = .0;
-
-  var dim = this.dimension;
-
-  var scale = this.instance.scale;
-
-  var shadowX = SHADOWX;
-  var shadowY = SHADOWY;
 
   for (; ii < length; ++ii) {
 
     entity = entities[ii];
-
-    x = Math.ceil(this.camera.x + entity.x * scale);
-    y = Math.ceil(this.camera.y + entity.y * scale);
-
-    width  = entity.size.x * scale;
-    height = entity.size.y * scale
 
     if (TextureCache[entity.sprite] !== void 0 && entity.texture === null) {
       entity.texture = TextureCache[entity.sprite];
@@ -126,38 +120,67 @@ export function renderEntities(entities) {
       continue;
     }
 
-    /** Shadow */
-    this.context.drawImage(
-      entity.texture.texture_shadow.canvas,
-      /** Frame */
-      (entity.frames[1] * (entity.size.x + dim)),
-      (entity.size.y + dim) * (entity.facing),
-      /** Scale */
-      entity.size.x * 2, entity.size.y * 2,
-      x << 0, y + (dim / 1.055 * scale) << 0,
-      width / SHADOWX << 0, height / SHADOWY << 0
-    );
+    if (!this.instance.isInView(entity)) continue;
 
-    /** Sprite */
-    this.context.drawImage(
-      entity.texture.texture.canvas,
-      /** Frame */
-      (entity.frames[1] * (entity.size.x + dim)),
-      (entity.size.y + dim) * entity.facing,
-      /** Scale */
-      entity.size.x * 2, entity.size.y * 2,
-      x << 0, y << 0,
-      width << 0, height << 0
-    );
-
-    /** Tag */
-    this.drawPixelText(
-      "Entity: " + entity.id,
-      x, y,
-      5 * scale, 1.5 * scale
-    );
+    this.renderEntity(entity);
 
   };
+
+  return void 0;
+
+}
+
+/**
+ * Render a entity
+ * @param {Object} entity
+ */
+export function renderEntity(entity) {
+
+  const dim = this.dimension;
+
+  const shadowX = SHADOWX;
+  const shadowY = SHADOWY;
+
+  let scale = this.scale;
+
+  let x = Math.ceil(this.camera.position.x + entity.x * scale);
+  let y = Math.ceil(this.camera.position.y + entity.y * scale);
+
+  let width  = entity.size.x * scale;
+  let height = entity.size.y * scale
+
+  /** Shadow */
+  this.context.drawImage(
+    entity.texture.texture_shadow.canvas,
+    /** Frame */
+    (entity.frames[0] * (entity.size.x + dim)),
+    (entity.size.y + dim) * entity.shadowFacing(entity.facing),
+    /** Scale */
+    entity.size.x * 2, entity.size.y * 2,
+    x << 0, y + (dim / 1.055 * scale) << 0,
+    width / shadowX << 0, height / shadowY << 0
+  );
+
+  /** Sprite */
+  this.context.drawImage(
+    entity.texture.texture.canvas,
+    /** Frame */
+    (entity.frames[0] * (entity.size.x + dim)),
+    (entity.size.y + dim) * entity.facing,
+    /** Scale */
+    entity.size.x * 2, entity.size.y * 2,
+    x << 0, y << 0,
+    width << 0, height << 0
+  );
+
+  /** Tag */
+  this.drawPixelText(
+    "Entity: " + entity.id,
+    x, y,
+    5 * scale, 1.5 * scale
+  );
+
+  return void 0;
 
 }
 

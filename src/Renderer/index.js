@@ -1,7 +1,10 @@
 import "../polyfill";
+import math from "../Math";
+import { DIMENSION } from "../cfg";
 import * as layer  from "../Engine/layers";
 import * as entity from "../Engine/entities";
 import * as render from "./render";
+import * as debug from "./debug";
 import { loadSprites }  from "./sprite";
 import { TextureCache } from "../Engine/utils";
 
@@ -64,7 +67,31 @@ export default class Renderer {
      * Dimension
      * @type {Number}
      */
-    this.dimension = 16;
+    this.dimension = DIMENSION;
+
+    /**
+     * Scale
+     * @type {Number}
+     */
+    this.scale = .0;
+
+    /**
+     * Delta timer
+     * @type {Number}
+     */
+    this.delta = 0;
+
+    /**
+     * Now timestamp
+     * @type {Number}
+     */
+    this.now = 0;
+
+    /**
+     * Then timestamp
+     * @type {Number}
+     */
+    this.then = 0;
 
     /**
      * Shadow casting
@@ -89,12 +116,6 @@ export default class Renderer {
      * @type {Number}
      */
     this.height = 0;
-
-    /**
-     * Scene ref
-     * @type {Object}
-     */
-    this.scene = instance.scene;
 
     /**
      * Camera ref
@@ -141,14 +162,25 @@ export default class Renderer {
 
     var entity = this.instance.localEntity;
 
+    this.updateTimers();
+
+    /** Pixel friendly scaling */
+    this.scale = this.camera.getScale();
+
     if (entity === null) return void 0;
 
-    this.scene.position.x = this.width / 2 - (entity.size.x / 2 * this.instance.scale);
-    this.scene.position.y = this.height / 2 - (entity.size.y / 2 * this.instance.scale);
+    this.camera.position.x = (this.width / 2 - (entity.size.x / 2 * this.scale)) - (entity.x * this.scale);
+    this.camera.position.y = (this.height / 2 - (entity.size.y / 2 * this.scale)) - (entity.y * this.scale);
 
-    this.camera.x = this.scene.position.x - (entity.x * this.instance.scale);
-    this.camera.y = this.scene.position.y - (entity.y * this.instance.scale);
+  }
 
+  /**
+   * Update timers
+   */
+  updateTimers() {
+    this.now = Date.now();
+    this.delta = (this.now - this.then) / 1E3;
+    this.then = this.now;
   }
 
   /**
@@ -235,9 +267,13 @@ Renderer.prototype.getLayerByName = layer.getLayerByName;
 Renderer.prototype.getLayerByProperty = layer.getLayerByProperty;
 
 Renderer.prototype.render = render.render;
+Renderer.prototype.renderScene = render.renderScene;
+Renderer.prototype.renderEntity = render.renderEntity;
 Renderer.prototype.renderLayers = render.renderLayers;
 Renderer.prototype.drawPixelText = render.drawPixelText;
 Renderer.prototype.renderEntities = render.renderEntities;
+
+Renderer.prototype.renderDebugScene = debug.renderDebugScene;
 
 Renderer.prototype.addEntity = entity.addEntity;
 Renderer.prototype.getEntityById = entity.getEntityById;

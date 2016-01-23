@@ -1,4 +1,6 @@
 import math from "../Math";
+import Camera from "./Camera";
+import Path from "./Path";
 import * as config from "../cfg";
 import * as layer  from "./layers";
 import * as entity from "./entities";
@@ -48,24 +50,6 @@ export default class Engine {
      */
     this.layers = [];
 
-    /**
-     * Engine scale
-     * @type {Number}
-     */
-    this.scale = 1;
-
-    /**
-     * Z scale
-     * @type {Number}
-     */
-    this.z = 1;
-
-    /**
-     * Delta timer
-     * @type {Number}
-     */
-    this.delta = 0;
-
     /** 
      * Engine size
      * @type {Object}
@@ -80,22 +64,13 @@ export default class Engine {
      * Camera object
      * @type {Object}
      */
-    this.camera = new math.Point();
+    this.camera = new Camera();
 
     /**
-     * Engine rendering position
+     * Path object
      * @type {Object}
      */
-    this.position = new math.Point();
-
-    /**
-     * Scene object
-     * @type {Object}
-     */
-    this.scene = {
-      position: new math.Point(),
-      size: new math.Point()
-    };
+    this.path = new Path();
 
     /**
      * Drag offset
@@ -118,14 +93,47 @@ export default class Engine {
   }
 
   /**
+   * Cubic in view
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} width
+   * @param {Number} height
+   * @return {Boolean}
+   */
+  inView(x, y, width, height) {
+
+    return (
+      x + width >= 0 && x - width <= this.size.x &&
+      y + height >= 0 && y - height <= this.size.y
+    );
+
+  }
+
+  /**
+   * @param {Object} obj
+   */
+  isInView(obj) {
+
+    var scale = this.camera.getScale();
+
+    return (
+      this.inView(
+        ((obj.x * scale) + this.camera.position.x) << 0,
+        ((obj.y * scale) + this.camera.position.y) << 0,
+        (obj.size.x * scale) << 0,
+        /** Shadow */
+        ((obj.size.y * 2) * scale) << 0
+      )
+    );
+
+  }
+
+  /**
    * Move
    * @param {Number} x
    * @param {Number} y
    */
   move(x, y) {
-
-    this.position.x += x - this.drag.x;
-    this.position.y += y - this.drag.y;
 
     this.drag.x = x;
     this.drag.y = y;
@@ -166,7 +174,7 @@ export default class Engine {
    * @setter
    */
   set sceneWidth(width) {
-    this.scene.size.x = width;
+    this.camera.viewport.x = width;
   }
 
   /**
@@ -175,7 +183,7 @@ export default class Engine {
    * @setter
    */
   set sceneHeight(height) {
-    this.scene.size.y = height;
+    this.camera.viewport.y = height;
   }
 
 }
