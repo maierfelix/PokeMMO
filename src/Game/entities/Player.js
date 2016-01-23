@@ -1,3 +1,5 @@
+import math from "../../Math";
+import { DIMENSION } from "../../cfg";
 import Entity from "../../Engine/Entity";
 import Animation from "../../Engine/Animation";
 
@@ -22,6 +24,12 @@ export class Player extends Entity {
      * @type {Number}
      */
     this.facing = 0;
+
+    /**
+     * Velocity
+     * @type {Number}
+     */
+    this.velocity = 1.0;
 
     /**
      * Idle state
@@ -64,21 +72,6 @@ export class Player extends Entity {
      * @type {Array}
      */
     this.frames = [0, 1, 0, 2, 3, 4];
-
-    this.walkAnimation = new Animation({
-      width: 16, height: 16,
-      frameTime: .13333,
-      row:       [0, 1, 0],
-      loop:      false
-    });
-
-    /**
-     * Animations
-     * @type {Object}
-     */
-    this.animations = {
-      walk: null
-    };
 
     this.init(obj);
 
@@ -131,19 +124,89 @@ export class Player extends Entity {
    */
   move(dir) {
 
+    /** Wait until we finished moving */
+    if (this.moving === true) {
+      /** Reached target but stop move didnt got switched */
+      if (
+        math.roundTo(this.x, DIMENSION) === this.x &&
+        math.roundTo(this.y, DIMENSION) === this.y
+      ) {
+        //console.error("Received bugged destination");
+        this.moving = false;
+      } else {
+        return void 0;
+      }
+    }
+
+    var newDir = false;
     var position = this.getTilePosition(this.x, this.y, dir);
 
-    this.x = position.x;
-    this.y = position.y;
+    if (this.facing !== position.facing) {
+      this.facing = position.facing;
+      newDir = true;
+    }
 
-    this.facing = position.facing;
+    this.animations.push({
+      type: "walk",
+      obstacle: false,
+      x: position.x,
+      y: position.y,
+      newDir: newDir
+    });
+
+    this.moving = true;
 
   }
 
   /**
-   * Jump
+   * Walk
+   * @param {Object} animation
+   * @animation
    */
-  jump() {
+  walk(animation) {
+
+    var halfStep = Math.ceil(Math.ceil(DIMENSION / this.velocity) / 2);
+
+    if (this.x % DIMENSION === 0 && this.y % DIMENSION === 0) {
+      this.stepCount = 0;
+    }
+
+    if (animation.obstacle === false) {
+      /** Do halfstep */
+      if (
+        this.stepCount === this.halfStep &&
+        this.lastFramePosition !== Math.floor(this.x) + ',' + Math.floor(this.y)
+      ) {
+        this.frame = (this.frame + 1) % 4;
+        this.lastFramePosition = Math.floor(this.x) + ',' + Math.floor(this.y);
+      }
+      /** Move by velocity */
+      if (this.x > animation.x) {
+        this.x = Math.max(animation.x, this.x - (this.velocity));
+        this.facing = 3;
+      }
+      else if (this.x < animation.x) {
+        this.x = Math.min(animation.x, this.x + (this.velocity));
+        this.facing = 2;
+      }
+      else if (this.y > animation.y) {
+        this.y = Math.max(animation.y, this.y - (this.velocity));
+        this.facing = 1;
+      }
+      else if (this.y < animation.y) {
+        this.y = Math.min(animation.y, this.y + (this.velocity));
+        this.facing = 0;
+      }
+      this.stepCount += (this.velocity);
+    }
+
+    /** Got to destination */
+    if (this.x === animation.x && this.y === animation.y) {
+      if (this.stepCount % DIMENSION === 0) {
+        this.moving = false;
+        this.animations.shift();
+      }
+    }
 
   }
 

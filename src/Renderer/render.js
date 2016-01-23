@@ -122,6 +122,8 @@ export function renderEntities(entities) {
 
     if (!this.instance.isInView(entity)) continue;
 
+    entity.animate();
+
     this.renderEntity(entity);
 
   };
@@ -153,7 +155,7 @@ export function renderEntity(entity) {
   this.context.drawImage(
     entity.texture.texture_shadow.canvas,
     /** Frame */
-    (entity.frames[0] * (entity.size.x + dim)),
+    (entity.frames[entity.frame] * (entity.size.x + dim)),
     (entity.size.y + dim) * entity.shadowFacing(entity.facing),
     /** Scale */
     entity.size.x * 2, entity.size.y * 2,
@@ -165,7 +167,7 @@ export function renderEntity(entity) {
   this.context.drawImage(
     entity.texture.texture.canvas,
     /** Frame */
-    (entity.frames[0] * (entity.size.x + dim)),
+    (entity.frames[entity.frame] * (entity.size.x + dim)),
     (entity.size.y + dim) * entity.facing,
     /** Scale */
     entity.size.x * 2, entity.size.y * 2,

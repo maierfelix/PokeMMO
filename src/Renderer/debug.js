@@ -31,7 +31,7 @@ export function renderDebugScene() {
   );
 
   this.drawPixelText(
-    "Delta: " + this.delta,
+    "Delta: " + this.delta * 1E3 + "ms",
     15, 150,
     20, 1.5
   );

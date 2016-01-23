@@ -67,10 +67,22 @@ export default class Entity {
     this.frames = obj.frames || [0];
 
     /**
+     * Current frame
+     * @type {Number}
+     */
+    this.frame = 0;
+
+    /**
      * Sprite
      * @type {String}
      */
     this.sprite = obj.sprite;
+
+    /**
+     * Animations
+     * @type {Array}
+     */
+    this.animations = [];
 
     if (obj.width) {
       this.size.x = obj.width;
@@ -79,6 +91,24 @@ export default class Entity {
     if (obj.height) {
       this.size.y = obj.height;
     }
+  }
+
+  /** Animate */
+  animate() {
+
+    if (this.animations.length <= 0) return void 0;
+
+    var ii = 0;
+    var length = 0;
+
+    length = this.animations.length;
+
+    for (; ii < length; ++ii) {
+      /** Wait out the animation until we finished it */
+      if (this.animations[ii].simultaneous === false) break;
+      this[this.animations[ii].type](this.animations[ii]);
+    };
+
   }
 
   /**
