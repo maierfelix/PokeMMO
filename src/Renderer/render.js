@@ -1,6 +1,6 @@
 import {
-  DEBUG,
-  SHADOWX, SHADOWY
+  DEBUG, DEBUG_FPS,
+  SHADOW_X, SHADOW_Y
 } from "../cfg";
 import math from "../Math";
 import { drawGrid } from "./grid";
@@ -39,11 +39,17 @@ export function render() {
     return void 0;
   }
 
-  if (DEBUG) this.renderScene();
+  if (DEBUG === true) {
+    this.renderScene();
+  }
 
   this.renderLayers();
 
-  if (DEBUG) this.renderDebugScene();
+  if (DEBUG === true) {
+    this.renderDebugScene();
+    setTimeout(() => this.render(), 1E3 / DEBUG_FPS);
+    return void 0;
+  }
 
   window.rAF(() => this.render());
 
@@ -140,8 +146,8 @@ export function renderEntity(entity) {
 
   const dim = this.dimension;
 
-  const shadowX = SHADOWX;
-  const shadowY = SHADOWY;
+  const shadowX = SHADOW_X;
+  const shadowY = SHADOW_Y;
 
   let scale = this.scale;
 
@@ -159,7 +165,7 @@ export function renderEntity(entity) {
     (entity.size.y + dim) * entity.shadowFacing(entity.facing),
     /** Scale */
     entity.size.x * 2, entity.size.y * 2,
-    x << 0, y + (dim / 1.055 * scale) << 0,
+    x << 0, y + (dim / 1.1175 * scale) << 0,
     width / shadowX << 0, height / shadowY << 0
   );
 

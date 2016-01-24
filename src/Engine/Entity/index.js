@@ -43,6 +43,12 @@ export default class Entity {
     this.y = math.roundTo(Math.floor(Math.random() * window.innerHeight / 10), 16);
 
     /**
+     * Last position
+     * @type {Object}
+     */
+    this.last = new math.Point();
+
+    /**
      * Z priority
      * @type {Number}
      */
@@ -104,8 +110,10 @@ export default class Entity {
     length = this.animations.length;
 
     for (; ii < length; ++ii) {
-      /** Wait out the animation until we finished it */
-      if (this.animations[ii].simultaneous === false) break;
+      if (this.animations[ii].simultaneous === false) {
+        this[this.animations[ii].type](this.animations[ii]);
+        break;
+      }
       this[this.animations[ii].type](this.animations[ii]);
     };
 
@@ -141,6 +149,15 @@ export default class Entity {
       dir === DOWN  ? 1 : 0
     );
 
+  }
+
+  facingToKey(facing) {
+    return (
+      facing === LEFT  ? 37 :
+      facing === UP    ? 38 :
+      facing === RIGHT ? 39 :
+      facing === DOWN  ? 40 : 38
+    );
   }
 
   /**

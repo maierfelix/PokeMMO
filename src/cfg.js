@@ -18,6 +18,24 @@ export const VERSION = "0.0.1";
 export const DEBUG = true;
 
 /**
+ * Debug fps
+ * @type {Number}
+ */
+export const DEBUG_FPS = 60;
+
+/**
+ * Play bgm
+ * @type {Number}
+ */
+export const BGM = false;
+
+/**
+ * Play bgs
+ * @type {Number}
+ */
+export const BGS = true;
+
+/**
  * @constant
  * @type {Number}
  */
@@ -48,14 +66,14 @@ export const MAX_SCALE = 12.5;
  * @constant
  * @type {Number}
  */
-export const SHADOWX = 1.0;
+export const SHADOW_X = 1.0;
 
 /**
  * Shadow y scale
  * @constant
  * @type {Number}
  */
-export const SHADOWY = 1.45;
+export const SHADOW_Y = 1.45;
 
 /**
  * Direction

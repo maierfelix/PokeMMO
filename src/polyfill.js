@@ -1,4 +1,6 @@
-"use strict";
+import { GT, Sound } from "./libs/audio";
+
+window.Sound = GT.Sound;
 
 window.rAF = (function() {
   return (
