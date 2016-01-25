@@ -85,6 +85,12 @@ export default class Entity {
     this.sprite = obj.sprite;
 
     /**
+     * Entity scale
+     * @type {Number}
+     */
+    this.scale = obj.scale === void 0 ? 1 : obj.scale;
+
+    /**
      * Animations
      * @type {Array}
      */

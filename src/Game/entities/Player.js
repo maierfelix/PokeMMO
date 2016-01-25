@@ -210,7 +210,7 @@ export class Player extends Entity {
         if (BGS) {
           var sound = new Sound({
             id: "sfx-1",
-            src: "assets/audio/grass_step.ogg",
+            src: "assets/audio/ground_step.ogg",
             loop: false,
             volume: 2,
             tag: "sfx",

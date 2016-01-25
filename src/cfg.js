@@ -39,7 +39,7 @@ export const BGS = true;
  * @constant
  * @type {Number}
  */
-export const DIMENSION = 16;
+export const DIMENSION = 8;
 
 /**
  * Used to make camera

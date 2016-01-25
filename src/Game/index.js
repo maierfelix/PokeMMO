@@ -138,13 +138,11 @@ export default class Game {
     var player = this.entities.Player;
 
     this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, shadow: true, static: true }));
-    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/0.png", width: 16, height: 16, solid: true }));
-    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/0.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/0.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, solid: true }));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16 }));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16 }));
     this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/200.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 5, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, shadowSettings: { zIndex: 2 }}));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/3.png", width: 16, height: 16, scale: 2}));
 
   }
 

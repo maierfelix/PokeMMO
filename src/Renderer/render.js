@@ -154,31 +154,34 @@ export function renderEntity(entity) {
   let x = Math.ceil(this.camera.position.x + entity.x * scale);
   let y = Math.ceil(this.camera.position.y + entity.y * scale);
 
-  let width  = entity.size.x * scale;
-  let height = entity.size.y * scale
+  let eWidth  = entity.size.x;
+  let eHeight = entity.size.y;
+
+  let width  = eWidth * scale;
+  let height = eHeight * scale
 
   /** Shadow */
   this.context.drawImage(
     entity.texture.texture_shadow.canvas,
     /** Frame */
-    (entity.frames[entity.frame] * (entity.size.x + dim)),
-    (entity.size.y + dim) * entity.shadowFacing(entity.facing),
+    (entity.frames[entity.frame] * (eWidth * 2)),
+    (eHeight * 2) * entity.shadowFacing(entity.facing),
     /** Scale */
-    entity.size.x * 2, entity.size.y * 2,
-    x << 0, y + (dim / 1.1175 * scale) << 0,
-    width / shadowX << 0, height / shadowY << 0
+    eWidth * 2, eHeight * 2,
+    x - (dim / 2 * scale) << 0, y + ((eHeight * entity.scale) / 1.1175 * scale) << 0,
+    width * entity.scale / shadowX << 0, height * entity.scale / shadowY << 0
   );
 
   /** Sprite */
   this.context.drawImage(
     entity.texture.texture.canvas,
     /** Frame */
-    (entity.frames[entity.frame] * (entity.size.x + dim)),
-    (entity.size.y + dim) * entity.facing,
+    (entity.frames[entity.frame] * (eWidth * 2)),
+    (eHeight * 2) * entity.facing,
     /** Scale */
-    entity.size.x * 2, entity.size.y * 2,
-    x << 0, y << 0,
-    width << 0, height << 0
+    eWidth * 2, eHeight * 2,
+    x - (dim / 2 * scale) << 0, y << 0,
+    width * entity.scale << 0, height * entity.scale << 0
   );
 
   /** Tag */
