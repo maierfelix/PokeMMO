@@ -4,8 +4,10 @@ import {
   BGM, BGS,
   LEFT, RIGHT, UP, DOWN
 } from "../../cfg";
+
+import Audio from "../../Engine/Audio";
 import Entity from "../../Engine/Entity";
-import Animation from "../../Engine/Animation";
+import Shadow from "./Shadow";
 
 let Sound = window.Sound;
 
@@ -80,13 +82,27 @@ export class Player extends Entity {
     this.frames = [0, 1, 0, 2, 3, 4];
 
     /**
+     * Sprite reset frames
+     * @type {Array}
+     */
+    this.resetFrames = [0, 2, 2, 0];
+
+    /**
      * Velocity
      * @type {Number}
      */
-    this.velocity = 1;
+    this.velocity = .5;
 
+    /**
+     * Step count
+     * @type {Number}
+     */
     this.stepCount = 0;
 
+    /**
+     * Face count
+     * @type {Number}
+     */
     this.faceCount = 0;
 
     this.init(obj);
@@ -143,7 +159,7 @@ export class Player extends Entity {
     /** Wait until we finished */
     if (this.movingState === true || this.facingState === true) return void 0;
 
-    var position = this.getTilePosition(this.x, this.y, dir);
+    let position = this.getTilePosition(this.x, this.y, dir);
 
     if (this.facing !== position.facing) {
 
@@ -173,7 +189,6 @@ export class Player extends Entity {
   /**
    * Facing
    * @param {Object} animation
-   * @animation
    */
   face(animation) {
 
@@ -184,7 +199,7 @@ export class Player extends Entity {
       this.frame = (this.frame + 3) % 4;
     }
 
-    if (this.faceCount >= DIMENSION / 3) {
+    if (this.faceCount >= DIMENSION / 2) {
       this.faceCount = 0;
       this.facingState = false;
       this.frame = [0, 2, 2, 0][this.frame];
@@ -196,31 +211,18 @@ export class Player extends Entity {
   /**
    * Walk
    * @param {Object} animation
-   * @animation
    */
   walk(animation) {
 
-    var halfStep = Math.ceil(Math.ceil(DIMENSION / this.velocity) / 2);
+    let halfStep = Math.ceil(Math.ceil(DIMENSION / (this.velocity * 2)) / 2);
 
     if (animation.obstacle === false) {
       /** Do halfstep */
       if (this.stepCount === halfStep) {
         this.frame = (this.frame + 1) % 4;
 
-        if (BGS) {
-          var sound = new Sound({
-            id: "sfx-1",
-            src: "assets/audio/ground_step.ogg",
-            loop: false,
-            volume: 2,
-            tag: "sfx",
-            channel: 2,
-            useWebAudio: true,
-          });
-          sound.load();
-          sound.onLoad = function(){
-            this.play();
-          }
+        if (BGS === true && this.isLocalPlayer === true) {
+          Audio.playSoundDefault("ground_step.ogg");
         }
 
       }
@@ -240,30 +242,45 @@ export class Player extends Entity {
       this.stepCount += this.velocity;
     }
 
-    /** Got to destination */
-    if (this.x === animation.x && this.y === animation.y) {
-      if (this.stepCount >= DIMENSION) {
+    if (this.stepCount >= DIMENSION) {
+      this.stopMoving(animation);
+    }
 
-        this.last.x = animation.oX;
-        this.last.y = animation.oY;
-        this.movingState = false;
-        this.animations.shift();
-        this.stepCount = 0;
-        this.frame = [0, 2, 2, 0][this.frame];
-        if (this === game.engine.localEntity) {
-          if (game.input.KeyBoard.KEYS[this.facingToKey(LEFT)].state === 1) {
-            this.move(LEFT);
-          }
-          else if (game.input.KeyBoard.KEYS[this.facingToKey(UP)].state === 1) {
-            this.move(UP);
-          }
-          else if (game.input.KeyBoard.KEYS[this.facingToKey(RIGHT)].state === 1) {
-            this.move(RIGHT);
-          }
-          else if (game.input.KeyBoard.KEYS[this.facingToKey(DOWN)].state === 1) {
-            this.move(DOWN);
-          }
-        }
+  }
+
+  /**
+   * Stop moving
+   * @param {Object} animation
+   */
+  stopMoving(animation) {
+
+    this.x = animation.x;
+    this.y = animation.y;
+
+    this.last.x = animation.oX;
+    this.last.y = animation.oY;
+
+    this.movingState = false;
+
+    this.stepCount = 0;
+
+    this.frame = this.resetFrames[this.frame];
+
+    this.animations.shift();
+
+    /** Continue moving */
+    if (this.isLocalPlayer === true) {
+      if (this.instance.input.KeyBoard.KEYS[this.facingToKey(LEFT)].state === 1) {
+        this.move(LEFT);
+      }
+      else if (this.instance.input.KeyBoard.KEYS[this.facingToKey(UP)].state === 1) {
+        this.move(UP);
+      }
+      else if (this.instance.input.KeyBoard.KEYS[this.facingToKey(RIGHT)].state === 1) {
+        this.move(RIGHT);
+      }
+      else if (this.instance.input.KeyBoard.KEYS[this.facingToKey(DOWN)].state === 1) {
+        this.move(DOWN);
       }
     }
 

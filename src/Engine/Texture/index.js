@@ -4,6 +4,8 @@ import {
   imageToCanvas
 } from "../utils";
 
+import { ColorPalette } from "../../cfg";
+
 import * as effect from "./effects";
 
 /**
@@ -60,11 +62,11 @@ export default class Texture {
      * Loading state
      * @type {Boolean}
      */
-    this.isLoaded = false;
+    this.hasLoaded = false;
 
-    this.fromImage(this.imgUrl, resolve);
-
-    return (this);
+    this.fromImage(this.imgUrl, this::function() {
+      resolve(this);
+    });
 
   }
 
@@ -82,54 +84,58 @@ export default class Texture {
       texture !== void 0 &&
       texture instanceof Texture
     ) {
-      this.isLoaded = true;
+      this.hasLoaded = true;
       return (TextureCache[url]);
     }
 
     img = new Image();
 
-    img.addEventListener('load', function() {
+    img.addEventListener('load', this::function() {
       this.width  = img.width;
       this.height = img.height;
-      this.isLoaded = true;
+      this.hasLoaded = true;
       TextureCache[url] = this;
       this.texture = imageToCanvas(img);
-      this.buildShadow();
+      this.renderEffects();
       resolve();
-    }.bind(this));
+    });
 
     img.src = url;
+
+    return void 0;
 
   }
 
   /**
-   * Build texture shadow
+   * Render texture effects
    */
-  buildShadow() {
+  renderEffects() {
+    this.buildTimeLightning();
+  }
+
+  /**
+   * Build texture time lightning
+   */
+  buildTimeLightning() {
 
     var width  = this.texture.canvas.width;
     var height = this.texture.canvas.height;
 
-    var shadow = createCanvasBuffer(width, height);
+    var texture = createCanvasBuffer(width, height);
 
-    shadow.translate(0, height);
-    shadow.scale(1, -1);
-
-    this.drawShadow(
+    this.drawTimeLightning(
       this.texture,
-      shadow,
-      0, -height,
-      width, height
+      texture,
+      0, 0,
+      width, height,
+      ColorPalette
     );
 
-    shadow.setTransform(1, 0, 0, 1, 0, 0);
-
-    this.texture_shadow = shadow;
+    this.texture_effect = texture;
 
   }
 
 }
 
-Texture.prototype.drawTint = effect.drawTint;
-Texture.prototype.drawShadow = effect.drawShadow;
 Texture.prototype.colorizePixels = effect.colorizePixels;
+Texture.prototype.drawTimeLightning = effect.drawTimeLightning;

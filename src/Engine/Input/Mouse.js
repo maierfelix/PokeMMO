@@ -24,11 +24,11 @@ export default class Mouse {
   registerEvent(event, root) {
 
     if (event.name === "mousewheel") {
-      Wheel.addWheelListener(document.body, e => event.fire.call(root, e));
+      Wheel.addWheelListener(document.body, e => root::event.fire(e));
       return void 0;
     }
 
-    window.addEventListener(event.name, e => event.fire.call(root, e), false);
+    window.addEventListener(event.name, e => root::event.fire(e), false);
 
   }
 

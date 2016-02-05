@@ -1,11 +1,33 @@
+import Texture from "../Texture";
+
 /**
  * Cached textures
  * @type {Object}
  */
-export let TextureCache = {}
+export let TextureCache = {};
 
 let hashIndex = -1;
 let hashes = [];
+
+/**
+ * Get a sprite
+ * @param {String}   sprite
+ * @param {Function} resolve
+ */
+export function getSprite(sprite, resolve) {
+
+  if (TextureCache[sprite]) {
+    resolve(TextureCache[sprite]);
+    return void 0;
+  }
+
+  new Texture(sprite, function(instance) {
+    resolve(TextureCache[sprite] = instance);
+  });
+
+  return void 0;
+
+}
 
 /**
  * Generate a unique hash

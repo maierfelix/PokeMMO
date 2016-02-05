@@ -936,19 +936,19 @@ export default class Keyboard {
     }
 
     /** Key loop */
-    this.keyLoop = setInterval(function() {
+    this.keyLoop = setInterval(this::function() {
       this.fireKeys();
-    }.bind(this), this.rate);
+    }, this.rate);
 
     this.fireKeys();
 
-    window.addEventListener('keydown', function(e) {
+    window.addEventListener('keydown', this::function(e) {
       this.switchKey(this.hash, e.keyCode, 1, e);
-    }.bind(this));
+    });
 
-    window.addEventListener('keyup', function(e) {
+    window.addEventListener('keyup', this::function(e) {
       this.switchKey(this.hash, e.keyCode, 0, e);
-    }.bind(this));
+    });
 
     return void 0;
 
@@ -1001,8 +1001,9 @@ export default class Keyboard {
    * Register a key
    * @param {Number | String} name
    * @param {Function}        fire
+   * @param {Function}        leave
    */
-  registerKey(name, fire) {
+  registerKey(name, fire, leave) {
 
     const key = String(name);
 
@@ -1018,6 +1019,7 @@ export default class Keyboard {
 
     this.KEYS[code] = {
       fire:  fire,
+      leave: leave,
       state: 0
     };
 
@@ -1051,12 +1053,16 @@ export default class Keyboard {
 
     if (
       this.hash === hash &&
-      this.validKey(key) &&
-      this.KEYS[name].state === 1 &&
-      this.KEYS[name].fire()
-    ) return void 0;
-
-    return void 0;
+      this.validKey(key)
+    ) {
+      if (this.KEYS[name].state === 1) {
+        this.KEYS[name].fire();
+      } else {
+        if (this.KEYS[name].leave !== void 0) {
+          this.KEYS[name].leave();
+        }
+      }
+    }
 
   }
 

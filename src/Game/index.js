@@ -17,7 +17,7 @@ import Engine from "../Engine";
 import Input from "../Engine/Input";
 import Renderer from "../Renderer";
 
-import * as Events from "./events.js";
+import * as Events from "./input.js";
 import * as entities from "./entities";
 
 /**
@@ -37,13 +37,11 @@ export default class Game {
     this.entities = entities;
 
     this.input = new Input(Events, this);
-
-    this.engine = new Engine(this.node);
+    this.engine = new Engine(this);
+    this.renderer = new Renderer(this.engine);
 
     this.engine.sceneWidth = 256;
     this.engine.sceneHeight = 128;
-
-    this.renderer = new Renderer(this.engine);
 
     this.renderer.dimension = DIMENSION;
     this.renderer.lightning = true;
@@ -51,20 +49,10 @@ export default class Game {
     this.renderer.imageSmoothing = false;
     this.renderer.render();
 
-    this.addListeners();
     this.addLayers();
     this.addEntities();
 
     this.engine.camera.scale = MIN_SCALE;
-
-  }
-
-  /**
-   * Add event listeners
-   */
-  addListeners() {
-
-    window.addEventListener('resize', e => this.renderer.resize(), false);
 
   }
 
@@ -137,12 +125,9 @@ export default class Game {
 
     var player = this.entities.Player;
 
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, shadow: true, static: true }));
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, solid: true }));
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 2, sprite: "assets/img/200.png", width: 16, height: 16 }));
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/3.png", width: 16, height: 16, scale: 2}));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, scale: 1, isLocalPlayer: true, shadow: true, static: true }));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/200.png", width: 16, height: 16, scale: 1, shadow: true, static: true }));
+    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, collidable: true }));
 
   }
 

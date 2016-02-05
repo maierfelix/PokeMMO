@@ -11,6 +11,17 @@ export const keys = [
     }
   },
   {
+    name: "X",
+    fire: function() {
+      var local = this.engine.localEntity;
+      local.velocity = 1;
+    },
+    leave: function() {
+      var local = this.engine.localEntity;
+      local.velocity = .5;
+    }
+  },
+  {
     name: "←",
     fire: function() {
       var local = this.engine.localEntity;
@@ -88,6 +99,15 @@ export const mouse = [
     name: "mousewheel",
     fire: function(e) {
       this.zoom(e);
+    }
+  }
+];
+
+export const global = [
+  {
+    name: "resize",
+    fire: function(e) {
+      this.renderer.resize();
     }
   }
 ];

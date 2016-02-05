@@ -2,45 +2,29 @@ import {
   DIMENSION,
   LEFT, RIGHT, UP, DOWN
 } from "../../cfg";
+
 import math from "../../Math";
-import { uHash } from "../utils";
+import { TextureCache, getSprite } from "../utils";
+
+import DisplayObject from "../DisplayObject";
+import Texture from "../Texture";
+import Shadow from "../Shadow";
 
 /**
  * Entity
  * @class Entity
  * @export
  */
-export default class Entity {
+export default class Entity extends DisplayObject {
 
   /**
-   * @param {Object} obj
+   * @param {Object}   obj
+   * @param {Function} resolve
    * @constructor
    */
-  constructor(obj) {
+  constructor(obj, resolve) {
 
-    /**
-     * Unique id
-     * @type {Number}
-     */
-    this.id = obj.id || uHash();
-
-    /**
-     * Size
-     * @type {Object}
-     */
-    this.size = new math.Point();
-
-    /**
-     * Entity x pos
-     * @type {Number}
-     */
-    this.x = math.roundTo(Math.floor(Math.random() * window.innerWidth / 10), 16);
-
-    /**
-     * Entity y pos
-     * @type {Number}
-     */
-    this.y = math.roundTo(Math.floor(Math.random() * window.innerHeight / 10), 16);
+    super(null);
 
     /**
      * Last position
@@ -55,10 +39,10 @@ export default class Entity {
     this.zIndex = obj.zIndex === void 0 ? 0 : obj.zIndex;
 
     /**
-     * Solid
+     * Collidable
      * @type {Boolean}
      */
-    this.solid = false;
+    this.collidable = obj.collidable || false;
 
     /**
      * Texture
@@ -96,13 +80,38 @@ export default class Entity {
      */
     this.animations = [];
 
-    if (obj.width) {
-      this.size.x = obj.width;
-    }
+    /**
+     * Shadow entity ref
+     * @type {Object}
+     */
+    this.shadow = null;
 
-    if (obj.height) {
-      this.size.y = obj.height;
-    }
+    /**
+     * Entity has shadow
+     * @type {Boolean}
+     */
+    this.hasShadow = obj.shadow || false;
+
+    /** Entity position */
+    this.x = math.roundTo(Math.floor(Math.random() * window.innerWidth / 10), DIMENSION * 2);
+    this.y = math.roundTo(Math.floor(Math.random() * window.innerHeight / 10), DIMENSION * 2);
+
+    /** Entity size */
+    if (obj.width) this.width = obj.width;
+    if (obj.height) this.height = obj.height;
+
+    /** Load texture */
+    getSprite(this.sprite, this::function(texture) {
+      this.texture = TextureCache[this.sprite];
+      if (obj.shadow === true) {
+        this.shadow = new Shadow(this);
+      }
+      if (
+        resolve !== void 0 &&
+        resolve instanceof Function
+      ) resolve();
+    });
+
   }
 
   /** Animate */

@@ -26,6 +26,15 @@ export default class Math {
           this.y = y || 0;
         }
 
+        /**
+         * @param {Number} x
+         * @param {Number} y
+         */
+        set(x, y) {
+          this.x = x;
+          this.y = y;
+        }
+
       }
     );
 

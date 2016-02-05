@@ -1,24 +1,29 @@
 import math from "../Math";
-import Camera from "./Camera";
-import Path from "./Path";
+
 import * as config from "../cfg";
 import * as layer  from "./Layer/functions";
 import * as entity from "./Entity/functions";
+
+import DisplayObject from "./DisplayObject";
+import Camera from "./Camera";
+import Path from "./Path";
 
 /**
  * Engine
  * @class Engine
  * @export
  */
-export default class Engine {
+export default class Engine extends DisplayObject {
 
   /**
-   * @param {Object} node
+   * @param {Object} instance
    * @param {Number} width
    * @param {Number} height
    * @constructor
    */
-  constructor(node, width, height) {
+  constructor(instance, width, height) {
+
+    super(null);
 
     /**
      * Config ref
@@ -27,10 +32,16 @@ export default class Engine {
     this.config = config;
 
     /**
+     * Instance
+     * @type {Object}
+     */
+    this.instance = instance;
+
+    /**
      * Node
      * @type {Object}
      */
-    this.node = node;
+    this.node = this.instance.node;
 
     /**
      * Context
@@ -50,21 +61,14 @@ export default class Engine {
      */
     this.layers = [];
 
-    /** 
-     * Engine size
-     * @type {Object}
-     * @default null
-     */
-    this.size = new math.Point(
-      width  || window.innerWidth,
-      height || window.innerHeight
-    );
+    this.width = width || 0;
+    this.height = height || 0;
 
     /**
      * Camera object
      * @type {Object}
      */
-    this.camera = new Camera();
+    this.camera = new Camera(this.size.x, this.size.y);
 
     /**
      * Path object
@@ -89,42 +93,6 @@ export default class Engine {
      * @type {Object}
      */
     this.localEntity = null;
-
-  }
-
-  /**
-   * Cubic in view
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} width
-   * @param {Number} height
-   * @return {Boolean}
-   */
-  inView(x, y, width, height) {
-
-    return (
-      x + width >= 0 && x - width <= this.size.x &&
-      y + height >= 0 && y - height <= this.size.y
-    );
-
-  }
-
-  /**
-   * @param {Object} obj
-   */
-  isInView(obj) {
-
-    var scale = this.camera.getScale();
-
-    return (
-      this.inView(
-        ((obj.x * scale) + this.camera.position.x) << 0,
-        ((obj.y * scale) + this.camera.position.y) << 0,
-        (obj.size.x * scale) << 0,
-        /** Shadow */
-        ((obj.size.y * 2) * scale) << 0
-      )
-    );
 
   }
 
@@ -157,7 +125,8 @@ export default class Engine {
    * @setter
    */
   set width(width) {
-    this.size.x = width || 0;
+    this.width = width || 0;
+    this.camera.width = this.width;
   }
 
   /**
@@ -165,7 +134,8 @@ export default class Engine {
    * @setter
    */
   set height(height) {
-    this.size.y = height || 0;
+    this.height = height || 0;
+    this.camera.height = this.height;
   }
 
   /**

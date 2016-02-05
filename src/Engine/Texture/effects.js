@@ -1,4 +1,40 @@
 /**
+ * Draw time based lightning
+ * @param {Object} buffer
+ * @param {Object} ctx
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Array}  colors
+ */
+export function drawTimeLightning(buffer, ctx, x, y, width, height, colors) {
+
+  var hour = 14;
+
+  var imgData = buffer.getImageData(
+    x, y,
+    width, height
+  );
+
+  this.colorizePixels(
+    imgData,
+    colors[hour][0] / 100,
+    colors[hour][1] / 100,
+    colors[hour][2] / 100,
+    false
+  );
+
+  ctx.putImageData(
+    imgData,
+    x, y
+  );
+
+  return void 0;
+
+};
+
+/**
  * Colorize pixels
  * @param {Object} imgData
  * @param {Number}  r
@@ -39,62 +75,3 @@ export function colorizePixels(imgData, r, g, b, strict) {
   }
 
 }
-
-/**
- * Create shadow of a sprite
- * @param {Object} buffer
- * @param {Object} ctx
- * @param {Number} x
- * @param {Number} y
- * @param {Number} width
- * @param {Number} height
- */
-export function drawShadow(buffer, ctx, x, y, width, height) {
-
-  ctx.clear();
-
-  ctx.drawImage(
-    buffer.canvas,
-    0, 0,
-    width, height
-  );
-
-  this.drawTint(
-    ctx,
-    0, 0,
-    width, height,
-    85
-  );
-
-};
-
-/**
- * Tint a canvas
- * @param {Object} ctx
- * @param {Number} x
- * @param {Number} y
- * @param {Number} width
- * @param {Number} height
- * @param {Number} value
- */
-export function drawTint(ctx, x, y, width, height, value) {
-
-  var imgData = ctx.getImageData(
-    x, y,
-    width, height
-  );
-
-  this.colorizePixels(
-    imgData,
-    0,
-    0,
-    value || this.config.shadowAlpha,
-    true
-  );
-
-  ctx.putImageData(
-    imgData,
-    x, y
-  );
-
-};

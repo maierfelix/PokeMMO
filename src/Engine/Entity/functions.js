@@ -9,6 +9,7 @@ import { TextureCache } from "../utils";
 export function addEntity(entity) {
 
   if (entity.isLocalPlayer) {
+    entity.instance = this.instance;
     this.localEntity = entity;
   }
 
