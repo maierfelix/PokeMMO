@@ -46,7 +46,9 @@ export default class DisplayObject {
       },
       set: function(value) {
         this.position.x = value;
-      }
+      },
+      configurable: true,
+      enumerable: true
     });
 
     Object.defineProperty(this, "y", {
@@ -55,7 +57,9 @@ export default class DisplayObject {
       },
       set: function(value) {
         this.position.y = value;
-      }
+      },
+      configurable: true,
+      enumerable: true
     });
 
     Object.defineProperty(this, "width", {
@@ -64,7 +68,9 @@ export default class DisplayObject {
       },
       set: function(value) {
         this.size.x = value;
-      }
+      },
+      configurable: true,
+      enumerable: true
     });
 
     Object.defineProperty(this, "height", {
@@ -73,7 +79,9 @@ export default class DisplayObject {
       },
       set: function(value) {
         this.size.y = value;
-      }
+      },
+      configurable: true,
+      enumerable: true
     });
 
   }

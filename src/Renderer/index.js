@@ -2,12 +2,12 @@ import "../polyfill";
 import math from "../Math";
 import { DIMENSION } from "../cfg";
 
+import { inherit } from "../Engine/utils";
+
 import * as layer  from "../Engine/Layer/functions";
 import * as entity from "../Engine/Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
-
-import { TextureCache } from "../Engine/utils";
 
 /**
  * Renderer
@@ -302,7 +302,7 @@ export default class Renderer {
     for (; ii < length; ++ii) {
       jj = ii;
       key = array[jj];
-      for (; jj > 0 && array[jj - 1].y + (array[jj - 1].size.y * array[jj - 1].scale) > key.y + (key.size.y * key.scale); --jj) {
+      for (; jj > 0 && array[jj - 1].y + array[jj - 1].height > key.y + key.height; --jj) {
         array[jj] = array[jj - 1];
       };
       array[jj] = key;
@@ -314,24 +314,7 @@ export default class Renderer {
 
 }
 
-Renderer.prototype.addLayer = layer.addLayer;
-Renderer.prototype.removeLayerByName = layer.removeLayerByName;
-Renderer.prototype.removeLayerByIndex = layer.removeLayerByIndex;
-Renderer.prototype.getLayerByName = layer.getLayerByName;
-Renderer.prototype.getLayerByProperty = layer.getLayerByProperty;
-
-Renderer.prototype.draw = render.draw;
-Renderer.prototype.render = render.render;
-Renderer.prototype.renderScene = render.renderScene;
-Renderer.prototype.renderEntity = render.renderEntity;
-Renderer.prototype.renderLayers = render.renderLayers;
-Renderer.prototype.drawPixelText = render.drawPixelText;
-Renderer.prototype.renderEntities = render.renderEntities;
-
-Renderer.prototype.renderDebugScene = debug.renderDebugScene;
-
-Renderer.prototype.addEntity = entity.addEntity;
-Renderer.prototype.getEntityById = entity.getEntityById;
-Renderer.prototype.removeEntityById = entity.removeEntityById;
-Renderer.prototype.removeEntityByIndex = entity.removeEntityByIndex;
-Renderer.prototype.getEntityByProperty = entity.getEntityByProperty;
+inherit(Renderer, debug);
+inherit(Renderer, layer);
+inherit(Renderer, render);
+inherit(Renderer, entity);

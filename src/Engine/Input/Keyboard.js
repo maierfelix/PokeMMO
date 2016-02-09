@@ -973,6 +973,10 @@ export default class Keyboard {
 
     this.KEYS[key].state = state;
 
+    if (state === 0) {
+      this.KEYS[name].left = 1;
+    }
+
     event.preventDefault();
 
     return void 0;
@@ -1020,6 +1024,7 @@ export default class Keyboard {
     this.KEYS[code] = {
       fire:  fire,
       leave: leave,
+      left:  0,
       state: 0
     };
 
@@ -1058,8 +1063,13 @@ export default class Keyboard {
       if (this.KEYS[name].state === 1) {
         this.KEYS[name].fire();
       } else {
-        if (this.KEYS[name].leave !== void 0) {
+        if (
+            this.KEYS[name].leave !== void 0 &&
+            this.KEYS[name].state === 0 &&
+            this.KEYS[name].left  === 1
+        ) {
           this.KEYS[name].leave();
+          this.KEYS[name].left = 0;
         }
       }
     }

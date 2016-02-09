@@ -83,8 +83,7 @@ export const BGS = true;
 export const DIMENSION = 8;
 
 /**
- * Used to make camera
- * scale pixel perfect
+ * PP rounding
  * @constant
  * @type {Number}
  */
@@ -94,7 +93,7 @@ export const PIXEL_SCALE = .125;
  * @constant
  * @type {Number}
  */
-export const MIN_SCALE = 0.0;
+export const MIN_SCALE = 7.5;
 
 /**
  * @constant

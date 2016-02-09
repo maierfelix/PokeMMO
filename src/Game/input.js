@@ -14,11 +14,11 @@ export const keys = [
     name: "X",
     fire: function() {
       var local = this.engine.localEntity;
-      local.velocity = 1;
+      local.velocity = 2;
     },
     leave: function() {
       var local = this.engine.localEntity;
-      local.velocity = .5;
+      local.velocity = 1;
     }
   },
   {

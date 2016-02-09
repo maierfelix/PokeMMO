@@ -35,6 +35,14 @@ export default class Math {
           this.y = y;
         }
 
+        /**
+         * Round point
+         */
+        round() {
+          this.x <<= 0;
+          this.y <<= 0;
+        }
+
       }
     );
 

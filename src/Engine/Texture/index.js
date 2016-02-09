@@ -1,4 +1,5 @@
 import {
+  inherit,
   TextureCache,
   createCanvasBuffer,
   imageToCanvas
@@ -27,12 +28,6 @@ export default class Texture {
      * @type {Object}
      */
     this.texture = null;
-
-    /**
-     * Shadow texture
-     * @type {Object}
-     */
-    this.texture_shadow = null;
 
     /**
      * Effect texture
@@ -137,5 +132,4 @@ export default class Texture {
 
 }
 
-Texture.prototype.colorizePixels = effect.colorizePixels;
-Texture.prototype.drawTimeLightning = effect.drawTimeLightning;
+inherit(Texture, effect);

@@ -1,13 +1,18 @@
-import {
-  DIMENSION,
-  LEFT, RIGHT, UP, DOWN
-} from "../../cfg";
-
+import { DIMENSION } from "../../cfg";
 import math from "../../Math";
-import { uHash, TextureCache, getSprite } from "../utils";
+import {
+  inherit,
+  Maps,
+  uHash,
+  TextureCache, getSprite,
+  createCanvasBuffer
+} from "../utils";
 
 import DisplayObject from "../DisplayObject";
 import Texture from "../Texture";
+import Path from "../Path";
+
+import * as events from "./events";
 
 /**
  * Map
@@ -37,14 +42,53 @@ export default class Map extends DisplayObject {
      */
     this.texture = null;
 
+    /**
+     * Map buffers
+     * @type {Object}
+     */
+    this.buffers = {};
+
     /** Map size */
-    if (obj.width) this.width = obj.width;
-    if (obj.height) this.height = obj.height;
+    this.width = obj.width;
+    this.height = obj.height;
+
+    /**
+     * Map name
+     * @type {String}
+     */
+    this.name = obj.name;
+
+    /**
+     * Layers
+     * @type {Array}
+     */
+    this.layers = obj.layers;
+
+    /**
+     * EventManager ref
+     * @type {Object}
+     */
+    this.event = null;
+
+    /**
+     * Path ref
+     * @type {Object}
+     */
+    this.path = null;
+
+    /**
+     * Collision layer ref
+     * @type {Object}
+     */
+    this.collisionLayer = null;
 
     /** Load texture */
     getSprite(this.tileset, this::function(texture) {
       this.texture = TextureCache[this.tileset];
-      this.render();
+      this.parse();
+      /** Attach path finder */
+      this.path = new Path(this);
+      Maps[this.name] = this;
       if (
         resolve !== void 0 &&
         resolve instanceof Function
@@ -54,40 +98,27 @@ export default class Map extends DisplayObject {
   }
 
   /**
-   * Render a map
+   * Parse a map
    */
-  render() {
+  parse() {
 
-    let width  = this.width * DIMENSION << 0;
-    let height = this.height * DIMENSION << 0;
+    let width  = this.width * (DIMENSION * 2) << 0;
+    let height = this.height * (DIMENSION * 2) << 0;
 
-    let buffer = this.createCanvasBuffer(
-      width, height
-    );
-
-    let mapBuffer = null;
-
-    /** Create a new buffer map object */
-    if (this.buffers[this.name] === void 0) {
-      this.buffers[this.name] = {};
-    }
-
-    mapBuffer = this.buffers[this.name];
+    let buffer = null;
 
     for (let layer of this.layers) {
-      this.renderLayer(buffer, this, layer.data);
-      if (
-        layer.collision !== void 0 &&
-        !this.config.devMode
-      ) { continue; }
-      mapBuffer["layer:" + layer.index] = buffer;
-      buffer = null;
-      buffer = this.createCanvasBuffer(
+      if (layer.collision === true) {
+        this.collisionLayer = layer;
+        continue;
+      }
+      buffer = createCanvasBuffer(
         width, height
       );
+      this.renderLayer(buffer, layer.data);
+      this.buffers[layer.index] = buffer;
+      buffer = null;
     };
-
-    //this.joinLayers(map.name, width, height, this.layers);
 
     return void 0;
 
@@ -107,9 +138,11 @@ export default class Map extends DisplayObject {
     let xx = 0;
     let yy = 0;
 
-    let tileset = this.tilesets[this.tileset];
+    let tileset = this.texture.texture_effect.canvas;
 
     buffer.clear();
+
+    let dim = DIMENSION * 2;
 
     for (yy = 0; yy < layer.length; ++yy) {
       x = 0;
@@ -117,18 +150,18 @@ export default class Map extends DisplayObject {
         tile = Math.abs(layer[yy][xx] - 1);
         buffer.drawImage(
           tileset,
-          ((tile) % DIMENSION) * DIMENSION,
-          ((tile / DIMENSION) << 0) * DIMENSION,
-          DIMENSION,
-          DIMENSION,
+          ((tile) % dim) * dim,
+          ((tile / dim) << 0) * dim,
+          dim,
+          dim,
           x,
           y,
-          DIMENSION,
-          DIMENSION
+          dim,
+          dim
         );
-        x += DIMENSION;
+        x += dim;
       };
-      y += DIMENSION;
+      y += dim;
     };
 
     return void 0;
@@ -136,3 +169,5 @@ export default class Map extends DisplayObject {
   }
 
 }
+
+inherit(Map, events);

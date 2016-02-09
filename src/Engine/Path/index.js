@@ -1,4 +1,8 @@
-import path from "../../libs/path";
+import {
+  DIMENSION
+} from "../../cfg";
+
+import path from "../../libs/astar";
 
 /**
  * Path
@@ -8,11 +12,32 @@ import path from "../../libs/path";
 export default class Path {
 
   /**
+   * @param {Object} map
    * @constructor
    */
-  constructor() {
+  constructor(map) {
 
-    console.log(1);
+    this.grid = new path.Graph(map.collisionLayer.data);
+
+  }
+
+  /**
+   * Get shortest path
+   * @param {Number} x1
+   * @param {Number} y1
+   * @param {Number} x2
+   * @param {Number} y2
+   * @return {Array}
+   */
+  getShortestPath(x1, y1, x2, y2) {
+
+    return (
+      path.astar.search(
+        this.grid,
+        this.grid.grid[x1 / DIMENSION * 2][y1 / DIMENSION * 2],
+        this.grid.grid[x2 / DIMENSION * 2][y2 / DIMENSION * 2]
+      )
+    );
 
   }
 

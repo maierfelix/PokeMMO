@@ -10,6 +10,12 @@ let hashIndex = -1;
 let hashes = [];
 
 /**
+ * Parsed maps
+ * @type {Object}
+ */
+export let Maps = {};
+
+/**
  * Get a sprite
  * @param {String}   sprite
  * @param {Function} resolve
@@ -35,7 +41,7 @@ export function getSprite(sprite, resolve) {
  */
 export function uHash() {
 
-  var index = ++hashIndex;
+  let index = ++hashIndex;
 
   if (hashes.indexOf(index) > -1) return (this.uHash());
 
@@ -50,9 +56,9 @@ export function uHash() {
  * @param {Object} prot
  * @export
  */
-export function join(cls, prot) {
+export function inherit(cls, prot) {
 
-  var key = null;
+  let key = null;
 
   for (key in prot) {
     if (prot[key] instanceof Function) {
@@ -68,8 +74,8 @@ export function join(cls, prot) {
  */
 export function createCanvasBuffer(width, height) {
 
-  var canvas = document.createElement("canvas");
-  var ctx = canvas.getContext("2d");
+  let canvas = document.createElement("canvas");
+  let ctx = canvas.getContext("2d");
 
   ctx.setImageSmoothing(false);
 
@@ -86,7 +92,7 @@ export function createCanvasBuffer(width, height) {
  */
 export function imageToCanvas(img) {
 
-  var ctx = createCanvasBuffer(
+  let ctx = createCanvasBuffer(
     img.width, img.height
   );
 
@@ -100,6 +106,26 @@ export function imageToCanvas(img) {
 
 }
 
+/**
+ * Get current time
+ * @return {Object}
+ */
+export function getTime() {
+
+  let date = new Date();
+
+  return ({
+    hours: date.getHours(),
+    minutes: date.getMinutes(),
+    seconds: date.getSeconds()
+  });
+
+}
+
+/**
+ * Ajax
+ * @param {String} url
+ */
 export function ajax(url) {
   return new Promise(function(resolve, reject) {
     let req = new XMLHttpRequest();

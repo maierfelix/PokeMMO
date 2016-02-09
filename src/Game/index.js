@@ -9,12 +9,12 @@ import {
 } from "../cfg";
 
 import {
-  ajax as $GET,
-  TextureCache
+  ajax as $GET
 } from "../Engine/utils";
 
-import Engine from "../Engine";
+import Map from "../Engine/Map";
 import Input from "../Engine/Input";
+import Engine from "../Engine";
 import Renderer from "../Renderer";
 
 import * as Events from "./input.js";
@@ -36,6 +36,8 @@ export default class Game {
 
     this.entities = entities;
 
+    this.maps = {};
+
     this.input = new Input(Events, this);
     this.engine = new Engine(this);
     this.renderer = new Renderer(this.engine);
@@ -49,10 +51,31 @@ export default class Game {
     this.renderer.imageSmoothing = false;
     this.renderer.render();
 
-    this.addLayers();
-    this.addEntities();
-
     this.engine.camera.scale = MIN_SCALE;
+
+    this.setup();
+
+  }
+
+  /**
+   * Setup
+   * @param {Number} stage
+   */
+  setup(stage = stage === void 0 ? 0 : stage) {
+
+    switch (++stage) {
+      case 1:
+        this.addMap(() => this.setup(stage));
+      return void 0;
+      case 2:
+        this.addLayers(() => this.setup(stage));
+      return void 0;
+      case 3:
+        this.addEntities(() => this.setup(stage));
+      return void 0;
+    };
+
+    return void 0;
 
   }
 
@@ -81,9 +104,25 @@ export default class Game {
   }
 
   /**
-   * Add layers
+   * Add map
+   * @param {Function} resolve
    */
-  addLayers() {
+  addMap(resolve) {
+    $GET(
+      "assets/maps/town.json"
+    ).then(
+      JSON.parse
+    ).then(this::function(data) {
+      this.engine.addMap(new Map(data));
+      return (resolve());
+    });
+  }
+
+  /**
+   * Add layers
+   * @param {Function} resolve
+   */
+  addLayers(resolve) {
 
     this.engine.addLayer({
       name: "Collisions",
@@ -116,18 +155,23 @@ export default class Game {
       shadowCast: true
     });
 
+    return (resolve());
+
   }
 
   /**
    * Add entities
+   * @param {Function} resolve
    */
-  addEntities() {
+  addEntities(resolve) {
 
     var player = this.entities.Player;
 
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, scale: 1, isLocalPlayer: true, shadow: true, static: true }));
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/200.png", width: 16, height: 16, scale: 1, shadow: true, static: true }));
-    this.engine.addEntity(new player({ zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, collidable: true }));
+    this.engine.addEntity(new player({ map: "Town", x: 8, y: 0, zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, scale: 1, isLocalPlayer: true, shadow: true, static: true }));
+
+    this.engine.addEntity(new player({ map: "Town", x: 40, y: 16, zIndex: 1, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, collidable: true }));
+
+    return (resolve());
 
   }
 

@@ -1,11 +1,9 @@
 import {
   DEBUG, DEBUG_FPS,
-  SHADOW_X, SHADOW_Y,
   GRID_WIDTH
 } from "../cfg";
 import math from "../Math";
 import { drawGrid } from "./grid";
-import { TextureCache } from "../Engine/utils";
 
 /**
  * Rendering
@@ -54,7 +52,29 @@ export function draw() {
     this.renderScene();
   }
 
+  this.renderMap();
+
   this.renderLayers();
+
+}
+
+/**
+ * Render map
+ */
+export function renderMap() {
+
+  var map = null;
+
+  if ((map = this.instance.maps["Town"]) === void 0) return void 0;
+  if (map.buffers[1] === void 0) return void 0;
+
+  this.context.drawImage(
+    map.buffers[1].canvas,
+    this.camera.x << 0,
+    this.camera.y << 0,
+    (map.width * this.dimension) * this.scale << 0,
+    (map.height * this.dimension) * this.scale << 0
+  );
 
 }
 
@@ -123,64 +143,9 @@ export function renderEntities(entities) {
 
     if (entity.texture !== null && entity.texture.hasLoaded === false) continue;
 
-    this.renderEntity(entity);
+    entity.render(this);
 
   };
-
-  return void 0;
-
-}
-
-/**
- * Render a entity
- * @param {Object} entity
- */
-export function renderEntity(entity) {
-
-  if (entity.texture === null) return void 0;
-
-  let eWidth  = (entity.width  / entity.scale) * 2;
-  let eHeight = (entity.height / entity.scale) * 2;
-
-  let scale = this.scale;
-
-  const shadowX = SHADOW_X;
-  const shadowY = SHADOW_Y;
-
-  let cX = ((this.dimension / 2) * entity.scale) * scale;
-  let cY = (this.dimension * entity.scale) * scale;
-
-  let x = (this.camera.x + entity.x * scale) - cX;
-  let y = (this.camera.y + entity.y * scale) - cY;
-
-  let width  = entity.width  * scale;
-  let height = entity.height * scale;
-
-  /** Shadow */
-  if (entity.shadow !== null && entity.hasShadow === true) {
-    this.context.drawImage(
-      entity.shadow.texture.canvas,
-      /** Frame */
-      (entity.frames[entity.frame] * (eWidth)),
-      (eHeight) * entity.shadowFacing(entity.facing),
-      /** Scale */
-      eWidth, eHeight,
-      x + (entity.shadow.offset.x) << 0, y + ((eHeight / 2 * entity.scale) / entity.shadow.offset.y * scale) << 0,
-      width / shadowX << 0, height / shadowY << 0
-    );
-  }
-
-  /** Sprite */
-  this.context.drawImage(
-    entity.texture.texture_effect.canvas,
-    /** Frame */
-    (entity.frames[entity.frame] * (eWidth)),
-    (eHeight) * entity.facing,
-    /** Scale */
-    eWidth, eHeight,
-    x << 0, y << 0,
-    width << 0, height << 0
-  );
 
   return void 0;
 

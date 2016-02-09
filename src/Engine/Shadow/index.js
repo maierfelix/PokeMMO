@@ -41,7 +41,7 @@ export default class Shadow {
      */
     this.offset = new math.Point(1, 1);
 
-    this.offset.set(1, 1.11525);
+    this.offset.set(0, 1.12);
 
     this.init();
 
@@ -82,11 +82,11 @@ export default class Shadow {
       width, height
     );
 
-    TextureCache[`Shadow:${this.parent.sprite}`] = shadow;
+    TextureCache[`Shadow:${this.parent.sprite}`] = this;
 
     shadow.setTransform(1, 0, 0, 1, 0, 0);
 
-    return (shadow);
+    return (this.texture = shadow);
 
   }
 

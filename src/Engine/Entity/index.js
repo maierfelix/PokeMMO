@@ -93,8 +93,8 @@ export default class Entity extends DisplayObject {
     this.hasShadow = obj.shadow || false;
 
     /** Entity position */
-    this.x = math.roundTo(Math.floor(Math.random() * window.innerWidth / 10), DIMENSION * 2);
-    this.y = math.roundTo(Math.floor(Math.random() * window.innerHeight / 10), DIMENSION * 2);
+    this.x = DIMENSION * 2;
+    this.y = DIMENSION * 2;
 
     /** Entity size */
     if (obj.width) this.width = obj.width;
@@ -112,6 +112,24 @@ export default class Entity extends DisplayObject {
       ) resolve();
     });
 
+    Object.defineProperty(this, "x", {
+      get: function() {
+        return (this.position.x);
+      },
+      set: function(value) {
+        this.position.x = value;
+      }
+    });
+
+    Object.defineProperty(this, "y", {
+      get: function() {
+        return (this.position.y);
+      },
+      set: function(value) {
+        this.position.y = value;
+      }
+    });
+
   }
 
   /** Animate */
@@ -125,10 +143,10 @@ export default class Entity extends DisplayObject {
     length = this.animations.length;
 
     for (; ii < length; ++ii) {
-      if (this.animations[ii].simultaneous === false) {
+      /*if (this.animations[ii].simultaneous === false) {
         this[this.animations[ii].type](this.animations[ii]);
         break;
-      }
+      }*/
       this[this.animations[ii].type](this.animations[ii]);
     };
 

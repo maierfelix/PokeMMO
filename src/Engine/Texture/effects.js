@@ -1,3 +1,7 @@
+import {
+  getTime
+} from "../utils";
+
 /**
  * Draw time based lightning
  * @param {Object} buffer
@@ -10,9 +14,9 @@
  */
 export function drawTimeLightning(buffer, ctx, x, y, width, height, colors) {
 
-  var hour = 14;
+  let hour = getTime().hours + 5;
 
-  var imgData = buffer.getImageData(
+  let imgData = buffer.getImageData(
     x, y,
     width, height
   );
@@ -44,10 +48,10 @@ export function drawTimeLightning(buffer, ctx, x, y, width, height, colors) {
  */
 export function colorizePixels(imgData, r, g, b, strict) {
 
-  var ii = 0;
-  var length = 0;
+  let ii = 0;
+  let length = 0;
 
-  var pixels = imgData.data;
+  let pixels = imgData.data;
 
   length = pixels.length;
 
@@ -73,5 +77,7 @@ export function colorizePixels(imgData, r, g, b, strict) {
       pixels[ii * 4 + 3] = pixels[ii * 4 + 3] * b;
     };
   }
+
+  return void 0;
 
 }

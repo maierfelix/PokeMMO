@@ -1,12 +1,14 @@
 import math from "../Math";
 
 import * as config from "../cfg";
-import * as layer  from "./Layer/functions";
+import * as map from "./Map/functions";
+import * as layer from "./Layer/functions";
 import * as entity from "./Entity/functions";
 
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
-import Path from "./Path";
+
+import { inherit } from "./utils";
 
 /**
  * Engine
@@ -56,6 +58,12 @@ export default class Engine extends DisplayObject {
     this.entities = [];
 
     /**
+     * Parsed maps
+     * @type {Object}
+     */
+    this.maps = {};
+
+    /**
      * Active layers
      * @type {Array}
      */
@@ -68,13 +76,7 @@ export default class Engine extends DisplayObject {
      * Camera object
      * @type {Object}
      */
-    this.camera = new Camera(this.size.x, this.size.y);
-
-    /**
-     * Path object
-     * @type {Object}
-     */
-    this.path = new Path();
+    this.camera = new Camera(this.width, this.height);
 
     /**
      * Drag offset
@@ -158,14 +160,6 @@ export default class Engine extends DisplayObject {
 
 }
 
-Engine.prototype.addLayer = layer.addLayer;
-Engine.prototype.getLayerByName = layer.getLayerByName;
-Engine.prototype.removeLayerByName = layer.removeLayerByName;
-Engine.prototype.removeLayerByIndex = layer.removeLayerByIndex;
-Engine.prototype.getLayerByProperty = layer.getLayerByProperty;
-
-Engine.prototype.addEntity = entity.addEntity;
-Engine.prototype.getEntityById = entity.getEntityById;
-Engine.prototype.removeEntityById = entity.removeEntityById;
-Engine.prototype.removeEntityByIndex = entity.removeEntityByIndex;
-Engine.prototype.getEntityByProperty = entity.getEntityByProperty;
+inherit(Engine, map);
+inherit(Engine, layer);
+inherit(Engine, entity);
