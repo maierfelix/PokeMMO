@@ -99,13 +99,6 @@ export default class Camera extends DisplayObject {
     let newX = this.getX(this.queue[0].entity);
     let newY = this.getY(this.queue[0].entity);
 
-    let distance = math.distance(
-      oldX, oldY,
-      newX, newY
-    );
-
-    let amount = math.roundTo(velocity, DIMENSION);
-
     /**
      * Immediate camera value injection
      * ?: so we do grid based movement
