@@ -93,27 +93,24 @@ export default class Camera extends DisplayObject {
 
     let velocity = this.queue[0].velocity;
 
-    let oldX = this.getX(this.entityFocus);
-    let oldY = this.getY(this.entityFocus);
-
-    let newX = this.getX(this.queue[0].entity);
-    let newY = this.getY(this.queue[0].entity);
+    let x = this.getX(this.queue[0].entity);
+    let y = this.getY(this.queue[0].entity);
 
     /**
      * Immediate camera value injection
      * ?: so we do grid based movement
      */
-    if (this.position.x !== newX) {
-      this.position.x += this.position.x < newX ? velocity : -velocity;
+    if (this.position.x !== x) {
+      this.position.x += this.position.x < x ? velocity : -velocity;
     } else {
-      if (this.position.y !== newY) {
-        this.position.y += this.position.y < newY ? velocity : -velocity;
+      if (this.position.y !== y) {
+        this.position.y += this.position.y < y ? velocity : -velocity;
       }
     }
 
     if (
-      this.position.x === newX &&
-      this.position.y === newY
+      this.position.x === x &&
+      this.position.y === y
     ) {
       this.entityFocus = this.queue[0].entity;
       this.queue.shift();
