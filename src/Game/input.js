@@ -1,5 +1,4 @@
 import {
-  DIMENSION,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 
@@ -98,7 +97,7 @@ export const mouse = [
   {
     name: "mousewheel",
     fire: function(e) {
-      this.zoom(e);
+      this.engine.zoom(e);
     }
   }
 ];
@@ -107,7 +106,7 @@ export const global = [
   {
     name: "resize",
     fire: function(e) {
-      this.renderer.resize();
+      this.engine.renderer.resize();
     }
   }
 ];

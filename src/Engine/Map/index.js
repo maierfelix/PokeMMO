@@ -13,6 +13,7 @@ import Texture from "../Texture";
 import Path from "../Path";
 
 import * as events from "./events";
+import * as functions from "./functions";
 
 /**
  * Map
@@ -87,7 +88,7 @@ export default class Map extends DisplayObject {
       this.texture = TextureCache[this.tileset];
       this.parse();
       /** Attach path finder */
-      this.path = new Path(this);
+      this.path = new Path(this.collisionLayer.data);
       Maps[this.name] = this;
       if (
         resolve !== void 0 &&
@@ -171,3 +172,4 @@ export default class Map extends DisplayObject {
 }
 
 inherit(Map, events);
+inherit(Map, functions);

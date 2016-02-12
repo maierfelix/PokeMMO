@@ -1,8 +1,7 @@
 import {
   DEBUG, DEBUG_FPS,
   GRID_WIDTH
-} from "../cfg";
-import math from "../Math";
+} from "../../cfg";
 import { drawGrid } from "./grid";
 
 /**
@@ -33,8 +32,13 @@ export function render() {
 
   window.rAF(() => this.render());
 
+  return void 0;
+
 }
 
+/**
+ * Draw
+ */
 export function draw() {
 
   this.clear();
@@ -56,6 +60,8 @@ export function draw() {
 
   this.renderLayers();
 
+  return void 0;
+
 }
 
 /**
@@ -76,6 +82,8 @@ export function renderMap() {
     (map.height * this.dimension) * this.scale << 0
   );
 
+  return void 0;
+
 }
 
 /**
@@ -91,16 +99,18 @@ export function renderScene() {
   this.context.strokeStyle = "red";
   this.context.lineWidth = ln;
 
-  this.context.strokeRect(
+  /*this.context.strokeRect(
     this.camera.x + (ln / 2),
     this.camera.y + (ln / 2),
     (this.camera.viewport.x * this.scale) - ln << 0,
     (this.camera.viewport.y * this.scale) - ln << 0
-  );
+  );*/
 
   this.context.stroke();
 
   this.context.closePath();
+
+  return void 0;
 
 }
 
@@ -117,6 +127,8 @@ export function renderLayers() {
   for (; ii < length; ++ii) {
     this.renderEntities(this.layers[ii].entities);
   };
+
+  return void 0;
 
 }
 
@@ -136,11 +148,12 @@ export function renderEntities(entities) {
   for (; ii < length; ++ii) {
 
     entity = entities[ii];
-
-    if (!this.instance.camera.isInView(entity)) continue;
-
     entity.animate();
 
+    if (!this.instance.camera.isInView(
+      entity.x, entity.y,
+      entity.width, entity.height
+    )) continue;
     if (entity.texture !== null && entity.texture.hasLoaded === false) continue;
 
     entity.render(this);

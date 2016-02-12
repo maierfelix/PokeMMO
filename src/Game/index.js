@@ -1,11 +1,6 @@
-"use strict";
-
-import math from "../Math";
-
 import {
-  __dirname,
-  MIN_SCALE, MAX_SCALE,
-  DIMENSION
+  MIN_SCALE,
+  LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 
 import {
@@ -15,7 +10,6 @@ import {
 import Map from "../Engine/Map";
 import Input from "../Engine/Input";
 import Engine from "../Engine";
-import Renderer from "../Renderer";
 
 import * as Events from "./input.js";
 import * as entities from "./entities";
@@ -40,16 +34,6 @@ export default class Game {
 
     this.input = new Input(Events, this);
     this.engine = new Engine(this);
-    this.renderer = new Renderer(this.engine);
-
-    this.engine.sceneWidth = 256;
-    this.engine.sceneHeight = 128;
-
-    this.renderer.dimension = DIMENSION;
-    this.renderer.lightning = true;
-    this.renderer.shadowCasting = true;
-    this.renderer.imageSmoothing = false;
-    this.renderer.render();
 
     this.engine.camera.scale = MIN_SCALE;
 
@@ -73,34 +57,32 @@ export default class Game {
       case 3:
         this.addEntities(() => this.setup(stage));
       return void 0;
+      case 4:
+        this.animateNPC();
+        this.setup(stage);
+      return void 0;
+      case 5:
+        /** Instant focus local player */
+        this.engine.camera.focus(this.engine.localEntity, true);
+        this.setup(stage);
+      return void 0;
+      case 6:
+        this.engine.renderer.render();
+        this.setup(stage);
+      return void 0;
     };
 
     return void 0;
 
   }
 
-  /**
-   * Zoom
-   * @param {Object} e
-   */
-  zoom(e) {
-
-    var camera = this.engine.camera;
-    var amount = (e.deltaY ? -e.deltaY : e.deltaY);
-
-    amount = amount / 2 / (math.distance(0, 0, this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(camera.scale);
-
-    camera.scale += amount / 2;
-
-    if (camera.scale < MIN_SCALE) camera.scale = MIN_SCALE;
-    if (camera.scale > MAX_SCALE) camera.scale = MAX_SCALE;
-
-    if (this.engine.dragging) {
-      this.engine.move(e.clientX, e.clientY);
-    }
-
-    this.engine.click(e.clientX, e.clientY);
-
+  animateNPC() {
+    setTimeout(this::function() {
+      let entity = this.engine.entities[1];
+      let move = [LEFT, RIGHT, UP, DOWN][(Math.random() * 3) << 0];
+      entity.move(move);
+      this.animateNPC();
+    }, 2e3);
   }
 
   /**
@@ -109,7 +91,7 @@ export default class Game {
    */
   addMap(resolve) {
     $GET(
-      "assets/maps/town.json"
+      "shared/maps/town.json"
     ).then(
       JSON.parse
     ).then(this::function(data) {

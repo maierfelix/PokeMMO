@@ -69,6 +69,18 @@ export default class Entity extends DisplayObject {
     this.sprite = obj.sprite;
 
     /**
+     * Reversed facing
+     * @type {Array}
+     */
+    this.reversed = [2, 3, 0, 1];
+
+    /**
+     * Reverse shadow
+     * @type {Array}
+     */
+    this.reverseShadow = [2, 3, 1, 0];
+
+    /**
      * Entity scale
      * @type {Number}
      */
@@ -158,14 +170,9 @@ export default class Entity extends DisplayObject {
    * @return {Number}
    */
   shadowFacing(dir) {
-
     return (
-      dir === LEFT  ? 0 :
-      dir === UP    ? 2 :
-      dir === RIGHT ? 1 :
-      dir === DOWN  ? 3 : 2
+      this.reverseShadow[dir]
     );
-
   }
 
   /**
@@ -174,14 +181,9 @@ export default class Entity extends DisplayObject {
    * @return {Number}
    */
   reverseDir(dir) {
-
     return (
-      dir === LEFT  ? 2 :
-      dir === UP    ? 0 :
-      dir === RIGHT ? 3 :
-      dir === DOWN  ? 1 : 0
+      this.reversed[dir]
     );
-
   }
 
   facingToKey(facing) {

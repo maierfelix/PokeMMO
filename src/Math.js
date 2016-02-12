@@ -1,3 +1,5 @@
+import { DIMENSION } from "./cfg";
+
 /**
  * Math
  * @class Math
@@ -91,11 +93,17 @@ export default class Math {
    * @param {Number} y1
    * @param {Number} x2
    * @param {Number} y2
-   * @return {Number}
+   * @return {Object}
    */
   static distance(x1, y1, x2, y2) {
 
-    return (this.hypot(x1 + x2, y1 + y2));
+    let x = this.roundTo(window.Math.sqrt(window.Math.pow((x1 - x2), 2)), DIMENSION);
+    let y = this.roundTo(window.Math.sqrt(window.Math.pow((y1 - y2), 2)), DIMENSION);
+
+    return ({
+      x: x,
+      y: y
+    });
 
   }
 

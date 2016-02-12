@@ -1,11 +1,11 @@
-import "../polyfill";
-import math from "../Math";
-import { DIMENSION } from "../cfg";
+import "../../polyfill";
+import math from "../../Math";
+import { DIMENSION } from "../../cfg";
 
-import { inherit } from "../Engine/utils";
+import { inherit } from "../utils";
 
-import * as layer  from "../Engine/Layer/functions";
-import * as entity from "../Engine/Entity/functions";
+import * as layer  from "../Layer/functions";
+import * as entity from "../Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
 
@@ -95,18 +95,6 @@ export default class Renderer {
     this.then = 0;
 
     /**
-     * Shadow casting
-     * @type {Boolean}
-     */
-    this.shadowCasting = false;
-
-    /**
-     * Lightning
-     * @type {Boolean}
-     */
-    this.lightning = false;
-
-    /**
      * Width
      * @type {Number}
      */
@@ -166,23 +154,13 @@ export default class Renderer {
     /** Pixel friendly scaling */
     this.scale = this.camera.resolution;
 
-    if (this.instance.localEntity !== null) {
-      this.focusEntity(this.instance.localEntity);
+    if (this.camera.entityfocus !== null) {
+      this.camera.animate();
     }
 
-    return void 0;
-
-  }
-
-  /**
-   * Focus camera on entity
-   * @param  {Object} entity
-   */
-  focusEntity(entity) {
-
-    /** Immediate camera value injection */
-    this.camera.position.x = (this.width / 2 - (entity.x * this.scale) - ((((entity.width) / DIMENSION)) * this.scale));
-    this.camera.position.y = (this.height / 2 - (entity.y * this.scale) - ((((entity.height) / DIMENSION)) * this.scale));
+    if (this.camera.queue.length <= 0) {
+      this.camera.focusEntity();
+    }
 
     return void 0;
 

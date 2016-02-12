@@ -43,8 +43,9 @@ export class Player extends Entity {
      * @type {Object}
      */
     this.STATES = {
-      WALKING:  false,
+      WALKING: false,
       RUNNING: false,
+      FACING:  false,
       BUMPING: false,
       JUMPING: false
     };
@@ -102,6 +103,12 @@ export class Player extends Entity {
      * @type {Number}
      */
     this.stepCount = 0;
+
+    /**
+     * Face count
+     * @type {Number}
+     */
+    this.faceCount = 0;
 
     /**
      * Latency
@@ -211,6 +218,13 @@ export class Player extends Entity {
   }
 
   /**
+   * Reset sprite frame
+   */
+  resetFrame() {
+    this.frame = this.frameReset[this.frame];
+  }
+
+  /**
    * Refresh entity states
    */
   refreshState() {
@@ -243,8 +257,8 @@ export class Player extends Entity {
 
     let scale = instance.scale;
 
-    const shadowX = SHADOW_X;
-    const shadowY = SHADOW_Y;
+    let shadowX = SHADOW_X;
+    let shadowY = SHADOW_Y;
 
     let cX = ((DIMENSION / 2) * this.scale) * scale;
     let cY = (DIMENSION * this.scale) * scale;

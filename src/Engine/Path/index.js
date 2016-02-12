@@ -12,12 +12,12 @@ import path from "../../libs/astar";
 export default class Path {
 
   /**
-   * @param {Object} map
+   * @param {Array} data
    * @constructor
    */
-  constructor(map) {
+  constructor(data) {
 
-    this.grid = new path.Graph(map.collisionLayer.data);
+    this.grid = new path.Graph(data);
 
   }
 

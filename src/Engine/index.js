@@ -1,10 +1,14 @@
 import math from "../Math";
 
-import * as config from "../cfg";
+import {
+  DIMENSION,
+  MIN_SCALE, MAX_SCALE
+} from "../cfg";
 import * as map from "./Map/functions";
 import * as layer from "./Layer/functions";
 import * as entity from "./Entity/functions";
 
+import Renderer from "./Renderer";
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
 
@@ -26,12 +30,6 @@ export default class Engine extends DisplayObject {
   constructor(instance, width, height) {
 
     super(null);
-
-    /**
-     * Config ref
-     * @type {Object}
-     */
-    this.config = config;
 
     /**
      * Instance
@@ -96,6 +94,12 @@ export default class Engine extends DisplayObject {
      */
     this.localEntity = null;
 
+    /**
+     * Renderer instance
+     * @type {Object}
+     */
+    this.renderer = new Renderer(this);
+
   }
 
   /**
@@ -123,6 +127,30 @@ export default class Engine extends DisplayObject {
   }
 
   /**
+   * Zoom
+   * @param {Object} e
+   */
+  zoom(e) {
+
+    let camera = this.camera;
+    let amount = (e.deltaY ? -e.deltaY : e.deltaY);
+
+    amount = amount / 2 / (math.hypot(this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(camera.scale);
+
+    camera.scale += amount / 2;
+
+    if (camera.scale < MIN_SCALE) camera.scale = MIN_SCALE;
+    if (camera.scale > MAX_SCALE) camera.scale = MAX_SCALE;
+
+    if (this.dragging) {
+      this.move(e.clientX, e.clientY);
+    }
+
+    this.click(e.clientX, e.clientY);
+
+  }
+
+  /**
    * @param {Number} width
    * @setter
    */
@@ -138,24 +166,6 @@ export default class Engine extends DisplayObject {
   set height(height) {
     this.height = height || 0;
     this.camera.height = this.height;
-  }
-
-  /**
-   * Set scene width
-   * @param {Number} width
-   * @setter
-   */
-  set sceneWidth(width) {
-    this.camera.viewport.x = width;
-  }
-
-  /**
-   * Set scene height
-   * @param {Number} width
-   * @setter
-   */
-  set sceneHeight(height) {
-    this.camera.viewport.y = height;
   }
 
 }

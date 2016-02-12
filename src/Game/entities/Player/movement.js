@@ -1,7 +1,8 @@
 import {
   DIMENSION,
   BGM, BGS,
-  LEFT, RIGHT, UP, DOWN
+  LEFT, RIGHT, UP, DOWN,
+  VOLUME
 } from "../../../cfg";
 
 import {
@@ -46,9 +47,10 @@ export function changeFacing(dir) {
   ) {
     this.lastFacing = this.facing;
     this.facing = dir;
-    this.frame = (this.frame + this.getFrameIndex()) % 4;
+    this.frame = (this.frame + 3) % 4;
   }
 
+  /** TODO: Avoid settimeout */
   setTimeout(this::function() {
     if (
       this.moving === false &&
@@ -56,7 +58,7 @@ export function changeFacing(dir) {
     ) {
       this.resetFrame();
     }
-  }, 100);
+  }, 30);
 
   /**
    * Player changed facing while in
@@ -83,13 +85,6 @@ export function halfStep() {
     this.frame = (this.frame + 1 + this.getFrameIndex()) % 4;
   }
 
-}
-
-/**
- * Reset sprite frame
- */
-export function resetFrame() {
-  this.frame = this.frameReset[this.frame];
 }
 
 /**
@@ -123,7 +118,13 @@ export function playWalkSound() {
 
   if (BGS !== true) return void 0;
 
-  let volume = this.isLocalPlayer === true ? 100 : 35;
+  let volume = this.isLocalPlayer === true ? VOLUME.LOCAL_PLAYER : VOLUME.NETWORK_PLAYER;
+
+  if (this.isLocalPlayer === false) {
+    let dist = Maps[this.map].distance(this, game.engine.localEntity);
+    let distance = dist.x + dist.y;
+    if ((volume -= distance / (DIMENSION / 2)) <= 0) return void 0;
+  }
 
   /** Player is bumping */
   if (this.STATES.BUMPING === true) {
@@ -151,6 +152,7 @@ export function playWalkSound() {
 export function walk(animation) {
 
   if (this.stepCount <= 0) {
+    this.resetFrame();
     if (animation.obstacle === false) {
       /** onEnter event => animation.x, animation.y */
     }
@@ -180,6 +182,7 @@ export function walk(animation) {
   }
 
   if (this.stepCount >= DIMENSION) {
+    this.lastFacing = this.facing;
     this.stopMoving(animation);
   }
 
@@ -238,7 +241,14 @@ export function stopMoving(animation) {
 
   this.stepCount = 0;
 
-  this.resetFrame();
+  setTimeout(this::function() {
+    if (
+      this.moving === false &&
+      this.STATES.BUMPING === false
+    ) {
+      this.resetFrame();
+    }
+  }, 100);
 
   this.animations.shift();
 
@@ -258,6 +268,8 @@ export function stopMoving(animation) {
     } else {
       this.soundSteps = DIMENSION;
     }
+  } else {
+    this.soundSteps = DIMENSION;
   }
 
 }
