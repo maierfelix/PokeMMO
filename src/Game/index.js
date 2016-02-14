@@ -80,9 +80,9 @@ export default class Game {
     setTimeout(this::function() {
       let entity = this.engine.entities[1];
       let move = [LEFT, RIGHT, UP, DOWN][(Math.random() * 3) << 0];
-      entity.move(move);
+      entity.move(UP);
       this.animateNPC();
-    }, 2e3);
+    }, 1e3);
   }
 
   /**

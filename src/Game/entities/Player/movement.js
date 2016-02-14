@@ -118,7 +118,7 @@ export function playWalkSound() {
 
   if (BGS !== true) return void 0;
 
-  let volume = this.isLocalPlayer === true ? VOLUME.LOCAL_PLAYER : VOLUME.NETWORK_PLAYER;
+  let volume = this.isLocalPlayer === true ? VOLUME.NETWORK_PLAYER : VOLUME.LOCAL_PLAYER;
 
   let dist = Maps[this.map].distance(this, game.engine.localEntity);
 

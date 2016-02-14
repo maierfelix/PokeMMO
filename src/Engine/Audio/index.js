@@ -27,7 +27,7 @@ class Audio {
     let sound = this.sounds[this.sounds.length - 1];
     this.player.setX(sound, this.file.x * 1e2);
     this.player.setY(sound, this.file.y * 1e2);
-    this.player.setZ(sound, this.file.volume * 1e1);
+    this.player.setZ(sound, (this.file.volume / 1.25) * 1e2);
     this.player.play(sound, false);
   }
 
