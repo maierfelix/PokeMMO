@@ -8,47 +8,51 @@ class Audio {
   /**
    * @constructor
    */
-  constructor() {}
+  constructor() {
+    this.player = new window.Sound();
+    this.sounds = [];
+    this.file = {
+      name: null,
+      volume: 0,
+      x: 0,
+      y: 0
+    };
+    this.player.onloadcomplete = this::this.onLoadComplete;
+  }
+
+  onLoadComplete() {
+    this.sounds.push(
+      this.player.create(this.file.name)
+    );
+    let sound = this.sounds[this.sounds.length - 1];
+    this.player.setX(sound, this.file.x * 1e2);
+    this.player.setY(sound, this.file.y * 1e2);
+    this.player.setZ(sound, this.file.volume * 1e1);
+    this.player.play(sound, false);
+  }
 
   /**
    * Play a sound with default settings
    * @param {String} name
    */
   playSoundDefault(name) {
-    let sound = new Sound({
-      id: "sfx-1",
-      src: `assets/audio/${name}.ogg`,
-      loop: false,
-      volume: 1,
-      tag: "sfx",
-      channel: 2,
-      useWebAudio: true
-    });
-    sound.load();
-    sound.onLoad = function(){
-      this.play();
-    }
+    console.log(name);
   }
 
   /**
    * Play a sound with custom volume
    * @param {String} name
-   * @param {Number} value
+   * @param {Number} vol
+   * @param {Number} x
+   * @param {Number} y
    */
-  playSound(name, value) {
-    let sound = new Sound({
-      id: "sfx-1",
-      src: `assets/audio/${name}.ogg`,
-      loop: false,
-      volume: value / 1E2,
-      tag: "sfx",
-      channel: 2,
-      useWebAudio: true
-    });
-    sound.load();
-    sound.onLoad = function(){
-      this.play();
-    }
+  playSound(name, vol, x, y) {
+    let path = `assets/audio/${name}.ogg`;
+    this.file.name = path;
+    this.file.volume = vol;
+    this.file.x = x;
+    this.file.y = y;
+    this.player.load(path);
   }
 
 }

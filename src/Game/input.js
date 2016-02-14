@@ -12,39 +12,39 @@ export const keys = [
   {
     name: "X",
     fire: function() {
-      var local = this.engine.localEntity;
+      let local = this.engine.localEntity;
       local.velocity = 2;
     },
     leave: function() {
-      var local = this.engine.localEntity;
+      let local = this.engine.localEntity;
       local.velocity = 1;
     }
   },
   {
     name: "←",
     fire: function() {
-      var local = this.engine.localEntity;
+      let local = this.engine.localEntity;
       local.move(LEFT);
     }
   },
   {
     name: "→",
     fire: function() {
-      var local = this.engine.localEntity;
+      let local = this.engine.localEntity;
       local.move(RIGHT);
     }
   },
   {
     name: "↑",
     fire: function() {
-      var local = this.engine.localEntity;
+      let local = this.engine.localEntity;
       local.move(UP);
     }
   },
   {
     name: "↓",
     fire: function() {
-      var local = this.engine.localEntity;
+      let local = this.engine.localEntity;
       local.move(DOWN);
     }
   },
@@ -97,7 +97,9 @@ export const mouse = [
   {
     name: "mousewheel",
     fire: function(e) {
-      this.engine.zoom(e);
+      if (this.engine.camera.queue.length <= 0) {
+        this.engine.zoom(e);
+      }
     }
   }
 ];

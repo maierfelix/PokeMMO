@@ -1,6 +1,6 @@
-import { GT, Sound } from "./libs/audio";
+import { AudioPlayer, Sound } from "./libs/audio";
 
-window.Sound = GT.Sound;
+window.Sound = AudioPlayer;
 
 window.rAF = (function() {
   return (

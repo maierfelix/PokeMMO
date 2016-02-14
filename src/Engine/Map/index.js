@@ -108,7 +108,11 @@ export default class Map extends DisplayObject {
 
     let buffer = null;
 
-    for (let layer of this.layers) {
+    let key = null;
+    let layer = null;
+
+    for (key in this.layers) {
+      layer = this.layers[key];
       if (layer.collision === true) {
         this.collisionLayer = layer;
         continue;
@@ -132,6 +136,8 @@ export default class Map extends DisplayObject {
    */
   renderLayer(buffer, layer) {
 
+    let dim = DIMENSION * 2;
+
     let tile = 0;
 
     let x  = 0;
@@ -141,14 +147,12 @@ export default class Map extends DisplayObject {
 
     let tileset = this.texture.texture_effect.canvas;
 
-    buffer.clear();
+    let outerLength = layer.length;
+    let innerLength = 0;
 
-    let dim = DIMENSION * 2;
-
-    for (yy = 0; yy < layer.length; ++yy) {
-      x = 0;
-      for (xx = 0; xx < layer[yy].length; ++xx) {
-        tile = Math.abs(layer[yy][xx] - 1);
+    for (; yy < outerLength; ++yy) {
+      for (!(xx = x = 0) && (innerLength = layer[yy].length) > 0; xx < innerLength; ++xx) {
+        if ((tile = layer[yy][xx] - 1) === -1) continue;
         buffer.drawImage(
           tileset,
           ((tile) % dim) * dim,

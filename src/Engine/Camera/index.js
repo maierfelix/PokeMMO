@@ -91,21 +91,24 @@ export default class Camera extends DisplayObject {
 
     if (this.queue.length <= 0) return void 0;
 
-    let velocity = this.queue[0].velocity;
+    let velocity = this.queue[0];
 
     let x = this.getX(this.queue[0].entity);
     let y = this.getY(this.queue[0].entity);
 
     /**
+     * TODO: Get camera movement working
+     * while change resolution
+     */
+ 
+    /**
      * Immediate camera value injection
      * ?: so we do grid based movement
      */
     if (this.position.x !== x) {
-      this.position.x += this.position.x < x ? velocity : -velocity;
+      this.position.x += this.position.x < x ? this.resolution : -this.resolution;
     } else {
-      if (this.position.y !== y) {
-        this.position.y += this.position.y < y ? velocity : -velocity;
-      }
+      this.position.y += this.position.y < y ? this.resolution : -this.resolution;
     }
 
     if (
@@ -126,8 +129,7 @@ export default class Camera extends DisplayObject {
    */
   animateFocus(entity) {
     this.queue.push({
-      entity: entity,
-      velocity: 4.0
+      entity: entity
     });
   }
 

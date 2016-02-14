@@ -1,731 +1,537 @@
-'use strict';
-
-var GT = {
-  Sound: null
-};
-
-(function(exports) {
-
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    (function() {
-        if (window.AudioContext) {
-            var proto = window.AudioContext.prototype;
-            proto.createGain = proto.createGain || proto.createGainNode
-            proto.createDelay = proto.createDelay || proto.createDelayNode
-        }
-    })();
-
-    var noop = function() {
-        // do nothing
-    };
-
-    var Sound = function(options) {
-        var superClass;
-        if (options.useWebAudio && window.AudioContext) {
-            superClass = WebAudioWrap;
-        } else {
-            superClass = AudioWrap;
-        }
-        for (var p in superClass.prototype) {
-            this[p] = superClass.prototype[p];
-        }
-        superClass.call(this, options);
-        // console.log(this.constructor);
-        // this.constructor = Sound;
-        this.init();
-    };
-
-    Sound.prototype = {
-        constructor: Sound,
-        id: 1,
-        tag: null,
-        channel: 1,
-        useWebAudio: true,
-    };
-
-
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-    var WebAudioWrap = function(options) {
-        for (var key in options) {
-            this[key] = options[key]
-        }
-    };
-
-    WebAudioWrap.prototype = {
-        constructor: WebAudioWrap,
-
-        context: null,
-        gain: null,
-        source: null,
-        audio: null,
-        buffer: null,
-
-        src: null,
-        loaded: false,
-        error: false,
-        playing: false,
-        currentTime: 0,
-        loop: false,
-        volume: 1,
-        muted: false,
-
-        beginTime: 0,
-        endTime: 0,
-        playTime: 0,
-
-        onended: null,
-
-        init: function() {
-            this.context = this.context || Sound.context;
-            this.gain = this.context.createGain();
-            this.gain.connect(this.context.destination);
-
-            this.currentTime = 0;
-            Sound.set(this.id, this);
-
-            if (this.audio) {
-                this.initAudio();
-            }
-        },
-
-        initAudio: function() {
-            var Me = this;
-            var context = this.context;
-            if (this.buffer) {
-                this.totalDuration = this.buffer.duration;
-            } else if (this.audio) {
-                this.totalDuration = this.audio.duration;
-            }
-            this.initRange();
-        },
-
-        initRange: function() {
-            this.beginTime = Math.min(this.beginTime, this.totalDuration);
-            if (this.endTime) {
-                this.endTime = Math.min(this.endTime, this.totalDuration);
-                this.duration = this.endTime - this.beginTime;
-                this.sprite = true;
-            } else if (this.duration) {
-                this.endTime = Math.min(this.beginTime + this.duration, this.totalDuration);
-                this.duration = this.endTime - this.beginTime;
-                this.sprite = true;
-            } else {
-                this.sprite = false;
-                this.duration = this.duration || this.totalDuration;
-            }
-        },
-
-        load: function() {
-            if (this.loaded === true) {
-                return false;
-            }
-
-            var Me = this;
-            Me.loaded = false;
-            Me.error = false;
-            var onLoad = function(event) {
-                Me.context.decodeAudioData(xhr.response, function(buffer) {
-                    Me.loaded = true;
-                    Me.error = false;
-                    Me.buffer = buffer;
-                    Me.initAudio();
-                    Me.onLoad(Me.source);
-                    xhr.onload = null;
-                    xhr.onerror = null;
-                }, onError);
-            };
-            var onError = function(event) {
-                Me.loaded = false;
-                Me.error = true;
-                Me.onLoadError(event);
-                xhr.onload = null;
-                xhr.onerror = null;
-            };
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', this.src, true);
-            xhr.responseType = 'arraybuffer';
-            xhr.onload = onLoad
-            xhr.onerror = onError;
-            xhr.send(null);
-        },
-
-        onLoad: function(source) {
-            // console.log("Load " + this.src + " ... OK.  WebAudio:" + this.useWebAudio);
-        },
-        onLoadError: function(event) {
-            console.log("Load " + this.src + " ... Failed");
-        },
-
-        play: function(ifNotPlay) {
-            if (ifNotPlay && this.playing) {
-                return;
-            }
-            if (this.channel <= 1 && this.source && this.playing) {
-                this.source.stop(0);
-            }
-            this.currentTime = 0;
-            this.resume();
-        },
-        pause: function() {
-            this.currentTime += this.context.currentTime - this.playTime;
-            this.source.stop(0);
-            this.playing = false;
-        },
-        resume: function() {
-            this.playTime = this.context.currentTime;
-            var source;
-            if (this.audio) {
-                source = this.context.createMediaElementSource(this.audio);
-            } else {
-                // } else if (this.buffer) {
-                source = this.context.createBufferSource();
-                source.buffer = this.buffer;
-            }
-            this.source = source;
-            source.connect(this.gain);
-            source.loop = !!this.loop;
-            if (this.onended) {
-                source.onended = this.onended;
-            }
-            this.setVolume(this.volume);
-            this.setMute(this.muted);
-
-            if (this.endTime) {
-                source.loopStart = this.beginTime;
-                source.loopEnd = this.endTime;
-            }
-            var offset = this.beginTime + this.currentTime;
-            if (this.loop) {
-                if (this.endTime && offset >= this.endTime) {
-                    offset = this.beginTime;
-                }
-                this.source.start(0, offset);
-            } else {
-                var duration;
-                if (this.endTime) {
-                    if (offset >= this.endTime) {
-                        return;
-                    }
-                    duration = this.endTime - offset;
-                } else {
-                    duration = this.totalDuration;
-                }
-                this.source.start(0, offset, duration);
-            }
-            this.playing = true;
-        },
-
-        stop: function() {
-            if (this.playing) {
-                this.source.stop(0);
-            }
-            this.currentTime = 0;
-            this.playTime = 0;
-            this.playing = false;
-        },
-
-        getCurrentTime: function() {
-            return this.currentTime;
-        },
-
-        setCurrentTime: function(time) {
-            this.pause();
-            this.currentTime = time;
-            this.resume();
-        },
-
-        getDuration: function() {
-            return this.duration;
-        },
-
-        isLoop: function() {
-            return this.loop;
-        },
-        setLoop: function(loop) {
-            this.loop = loop;
-            this.source.loop = loop;
-        },
-
-        getVolume: function(volume) {
-            return this.volume;
-        },
-        setVolume: function(volume) {
-            this.volume = volume;
-            this.gain.gain.value = this.volume;
-        },
-        isMuted: function() {
-            return this.muted;
-        },
-        setMute: function(muted) {
-            muted = this.muted = !!muted;
-            if (muted) {
-                this.gain.gain.value = 0;
-            } else {
-                this.gain.gain.value = this.volume;
-            }
-        },
-
-    };
-
-
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-
-    var AudioWrap = function(options) {
-        for (var key in options) {
-            this[key] = options[key]
-        }
-    };
-
-    AudioWrap.prototype = {
-        constructor: AudioWrap,
-
-        audio: null,
-        channel: 1,
-        lazyClone: false,
-
-        src: null,
-        loaded: false,
-        error: false,
-        playing: false,
-        currentTime: 0,
-        loop: false,
-        volume: 1,
-        muted: false,
-
-        duration: 0,
-        beginTime: 0,
-        endTime: 0,
-
-
-        init: function() {
-            if (!this.audio) {
-                this.audio = new Audio();
-
-                this.audio.volume = this.volume;
-                this.audio.muted = this.muted;
-                this.audio.loop = this.loop;
-
-                this.audio.preload = "auto";
-                this.audio.autoplay = false;
-                this.audio.autobuffer = true;
-
-                this.audio.src = this.src;
-            }
-
-
-            if (this.channel <= 1) {
-                this.play = this.play || this.playSingle;
-            } else {
-                this.pool = [];
-                this.pool.push(this.audio);
-                this.audio._index = this.pool.length;
-                this.play = this.play || this.playMulti;
-            }
-            this.index = 0;
-
-            Sound.set(this.id, this);
-        },
-
-        initAudio: function() {
-            this.totalDuration = this.audio.duration;
-            this.initRange();
-
-            if (this.sprite) {
-                var Me = this;
-                this.onTimeUpdate = function(event) {
-                    Me.spriteHandler(event);
-                };
-                this.audio.addEventListener('timeupdate', this.onTimeUpdate, false);
-            }
-
-            if (this.channel > 1) {
-                if (!this.lazyClone) {
-                    for (var i = 1; i < this.channel; i++) {
-                        this.cloneAudio();
-                    }
-                }
-            }
-        },
-
-        initRange: function() {
-            this.beginTime = Math.min(this.beginTime, this.totalDuration);
-            if (this.endTime) {
-                this.endTime = Math.min(this.endTime, this.totalDuration);
-                this.duration = this.endTime - this.beginTime;
-                this.sprite = true;
-            } else if (this.duration) {
-                this.endTime = Math.min(this.beginTime + this.duration, this.totalDuration);
-                this.duration = this.endTime - this.beginTime;
-                this.sprite = true;
-            } else {
-                this.sprite = false;
-                this.duration = this.duration || this.totalDuration;
-            }
-        },
-
-        spriteHandler: function(event) {
-            var audio = event.target;
-            if (audio.currentTime >= this.endTime && !audio.paused) {
-                audio.pause();
-                if (!this.loop) {
-                    // console.log(audio._index, "paused");
-                    // audio.removeEventListener('timeupdate', this.onTimeUpdate);
-                    return true;
-                }
-                audio.currentTime = this.beginTime;
-                audio.play();
-            }
-            return false;
-        },
-
-        load: function() {
-            if (this.loaded === true) {
-                return false;
-            }
-
-            var Me = this;
-            Me.loaded = false;
-            Me.error = false;
-            var onLoad = function() {
-                Me.loaded = true;
-                Me.error = false;
-                Me.initAudio();
-                Me.onLoad(Me.audio);
-                Me.audio.removeEventListener("canplaythrough", onLoad);
-                Me.audio.removeEventListener("error", onError);
-            };
-            var onError = function(event) {
-                Me.loaded = false;
-                Me.error = true;
-                Me.onLoadError(event);
-                Me.audio.removeEventListener("canplaythrough", onLoad);
-                Me.audio.removeEventListener("error", onError);
-            };
-
-            this.audio.addEventListener("canplaythrough", onLoad);
-            this.audio.addEventListener("error", onError);
-
-            // this.audio.src = this.src;
-            this.audio.load();
-        },
-
-        onLoad: function() {
-            // console.log("Load " + this.src + " ... OK.  WebAudio:" + this.useWebAudio);
-        },
-        onLoadError: function(event) {
-            console.log("Load " + this.src + " ... Failed");
-        },
-
-        play: null,
-
-        pause: function() {
-            this.currentTime = this.audio.currentTime - this.beginTime;
-            this.playing = false;
-            this.audio.pause();
-        },
-        resume: function() {
-            if (this.loaded) {
-                this.audio.currentTime = this.beginTime + this.currentTime;
-                this.audio.play();
-            }
-            this.playing = true;
-        },
-        stop: function() {
-            this.audio.pause();
-            this.audio.currentTime = 0;
-            this.currentTime = 0;
-            this.playing = false;
-        },
-
-        getCurrentTime: function() {
-            return this.audio.currentTime - this.beginTime;
-        },
-
-        setCurrentTime: function(time) {
-            this.currentTime = time;
-            this.audio.currentTime = this.beginTime + time;
-        },
-
-        getDuration: function() {
-            return this.duration;
-        },
-        isLoop: function() {
-            return this.loop;
-        },
-        setLoop: function(loop) {
-            this.loop = loop;
-            if (this.pool) {
-                this.pool.forEach(function(audio) {
-                    audio.loop = loop;
-                });
-            } else {
-                this.audio.loop = loop;
-            }
-        },
-        getVolume: function(volume) {
-            return this.volume;
-        },
-        setVolume: function(volume) {
-            this.volume = volume;
-            if (this.pool) {
-                this.pool.forEach(function(audio) {
-                    audio.volume = volume;
-                });
-            } else {
-                this.audio.volume = volume;
-            }
-        },
-
-        isMuted: function() {
-            return this.muted;
-        },
-
-        setMute: function(muted) {
-            muted = this.muted = !!muted;
-            var Me = this;
-            if (this.pool) {
-                this.pool.forEach(function(audio) {
-                    audio.muted = muted;
-                });
-            } else {
-                this.audio.muted = muted;
-            }
-        },
-
-        ////////////////////////////////////////////////////////////
-
-
-        playSingle: function(ifNotPlay) {
-            if (ifNotPlay && this.playing) {
-                return;
-            }
-            if (this.channel <= 1) {
-                this.audio.pause();
-            }
-            this.currentTime = 0;
-            this.resume();
-        },
-
-        playMulti: function(ifNotPlay) {
-            if (ifNotPlay && this.playing) {
-                return;
-            }
-            if (this.pool.length <= this.index) {
-                this.cloneAudio();
-            }
-            this.audio = this.pool[this.index];
-            this.index = (++this.index) % this.channel;
-            this.currentTime = 0;
-            this.resume();
-        },
-
-        cloneAudio: function() {
-            var _a = this.audio.cloneNode();
-            _a.loop = this.loop;
-            _a.volume = this.volume;
-            _a.muted = !!this.muted;
-            if (this.sprite) {
-                _a.addEventListener('timeupdate', this.onTimeUpdate, false);
-            }
-            this.pool.push(_a);
-            _a._index = this.pool.length;
-            return _a;
-        },
-
-    };
-
-
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-
-    Sound.createContext = function() {
-        var context = new AudioContext();
-        context.gain = context.createGain();
-        context.gain.gain.value = 1;
-        context.gain.connect(context.destination);
-        return context;
-    };
-    if (window.AudioContext) {
-        Sound.context = Sound.createContext();
-        Sound.supportWebAudio = true;
-    }
-
-    Sound.activateContext = function(context) {
-        context = context || Sound.context;
-        if (!context || context && context.currentTime > 0) {
-            return false;
-        }
-        var source = context.createBufferSource();
-        source.buffer = context.createBuffer(2, 22050, 22050);
-        var gain = context.createGain();
-        gain.gain.value = 0;
-        gain.connect(context.destination);
-        source.connect(gain);
-        source.start(0);
-        Sound.activateContext.played = true;
-        return source;
-    };
-    // Sound.activateContext();
-
-    var _soundPool = {};
-
-    Sound.get = function(id) {
-        return _soundPool[id];
-    };
-    Sound.set = function(id, sound) {
-        _soundPool[id] = sound;
-        return sound;
-    };
-    Sound.clear = function() {
-        _soundPool = {};
-    };
-    Sound.remove = function(id) {
-        var s = _soundPool[id];
-        delete _soundPool[id];
-        return s;
-    };
-    Sound.size = function() {
-        var keys = Object.keys(_soundPool);
-        return keys.length;
-    };
-    Sound.getAll = function() {
-        return _soundPool;
-    };
-
-    var methods = ["play", "stop", "pause", "resume", "setMute", "isMuted", "setVolume", "getVolume"];
-
-    methods.forEach(function(name) {
-        // Sound[name]=function(args){
-        //  var id=arguments[0];
-        //  var s=Sound.get(id);
-        //  if (s && s.audio){
-        //      args=Array.prototype.slice.call(arguments,1);
-        //      return s[name].apply(s,args);
-        //  }
-        //  console.log("Sound."+name, id , "failed");
-        // }
-
-        Sound[name] = function(id, arg) {
-            var s = Sound.get(id);
-            if (s && s[name]) {
-                return s[name](arg);
-            }
-            // console.log("Sound."+name, id , "failed");
-        }
-    });
-
-    Sound.muted = false;
-
-    Sound.setMuteGlobal = function(mute, exclude, isExcludeByTag) {
-        mute = !!mute;
-        for (var id in _soundPool) {
-            if (isExcludeByTag !== true && id === exclude) {
-                continue;
-            }
-            var s = _soundPool[id];
-            if (isExcludeByTag === true) {
-                if (("tag" in s) && s.tag === tag) {
-                    continue;
-                }
-            }
-            s.setMute(mute);
-        }
-        Sound.muted = mute;
-    };
-
-
-    Sound.setMuteByTag = function(tag, mute) {
-        mute = !!mute;
-        for (var id in _soundPool) {
-            var s = _soundPool[id];
-            if (s.tag === tag) {
-                s.setMute(mute);
-            }
-        }
-        Sound[tag + "Muted"] = mute;
-    };
-
-    Sound.smartPlay = function(id, interval) {
-        var s = Sound.get(id);
-        if (!s || s.loaded !== true) {
-            return false;
-        }
-        interval = interval || interval === 0 ? interval : 30;
-        var t = Sound.smartPlay.timer[id];
-        var now = Date.now();
-        if (!t || now - t > interval) {
-            Sound.smartPlay.timer[id] = now;
-            try {
-                s.play();
-            } catch (e) {
-                console.log("Sound.smartPlay ERROR:", s.id, e);
-            }
-            return true;
-        }
-        return false;
-    };
-
-    Sound.smartPlay.timer = {};
-
-    // uncomment below to remove sound play for ignoring sound
-    // Sound.smartPlay = Sound.play = Sound.stop = function (){}
-
-
-    var _waitingForTouchLoad = [];
-    var _onAudioLoaded = function(event) {
-        var audio = event.target;
-        audio.loaded = true;
-        audio.error = false;
-        audio.removeEventListener("canplaythrough", _onAudioLoaded);
-    };
-    Sound.loadSounds = function(sounds, useWebAudio) {
-        for (var i = 0; i < sounds.length; i++) {
-            var soundInfo = sounds[i];
-            soundInfo.useWebAudio = useWebAudio !== false && Sound.supportWebAudio;
-            var sound = new Sound(soundInfo);
-            sound.load();
-        }
-    };
-
-    Sound.setTouchLoadSounds = function(sounds, useWebAudio) {
-        for (var i = 0; i < sounds.length; i++) {
-            var soundInfo = sounds[i];
-            soundInfo.useWebAudio = useWebAudio !== false && Sound.supportWebAudio;
-            var sound = new Sound(soundInfo);
-            sound.load();
-            _waitingForTouchLoad.push(sound);
-        }
-    };
-
-    Sound.touchLoad = function() {
-        if (_waitingForTouchLoad.length < 1) {
-            return;
-        }
-        var sound = _waitingForTouchLoad.shift();
-        if (sound.loaded) {
-            // console.log("Sound.touchLoad: loaded");
-            return;
-        }
-        if (sound.tagName === "AUDIO") {
-            sound.addEventListener("canplaythrough", _onAudioLoaded);
-        }
-        sound.load();
-    };
-
-    GT.Sound = Sound;
-
-}(GT));
-
-export { GT as GT};
+//
+// Web Audio and 3D Soundscapes: Implementation
+// http://gamedev.tutsplus.com/tutorials/web-audio-and-3d-soundscapes-implementation--cms-22651
+//
+(function(){
+	if (window.AudioContext === undefined) {
+		return
+	}
+
+	// Helper function.
+	function is(o, c) {
+		if (o === null || o === undefined) {
+			return false
+		}
+
+		if (c === null || c === undefined) {
+			return false
+		}
+
+		if (c === Number) {
+			if (o.constructor === c) {
+				return isNaN(o) === false
+			}
+
+			return false
+		}
+
+		return o.constructor === c
+	}
+
+	//
+	// AudioPlayer constructor.
+	//
+	function AudioPlayer() {
+		if (this.constructor !== AudioPlayer) {
+			return
+		}
+
+		var m_this = this
+		var m_context = new AudioContext()
+		var m_gain = m_context.createGain()
+
+		// Sounds will connect to this gain node.
+		m_gain.connect(m_context.destination)
+
+		// The common coordinate system used with WebGL.
+		// The listener is always facing down the negative Z axis, the
+		// positive Y axis points up, the positive X axis points right.
+		m_context.listener.setOrientation(0, 0, -1, 0, 1, 0)
+		
+		var m_loader = new XMLHttpRequest()
+		var m_queue = []   // <String>
+		var m_buffers = {} // <String,AudioBuffer>
+		var m_sounds = {}  // <String,Sound>
+		var m_counter = 0
+
+		this.IO_ERROR = 1
+		this.DECODING_ERROR = 2
+
+		this.errorText = null
+		this.errorType = null
+		this.onloadstart = null
+		this.onloaderror = null
+		this.onloadcomplete = null
+
+		//
+		// Loads a sound file.
+		// The source paths are queued and loaded sequentially.
+		//
+		// src: The source path of the sound file to load.
+		//
+		this.load = function(src) {
+			if (is(src, String) === false) {
+				throw new Error("Parameter 'src' must be a String")
+			}
+			
+			if (m_queue.push(src) === 1) {
+				load()
+			}
+		}
+
+		//
+		// Creates a new sound and returns an identifier for the sound.
+		//
+		// src: The source path of the sound file the new sound will use.
+		//
+		this.create = function(src) {
+			if (is(src, String) === false) {
+				throw new Error("Parameter 'src' must be a String")
+			}
+
+			if (m_buffers[src] === undefined) {
+				throw new Error("Sound file has not been loaded: " + src)
+			}
+
+			var snd = "snd:" + (m_counter++)
+
+			m_sounds[snd] = new Sound()
+			m_sounds[snd].snd = snd
+			m_sounds[snd].buffer = m_buffers[src]
+			
+			return snd
+		}
+
+		//
+		// Destroys a previously created sound. The sound identifier returned
+		// from the create() function will be invalidated.
+		//
+		// snd: The sound identifier.
+		//
+		this.destroy = function(snd) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			if (o.source !== null) {
+				if (o.source.loop) {
+					o.source.stop()
+				}
+			}
+
+			delete m_sounds[snd]
+		}
+
+		//
+		// Plays a sound.
+		//
+		// snd:  The sound identifier.
+		// loop: Indicates if the sound should loop. (optional, default = false)
+		//
+		this.play = function(snd, loop) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			if (is(loop, Boolean) === false) {
+				loop = false
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			if (o.playing) {
+				o.source.stop()
+			}
+
+			o.source = m_context.createBufferSource()
+			o.panner = m_context.createPanner()
+
+			o.source.buffer = o.buffer
+			o.source.loop = loop
+			o.source.onended = onSoundEnded
+
+			// This is a bit of a hack but we need to reference the sound
+			// object in the onSoundEnded event handler, and doing things
+			// this way is more optimal than binding the handler.
+			o.source.sound = o
+			
+			o.panner.panningModel = "HRTF"
+			o.panner.distanceModel = "linear"
+			o.panner.setPosition(o.x, o.y, o.z)
+
+			o.source.connect(o.panner)
+			o.panner.connect(m_gain)
+
+			o.source.start()
+			
+			o.playing = true
+		}
+
+		//
+		// Stops a sound playing.
+		//
+		// snd: The sound identifier.
+		//
+		this.stop = function(snd) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			if (o.playing) {
+				o.source.stop()
+			}
+		}
+
+		//
+		// Indicates if a sound is playing.
+		//
+		// src: The sound identifier.
+		//
+		this.isPlaying = function(snd) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			return o.playing
+		}
+
+		//
+		// Sets the X position of the sound.
+		//
+		// src: The sound identifier.
+		// x:   The position.
+		//
+		this.setX = function(snd, x) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			if (is(x, Number) === false) {
+				throw new Error("Parameter 'x' must be a Number")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			o.x = x
+
+			if (o.panner !== null) {
+				o.panner.setPosition(o.x, o.y, o.z)
+			}
+		}
+
+		//
+		// Returns the X position of a sound.
+		//
+		// src: The sound identifier.
+		//
+		this.getX = function(snd) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			return o.x
+		}
+
+		//
+		// Sets the Y position of the sound.
+		//
+		// src: The sound identifier.
+		// y:   The position.
+		//
+		this.setY = function(snd, y) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			if (is(y, Number) === false) {
+				throw new Error("Parameter 'y' must be a Number")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			o.y = y
+
+			if (o.panner !== null) {
+				o.panner.setPosition(o.x, o.y, o.z)
+			}
+		}
+
+		//
+		// Returns the Y position of the sound.
+		//
+		// src: The sound identifier.
+		//
+		this.getY = function(snd) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			return o.y
+		}
+
+		//
+		// Sets the Z position of the sound.
+		//
+		// src: The sound identifier.
+		// z:   The position.
+		//
+		this.setZ = function(snd, z) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			if (is(z, Number) === false) {
+				throw new Error("Parameter 'z' must be a Number")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			o.z = z
+
+			if (o.panner !== null) {
+				o.panner.setPosition(o.x, o.y, o.z)
+			}
+		}
+
+		//
+		// Returns the Z position of the sound.
+		//
+		// src: The sound identifier.
+		//
+		this.getZ = function(snd) {
+			if (is(snd, String) === false) {
+				throw new Error("Parameter 'snd' must be a String")
+			}
+
+			var o = m_sounds[snd]
+
+			if (o === undefined) {
+				throw new Error("Parameter 'snd' is invalid")
+			}
+
+			return o.z
+		}
+
+		//
+		// Sets the position of a sound.
+		//
+		// src: The sound identifier.
+		// x:   The X position.
+		// y:   The Y position.
+		// z:   The Z position.
+		//
+		this.setPosition = function(snd, x, y, z) {
+			m_this.setX(snd, x)
+			m_this.setY(snd, y)
+			m_this.setZ(snd, z)
+		}
+
+		//
+		// Sets the volume level of the audio player.
+		//
+		// volume: The volume. (min = 0.0, max = 1.0)
+		// time:   The amount of time, in seconds, that the current
+		//         volume level should take to reach the new volume level.
+		//         (optional, default = 0.01, min = 0.01, max = 120.0)
+		//
+		this.setVolume = function(volume, time) {
+			if (is(volume, Number) === false) {
+				throw new Error("Parameter 'volume' must be a Number")
+			}
+
+			volume = clamp(volume, 0.0, 1.0)
+
+			if (is(time, Number) === false) {
+				time = 0.01
+			} else {
+				time = clamp(time, 0.01, 120.0)
+			}
+
+			var currentTime = m_context.currentTime
+			var currentVolume = m_gain.gain.value
+
+			m_gain.gain.cancelScheduledValues(0.0)
+			m_gain.gain.setValueAtTime(currentVolume, currentTime)
+			m_gain.gain.linearRampToValueAtTime(volume, currentTime + time)
+		}
+
+		//
+		// Returns the volume level of the audio player.
+		//
+		this.getVolume = function() {
+			return m_gain.gain.value
+		}
+
+		//
+		// Private.
+		//
+		function load() {
+			m_this.errorText = null
+			m_this.errorType = null
+			
+			if (m_queue.length === 0 || m_loader.readyState !== 0) {
+				return
+			}
+
+			m_loader.open("GET", m_queue[0])
+			m_loader.responseType = "arraybuffer"
+			m_loader.onload = onLoad
+			m_loader.send()
+		}
+
+		//
+		// Private.
+		// This function will be scoped to the m_loader object.
+		//
+		function onLoad(event) {
+			var data = m_loader.response
+			var status = m_loader.status
+
+			// Reset the loader.
+			m_loader.abort()
+
+			// Anything higher than 400 will indicate an error.
+			if (status < 400) {
+				m_context.decodeAudioData(data, onDecode, onDecodeError)
+				return
+			}
+
+			var src = m_queue.shift()
+
+			// Clear the queue.
+			m_queue = []
+
+			m_this.errorText = "Failed to load sound file: " + src
+			m_this.errorType = m_this.IO_ERROR
+
+			if (is(m_this.onloaderror, Function)) {
+				m_this.onloaderror()
+			} else {
+				window.console.error(m_this.errorText)
+			}
+		}
+
+		//
+		// Private.
+		// This function will be scoped to the window object.
+		//
+		function onDecode(buffer) {
+			var src = m_queue.shift()
+
+			// Store the audio buffer.
+			m_buffers[src] = buffer
+
+			// Break the loading loop if the queue is empty.
+			if (m_queue.length === 0) {
+				if (is(m_this.onloadcomplete, Function)) {
+					m_this.onloadcomplete()
+				}
+			}
+
+			load()
+		}
+
+		//
+		// Private.
+		// This function will be scoped to the window object.
+		//
+		function onDecodeError() {
+			var src = m_queue[0]
+
+			// Clear the queue.
+			m_queue = []
+
+			m_this.errorText = "Failed to decode sound file: " + src
+			m_this.errorType = m_this.DECODING_ERROR
+			
+			if (is(m_this.onloaderror, Function)) {
+				m_this.onloaderror()
+			} else {
+				window.console.error(m_this.errorText)
+			}
+		}
+
+		//
+		// Private.
+		// This function will be scoped to an AudioSourceBufferNode object.
+		//
+		function onSoundEnded() {
+			var o = this.sound
+			
+			o.panner.disconnect()
+			o.source.disconnect()
+			o.source.onended = null
+
+			o.playing = false
+		}
+	}
+
+	//
+	// Sound constructor.
+	//
+	function Sound() {
+		this.x = 0.0
+		this.y = 0.0
+		this.z = 0.0
+		this.snd = null    // String (sound identifier)
+		this.buffer = null // AudioBuffer
+		this.source = null // AudioBufferSourceNode
+		this.panner = null // PannerNode
+		this.playing = false
+	}
+
+	//
+	// Expose the AudioPlayer constructor as a read-only property.
+	//
+	Object.defineProperty(window, "AudioPlayer", {
+		value: AudioPlayer
+	})
+})()
+
+export { AudioPlayer as AudioPlayer };

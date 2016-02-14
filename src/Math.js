@@ -101,8 +101,8 @@ export default class Math {
     let y = this.roundTo(window.Math.sqrt(window.Math.pow((y1 - y2), 2)), DIMENSION);
 
     return ({
-      x: x,
-      y: y
+      x: x1 - x2 < 0 ? -x : x,
+      y: y1 - y2 < 0 ? -y : y,
     });
 
   }

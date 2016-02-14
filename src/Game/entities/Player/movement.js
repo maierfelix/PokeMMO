@@ -120,24 +120,20 @@ export function playWalkSound() {
 
   let volume = this.isLocalPlayer === true ? VOLUME.LOCAL_PLAYER : VOLUME.NETWORK_PLAYER;
 
-  if (this.isLocalPlayer === false) {
-    let dist = Maps[this.map].distance(this, game.engine.localEntity);
-    let distance = dist.x + dist.y;
-    if ((volume -= distance / (DIMENSION / 2)) <= 0) return void 0;
-  }
+  let dist = Maps[this.map].distance(this, game.engine.localEntity);
 
   /** Player is bumping */
   if (this.STATES.BUMPING === true) {
-    Audio.playSound("bump", volume);
+    Audio.playSound("bump", volume, dist.x, dist.y);
   /** Player is walking */
   } else {
     if (this.moving === true) {
       if (this.soundSteps >= DIMENSION * 2) {
         this.soundSteps = 0;
         if (this.STATES.RUNNING === true) {
-          Audio.playSound("run_step", volume);
+          Audio.playSound("run_step", volume, dist.x, dist.y);
         } else {
-          Audio.playSound("ground_step", volume);
+          Audio.playSound("ground_step", volume, dist.x, dist.y);
         }
       }
     }
