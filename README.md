@@ -1,0 +1,29 @@
+ - [ ] Engine
+   - [x] Collisions
+   - [x] Camera
+   - [x] Camera movement animation
+   - [x] 3D Audio implementation
+   - [x] Grid based path finding
+   - [ ] Maps
+   - [ ] Map connections
+   - [ ] Map layer depth based rendering
+   - [ ] Dynamic multi-lingual support
+   - [ ] Mini map
+
+ - [ ] Editor
+   - [ ] UI
+   - [ ] Dynamic layers
+   - [ ] Layer tile drawing
+   - [ ] Drawing tools
+   - [ ] Objects
+   - [ ] Object tools
+   - [ ] Object add & edit support
+   - [ ] Collison layer
+   - [ ] Map connections
+
+ - [ ] Interpreter
+   - [ ] Syntax
+   - [ ] Global flags
+   - [ ] Expressions
+   - [ ] Game api
+   - [ ] Frame based step walking
