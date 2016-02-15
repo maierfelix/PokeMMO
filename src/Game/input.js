@@ -21,6 +21,13 @@ export const keys = [
     }
   },
   {
+    name: "C",
+    fire: function() {
+      let local = this.engine.localEntity;
+      local.jump();
+    }
+  },
+  {
     name: "←",
     fire: function() {
       let local = this.engine.localEntity;

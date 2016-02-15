@@ -12,6 +12,53 @@ import {
 import Audio from "../../../Engine/Audio";
 
 /**
+ * Jump
+ */
+export function jump() {
+
+  this.refreshState();
+
+  if (this.STATES.JUMPING === true) return void 0;
+
+  this.animations.push({
+    type: "jumping",
+    gravity: -.9375
+  });
+
+  this.STATES.JUMPING = true;
+
+  this.playStateSound();
+
+  this.idleTime = 0;
+
+}
+
+/**
+ * Jumping
+ * @param {Object} animation
+ */
+export function jumping(animation) {
+
+  this.frame = 3;
+
+  this.z += animation.gravity;
+
+  if (this.z < 0) {
+    animation.gravity += 0.1;
+    this.shadow.position.set(0, -1.75 - (this.z));
+    this.shadow.scale.set(-(this.z / 4), -(this.z / 4));
+  } else {
+    this.animations.shift();
+    this.z = 0;
+    this.resetFrame();
+    this.refreshState();
+    this.shadow.position.set(0, -1.75);
+    this.shadow.scale.set(0, 0);
+  }
+
+}
+
+/**
  * Move player
  * @param {Number} dir
  */
@@ -39,6 +86,8 @@ export function move(dir) {
  */
 export function changeFacing(dir) {
 
+  if (this.STATES.JUMPING === true) return void 0;
+
   this.idleTime = 0;
 
   if (
@@ -47,14 +96,15 @@ export function changeFacing(dir) {
   ) {
     this.lastFacing = this.facing;
     this.facing = dir;
-    this.frame = (this.frame + 3) % 4;
+    this.frame = (this.frame + 3 + this.getFrameIndex()) % 4;
   }
 
   /** TODO: Avoid settimeout */
   setTimeout(this::function() {
     if (
       this.moving === false &&
-      this.STATES.BUMPING === false
+      this.STATES.BUMPING === false &&
+      this.STATES.JUMPING === false
     ) {
       this.resetFrame();
     }
@@ -94,7 +144,7 @@ export function halfStep() {
 export function bump(animation) {
 
   if (this.stepCount <= 0) {
-    this.playWalkSound();
+    this.playStateSound();
   }
 
   this.stepCount += .5;
@@ -114,13 +164,17 @@ export function bump(animation) {
 /**
  * Play sound
  */
-export function playWalkSound() {
+export function playStateSound() {
 
   if (BGS !== true) return void 0;
 
   let volume = this.isLocalPlayer === true ? VOLUME.NETWORK_PLAYER : VOLUME.LOCAL_PLAYER;
 
   let dist = Maps[this.map].distance(this, game.engine.localEntity);
+
+  if (this.STATES.JUMPING === true && this.z === 0) {
+    Audio.playSound("jump", volume, dist.x, dist.y);
+  }
 
   /** Player is bumping */
   if (this.STATES.BUMPING === true) {
@@ -154,7 +208,7 @@ export function walk(animation) {
     }
   }
 
-  this.playWalkSound();
+  this.playStateSound();
 
   if (animation.obstacle === false) {
     this.halfStep();
@@ -240,7 +294,8 @@ export function stopMoving(animation) {
   setTimeout(this::function() {
     if (
       this.moving === false &&
-      this.STATES.BUMPING === false
+      this.STATES.BUMPING === false &&
+      this.STATES.JUMPING === false
     ) {
       this.resetFrame();
     }

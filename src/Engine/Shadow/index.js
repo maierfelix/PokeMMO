@@ -5,6 +5,8 @@ import {
 
 import math from "../../Math";
 
+import DisplayObject from "../DisplayObject";
+
 import { TextureCache, uHash, createCanvasBuffer } from "../utils";
 import { colorizePixels } from "../Texture/effects";
 
@@ -13,13 +15,15 @@ import { colorizePixels } from "../Texture/effects";
  * @class Shadow
  * @export
  */
-export default class Shadow {
+export default class Shadow extends DisplayObject {
 
   /**
    * @param {Object} parent
    * @constructor
    */
   constructor(parent) {
+
+    super(null);
 
     /**
      * Unique id
@@ -35,13 +39,9 @@ export default class Shadow {
      */
     this.texture = null;
 
-    /** 
-     * Offset
-     * @type {Object}
-     */
-    this.offset = new math.Point(1, 1);
+    this.position.set(0, -1.75);
 
-    this.offset.set(0, 1.12);
+    this.scale.set(0, 0);
 
     this.init();
 
@@ -82,9 +82,9 @@ export default class Shadow {
       width, height
     );
 
-    TextureCache[`Shadow:${this.parent.sprite}`] = this;
-
     shadow.setTransform(1, 0, 0, 1, 0, 0);
+
+    TextureCache[`Shadow:${this.parent.sprite}`] = this;
 
     return (this.texture = shadow);
 

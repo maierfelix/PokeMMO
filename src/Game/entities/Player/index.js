@@ -1,7 +1,6 @@
 import math from "../../../Math";
 import {
-  DIMENSION,
-  SHADOW_X, SHADOW_Y
+  DIMENSION
 } from "../../../cfg";
 
 import { inherit } from "../../../Engine/utils";
@@ -24,7 +23,7 @@ export class Player extends Entity {
      * Z axis position
      * @type {Number}
      */
-    this.z = 0;
+    this.z = .0;
 
     /**
      * Player facing
@@ -49,12 +48,6 @@ export class Player extends Entity {
       BUMPING: false,
       JUMPING: false
     };
-
-    /**
-     * Jumping state
-     * @type {Boolean}
-     */
-    this.jumping = false;
 
     /**
      * Local player check
@@ -218,89 +211,28 @@ export class Player extends Entity {
   }
 
   /**
+   * Get frame index
+   * @return {Number}
+   */
+  getFrameIndex() {
+    return (
+      this.STATES.RUNNING === true ? 2 : 0
+    );
+  }
+
+  /**
    * Reset sprite frame
    */
   resetFrame() {
-    this.frame = this.frameReset[this.frame];
+    this.frame = this.frameReset[this.frame] + this.getFrameIndex();
   }
 
   /**
    * Refresh entity states
    */
   refreshState() {
-
     this.STATES.RUNNING = this.velocity === .5 ? false : this.velocity === 1 && this.STATES.WALKING === true ? true : false;
-    this.STATES.JUMPING = this.z > 0;
-
-  }
-
-  /**
-   * Get frame index
-   * @return {Number}
-   */
-  getFrameIndex() {
-    return (
-      this.STATES.RUNNING === true ? 3 : 0
-    );
-  }
-
-  /**
-   * Render entity
-   * @param {Object} instance
-   */
-  render(instance) {
-
-    if (this.texture === null) return void 0;
-
-    let eWidth  = (this.width  / this.scale) * 2;
-    let eHeight = (this.height / this.scale) * 2;
-
-    let scale = instance.scale;
-
-    let shadowX = SHADOW_X;
-    let shadowY = SHADOW_Y;
-
-    let cX = ((DIMENSION / 2) * this.scale) * scale;
-    let cY = (DIMENSION * this.scale) * scale;
-
-    let x = (instance.camera.x + this.x * scale) - cX;
-    let y = (instance.camera.y + this.y * scale) - cY;
-
-    let width  = this.width  * scale;
-    let height = this.height * scale;
-
-    let frameIndex = this.getFrameIndex();
-
-    /** Shadow */
-    if (this.hasShadow === true) {
-      instance.context.drawImage(
-        this.shadow.texture.canvas,
-        /** Frame */
-        (this.frames[this.frame] + frameIndex) * eWidth,
-        eHeight * this.shadowFacing(this.facing),
-        /** Scale */
-        eWidth, eHeight,
-        x + (this.shadow.offset.x) << 0, y + ((eHeight / 2 * this.scale) / this.shadow.offset.y * scale) << 0,
-        width / shadowX << 0, height / shadowY << 0
-      );
-    }
-
-    /** Sprite */
-    instance.context.drawImage(
-      this.texture.texture_effect.canvas,
-      /** Frame */
-      (this.frames[this.frame] + frameIndex) * eWidth,
-      eHeight * this.facing,
-      /** Scale */
-      eWidth, eHeight,
-      x << 0, y << 0,
-      width << 0, height << 0
-    );
-
-    this.idleTime++;
-
-    return void 0;
-
+    this.STATES.JUMPING = this.z < 0;
   }
 
 }

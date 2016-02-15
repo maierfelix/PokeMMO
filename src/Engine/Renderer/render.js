@@ -1,6 +1,8 @@
 import {
   DEBUG, DEBUG_FPS,
-  GRID_WIDTH
+  GRID_WIDTH,
+  DIMENSION,
+  SHADOW_X, SHADOW_Y
 } from "../../cfg";
 import { drawGrid } from "./grid";
 
@@ -149,6 +151,7 @@ export function renderEntities(entities) {
 
     entity = entities[ii];
     entity.animate();
+    entity.idleTime++;
 
     if (!this.instance.camera.isInView(
       entity.x, entity.y,
@@ -156,9 +159,67 @@ export function renderEntities(entities) {
     )) continue;
     if (entity.texture !== null && entity.texture.hasLoaded === false) continue;
 
-    entity.render(this);
+    this.renderEntity(entity);
 
   };
+
+  return void 0;
+
+}
+
+/**
+ * Render a single entity
+ * @param  {Object} entity
+ */
+export function renderEntity(entity) {
+
+  if (entity.texture === null) return void 0;
+
+  let frameIndex = entity.getFrameIndex();
+
+  let width  = entity.width  * this.scale;
+  let height = entity.height * this.scale;
+
+  let eWidth  = (entity.width  / entity.scale) * 2;
+  let eHeight = (entity.height / entity.scale) * 2;
+
+  let cX = ((DIMENSION / 2) * entity.scale) * this.scale;
+  let cY = (DIMENSION * entity.scale) * this.scale;
+
+  let x = (this.camera.x + entity.x * this.scale) - cX;
+  let y = (this.camera.y + (entity.y + entity.z) * this.scale) - cY;
+
+  /** Shadow */
+  if (entity.hasShadow === true) {
+    this.context.drawImage(
+      /** Texture */
+      entity.shadow.texture.canvas,
+      /** Frame */
+      (entity.frames[entity.frame] + frameIndex) * eWidth,
+      eHeight * entity.shadowFacing(entity.facing),
+      /** Scale */
+      eWidth + (entity.shadow.scale.x * this.scale),
+      eHeight + (entity.shadow.scale.y * this.scale),
+      /** Position */
+      x + (entity.shadow.position.x * this.scale) + (entity.shadow.scale.x * this.scale) << 0,
+      y + (entity.shadow.position.y * this.scale) + (entity.shadow.scale.y * this.scale) + ((eHeight / 2 * entity.scale) * this.scale) << 0,
+      /** Scretch */
+      width / SHADOW_X << 0,
+      height / SHADOW_Y << 0
+    );
+  }
+
+  /** Sprite */
+  this.context.drawImage(
+    entity.texture.texture_effect.canvas,
+    /** Frame */
+    (entity.frames[entity.frame] + frameIndex) * eWidth,
+    eHeight * entity.facing,
+    /** Scale */
+    eWidth, eHeight,
+    x << 0, y << 0,
+    width << 0, height << 0
+  );
 
   return void 0;
 

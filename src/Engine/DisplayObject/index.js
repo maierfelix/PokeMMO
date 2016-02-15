@@ -31,14 +31,19 @@ export default class DisplayObject {
     );
 
     /** 
-     * Camera size
+     * Size
      * @type {Object}
-     * @default null
      */
     this.size = new math.Point(
       width  !== void 0 ? width  : 0,
       height !== void 0 ? height : 0
     );
+
+    /** 
+     * Scale factor
+     * @type {Object}
+     */
+    this.scale = new math.Point(1, 1);
 
     Object.defineProperty(this, "x", {
       get: function() {
