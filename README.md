@@ -8,7 +8,7 @@
    - [ ] Map connections
    - [ ] Map layer depth based rendering
    - [ ] Dynamic multi-lingual support
-   - [ ] Mini map
+   - [ ] Mini map?
 
  - [ ] Editor
    - [ ] UI
@@ -26,4 +26,4 @@
    - [ ] Global flags
    - [ ] Expressions
    - [ ] Game api
-   - [ ] Frame based step walking
+   - [ ] Frame based step script execution
