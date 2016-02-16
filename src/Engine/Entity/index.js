@@ -63,6 +63,12 @@ export default class Entity extends DisplayObject {
     this.frame = 0;
 
     /**
+     * Opacity
+     * @type {Number}
+     */
+    this.opacity = 1.0;
+
+    /**
      * Sprite
      * @type {String}
      */
@@ -161,6 +167,55 @@ export default class Entity extends DisplayObject {
       }*/
       this[this.animations[ii].type](this.animations[ii]);
     };
+
+  }
+
+  /**
+   * Entity has customized opacity
+   * @return {Boolean}
+   */
+  customOpacity() {
+    return (
+      this.opacity !== 1.0 &&
+      this.opacity !== 0.0
+    );
+  }
+
+  /**
+   * Fade in
+   */
+  fadeIn() {
+    this.animations.push({
+      type: "fade",
+      fade: 1
+    });
+  }
+
+  /**
+   * Fade out
+   */
+  fadeOut() {
+    this.animations.push({
+      type: "fade",
+      fade: 0
+    });
+  }
+
+  /**
+   * Fade animation
+   * @param {Object} animation
+   */
+  fade(animation) {
+
+    this.opacity += (animation.fade === 1) ? .025 : -(.025);
+
+    if (animation.fade === 1 && this.opacity > 1) {
+      this.opacity = 1.0;
+      this.animations.shift();
+    } else if (animation.fade === 0 && this.opacity < 0) {
+      this.opacity = .0;
+      this.animations.shift();
+    }
 
   }
 

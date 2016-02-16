@@ -55,7 +55,6 @@ export function draw() {
       .05,
       "#FFF"
     );
-    this.renderScene();
   }
 
   this.renderMap();
@@ -83,34 +82,6 @@ export function renderMap() {
     (map.width * this.dimension) * this.scale << 0,
     (map.height * this.dimension) * this.scale << 0
   );
-
-  return void 0;
-
-}
-
-/**
- * Render scene
- */
-export function renderScene() {
-
-  let ln = GRID_WIDTH * this.scale;
-
-  this.context.beginPath();
-
-  /** Draw scene */
-  this.context.strokeStyle = "red";
-  this.context.lineWidth = ln;
-
-  /*this.context.strokeRect(
-    this.camera.x + (ln / 2),
-    this.camera.y + (ln / 2),
-    (this.camera.viewport.x * this.scale) - ln << 0,
-    (this.camera.viewport.y * this.scale) - ln << 0
-  );*/
-
-  this.context.stroke();
-
-  this.context.closePath();
 
   return void 0;
 
@@ -153,11 +124,12 @@ export function renderEntities(entities) {
     entity.animate();
     entity.idleTime++;
 
+    if (entity.texture !== null && entity.texture.hasLoaded === false) continue;
     if (!this.instance.camera.isInView(
       entity.x, entity.y,
       entity.width, entity.height
     )) continue;
-    if (entity.texture !== null && entity.texture.hasLoaded === false) continue;
+    if (entity.opacity === .0) continue;
 
     this.renderEntity(entity);
 
@@ -188,6 +160,12 @@ export function renderEntity(entity) {
 
   let x = (this.camera.x + entity.x * this.scale) - cX;
   let y = (this.camera.y + (entity.y + entity.z) * this.scale) - cY;
+
+  let cOpacity = entity.customOpacity();
+
+  if (cOpacity === true) {
+    this.context.globalAlpha = entity.opacity;
+  }
 
   /** Shadow */
   if (entity.hasShadow === true) {
@@ -220,6 +198,11 @@ export function renderEntity(entity) {
     x << 0, y << 0,
     width << 0, height << 0
   );
+
+  /** Reset ctx opacity */
+  if (cOpacity === true) {
+    this.context.globalAlpha = 1.0;
+  }
 
   return void 0;
 

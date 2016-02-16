@@ -138,6 +138,11 @@ export default class Camera extends DisplayObject {
    */
   focusEntity() {
 
+    if (
+      this.entityFocus === null ||
+      this.entityFocus === void 0
+    ) return void 0;
+
     /** Immediate camera value injection */
     this.position.x = this.getX(this.entityFocus);
     this.position.y = this.getY(this.entityFocus);
