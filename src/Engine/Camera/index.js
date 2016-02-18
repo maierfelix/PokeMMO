@@ -193,7 +193,7 @@ export default class Camera extends DisplayObject {
         ((x * this.scale) + this.x) << 0,
         ((y * this.scale) + this.y) << 0,
         width * this.scale << 0,
-        height * this.scale << 0
+        (height * 3) * this.scale << 0
       )
     );
 

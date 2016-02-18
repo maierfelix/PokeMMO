@@ -26,6 +26,8 @@ export default class Entity extends DisplayObject {
 
     super(null);
 
+    this.name = obj.name || null;
+
     /**
      * Last position
      * @type {Object}
@@ -66,7 +68,7 @@ export default class Entity extends DisplayObject {
      * Opacity
      * @type {Number}
      */
-    this.opacity = 1.0;
+    this.opacity = .0;
 
     /**
      * Sprite
@@ -93,6 +95,13 @@ export default class Entity extends DisplayObject {
     this.scale = obj.scale === void 0 ? 1 : obj.scale;
 
     /**
+     * Static state
+     * Used for faster rendering
+     * @type {Boolean}
+     */
+    this.static = obj.static === void 0 ? false : obj.static;
+
+    /**
      * Animations
      * @type {Array}
      */
@@ -110,17 +119,48 @@ export default class Entity extends DisplayObject {
      */
     this.hasShadow = obj.shadow || false;
 
-    /** Entity position */
-    this.x = DIMENSION * 2;
-    this.y = DIMENSION * 2;
+    /**
+     * Sizes
+     * @type {Number}
+     */
+    this.width = 0;
+    this.height = 0;
+
+    /**
+     * Position
+     * @type {Number}
+     */
+    this.x = 0;
+    this.y = 0;
+
+    /**
+     * Z axis position
+     * @type {Number}
+     */
+    this.z = .0;
+
+    if (
+      obj.x !== void 0 &&
+      obj.y !== void 0
+    ) {
+      this.x = obj.x;
+      this.y = obj.y;
+    }
 
     /** Entity size */
     if (obj.width) this.width = obj.width;
     if (obj.height) this.height = obj.height;
 
+    /**
+     * Shadow offsets
+     * @type {Number}
+     */
+    this.shadowX = obj.shadowX === void 0 ? 0 : obj.shadowX;
+    this.shadowY = obj.shadowY === void 0 ? -this.height / 2 : obj.shadowY;
+
     /** Load texture */
     getSprite(this.sprite, this::function(texture) {
-      this.texture = TextureCache[this.sprite];
+      this.texture = texture;
       if (obj.shadow === true) {
         this.shadow = new Shadow(this);
       }
@@ -153,14 +193,13 @@ export default class Entity extends DisplayObject {
   /** Animate */
   animate() {
 
+    if (this.STATES.JUMPING === true) {
+      this.jumping();
+    }
+
     if (this.animations.length <= 0) return void 0;
 
-    var ii = 0;
-    var length = 0;
-
-    length = this.animations.length;
-
-    for (; ii < length; ++ii) {
+    for (var ii = 0; ii < this.animations.length; ++ii) {
       /*if (this.animations[ii].simultaneous === false) {
         this[this.animations[ii].type](this.animations[ii]);
         break;
@@ -248,51 +287,6 @@ export default class Entity extends DisplayObject {
       facing === RIGHT ? 39 :
       facing === DOWN  ? 40 : 38
     );
-  }
-
-  /**
-   * Get tile position
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} dir
-   */
-  getTilePosition(x, y, dir) {
-
-    var amount = DIMENSION;
-
-    var facing = -1;
-
-    var x = x;
-    var y = y;
-
-    switch (dir) {
-      case LEFT:
-        x -= amount;
-        facing = 3;
-      break;
-      case UP:
-        y -= amount;
-        facing = 1;
-      break;
-      case RIGHT:
-        x += amount;
-        facing = 2;
-      break;
-      case DOWN:
-        y += amount;
-        facing = 0;
-      break;
-      default:
-        facing = 0;
-      break;
-    };
-
-    return ({
-      x: x,
-      y: y,
-      facing: facing
-    });
-
   }
 
 }

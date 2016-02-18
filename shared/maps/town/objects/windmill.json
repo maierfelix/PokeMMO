@@ -1,0 +1,10 @@
+{
+  "name"   : "Windmill",
+  "sprite" : "windmill.png",
+  "width"  : 80,
+  "height" : 80,
+  "scale"  : 1,
+  "zIndex" : 4,
+  "shadow" : true,
+  "collidable": true
+}

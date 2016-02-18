@@ -1,5 +1,6 @@
 /**
  * Grid width
+ * @constant
  * @type {Number}
  */
 export const GRID_WIDTH = 1;
@@ -19,27 +20,38 @@ export const VERSION = "0.0.1";
 
 /**
  * Debug mode
+ * @constant
  * @type {Boolean}
  */
 export const DEBUG = true;
 
 /**
  * Debug fps
+ * @constant
  * @type {Number}
  */
 export const DEBUG_FPS = 60;
 
 /**
  * Play bgm
+ * @constant
  * @type {Number}
  */
 export const BGM = false;
 
 /**
  * Play bgs
+ * @constant
  * @type {Number}
  */
 export const BGS = true;
+
+/**
+ * God mode
+ * @constant
+ * @type {Boolean}
+ */
+export const GOD_MODE = false;
 
 /**
  * @constant
@@ -58,7 +70,7 @@ export const PIXEL_SCALE = .125;
  * @constant
  * @type {Number}
  */
-export const MIN_SCALE = 7.5;
+export const MIN_SCALE = 1.0;
 
 /**
  * @constant
@@ -107,6 +119,13 @@ export const RIGHT = 2;
  * @type {Number}
  */
 export const DOWN = 0;
+
+/**
+ * Gravity
+ * @constant
+ * @type {Number}
+ */
+export const GRAVITY = -.9375;
 
 /**
  * @constant

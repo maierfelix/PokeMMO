@@ -39,7 +39,7 @@ export default class Shadow extends DisplayObject {
      */
     this.texture = null;
 
-    this.position.set(0, -1.75);
+    this.position.set(parent.shadowX, parent.shadowY);
 
     this.scale.set(0, 0);
 
@@ -84,7 +84,7 @@ export default class Shadow extends DisplayObject {
 
     shadow.setTransform(1, 0, 0, 1, 0, 0);
 
-    TextureCache[`Shadow:${this.parent.sprite}`] = this;
+    TextureCache[`Shadow:${this.parent.sprite}`] = shadow;
 
     return (this.texture = shadow);
 

@@ -1,0 +1,12 @@
+{
+  "name"   : "Foutune",
+  "sprite" : "foutune.png",
+  "width"  : 32,
+  "height" : 32,
+  "scale"  : 1,
+  "zIndex" : 4,
+  "shadow" : true,
+  "collidable": true,
+  "animated": true,
+  "frames": 1
+}

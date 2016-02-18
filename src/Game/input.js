@@ -22,6 +22,7 @@ export const keys = [
   },
   {
     name: "C",
+    spam: false,
     fire: function() {
       let local = this.engine.localEntity;
       local.jump();

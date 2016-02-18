@@ -5,9 +5,11 @@ import {
   Maps,
   uHash,
   TextureCache, getSprite,
-  createCanvasBuffer
+  createCanvasBuffer,
+  ajax as $GET,
 } from "../utils";
 
+import MapEntity from "./object";
 import DisplayObject from "../DisplayObject";
 import Texture from "../Texture";
 import Path from "../Path";
@@ -66,10 +68,22 @@ export default class Map extends DisplayObject {
     this.layers = obj.layers;
 
     /**
-     * EventManager ref
+     * Map objects
      * @type {Object}
      */
-    this.event = null;
+    this.objects = {};
+
+    /**
+     * Map entities
+     * @type {Array}
+     */
+    this.entities = [];
+
+    /**
+     * Map path
+     * @type {Object}
+     */
+    this.mapPath = obj.path;
 
     /**
      * Path ref
@@ -83,25 +97,90 @@ export default class Map extends DisplayObject {
      */
     this.collisionLayer = null;
 
+    /** Attach map objects */
+    if (obj.objects !== void 0) {
+      if (obj.objects instanceof Array) {
+        this.objTpl = obj.objects;
+      }
+    }
+
     /** Load texture */
     getSprite(this.tileset, this::function(texture) {
       this.texture = TextureCache[this.tileset];
-      this.parse();
+      this.parseLayers();
       /** Attach path finder */
       this.path = new Path(this.collisionLayer.data);
       Maps[this.name] = this;
-      if (
-        resolve !== void 0 &&
-        resolve instanceof Function
-      ) resolve();
+      this.loadMapFile(this::function() {
+        this.loadObjects(function() {
+          if (resolve instanceof Function) resolve();
+        });
+      });
     });
 
   }
 
   /**
-   * Parse a map
+   * Load map file
+   * @param {Function} resolve
    */
-  parse() {
+  loadMapFile(resolve) {
+
+    let path = this.mapPath + this.name.toLowerCase() + ".js";
+
+    $GET(path).then(this::function(data) {
+      let map = new Function(data)();
+      this.entities = map.entities;
+      return (resolve());
+    });
+
+  }
+
+  /**
+   * Load map objects
+   * @param {Function} resolve
+   */
+  loadObjects(resolve) {
+    let length = this.objTpl.length;
+    for (let key of this.objTpl) {
+      let path = `${this.mapPath}objects/${key}`;
+      $GET(path + ".json").then(
+        JSON.parse
+      ).then(this::function(data) {
+        data.sprite = path + ".png";
+        this.objects[key] = data;
+        if (--length <= 0) {
+          this.buildEntities();
+          return (resolve());
+        }
+      });
+    };
+  }
+
+  /**
+   * Fusionize entity
+   * @param {Function} resolve
+   */
+  buildEntities(resolve) {
+
+    let ii = 0;
+    let length = 0;
+
+    length = this.entities.length;
+
+    for (; ii < length; ++ii) {
+      this.entities[ii] = new MapEntity(Object.assign(
+        this.objects[this.entities[ii].type],
+        this.entities[ii]
+      ));
+    };
+
+  }
+
+  /**
+   * Parse map layers
+   */
+  parseLayers() {
 
     let width  = this.width * (DIMENSION * 2) << 0;
     let height = this.height * (DIMENSION * 2) << 0;
@@ -152,7 +231,7 @@ export default class Map extends DisplayObject {
 
     for (; yy < outerLength; ++yy) {
       for (!(xx = x = 0) && (innerLength = layer[yy].length) > 0; xx < innerLength; ++xx) {
-        if ((tile = layer[yy][xx] - 1) === -1) continue;
+        tile = layer[yy][xx] - 1;
         buffer.drawImage(
           tileset,
           ((tile) % dim) * dim,

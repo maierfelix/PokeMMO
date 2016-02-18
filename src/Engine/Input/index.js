@@ -35,7 +35,7 @@ export default class Input {
 
     for (let key of this.events.keys) {
       this.KeyBoard.registerKey(
-        key.name,
+        key,
         this.instance::key.fire,
         key.leave instanceof Function ? this.instance::key.leave : void 0
       );

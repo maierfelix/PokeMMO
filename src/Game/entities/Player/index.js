@@ -1,6 +1,6 @@
 import math from "../../../Math";
 import {
-  DIMENSION
+  DIMENSION, GRAVITY
 } from "../../../cfg";
 
 import { inherit } from "../../../Engine/utils";
@@ -20,10 +20,10 @@ export class Player extends Entity {
     super(obj);
 
     /**
-     * Z axis position
+     * Gravity
      * @type {Number}
      */
-    this.z = .0;
+    this.gravity = GRAVITY;
 
     /**
      * Player facing
@@ -46,8 +46,16 @@ export class Player extends Entity {
       RUNNING: false,
       FACING:  false,
       BUMPING: false,
-      JUMPING: false
+      JUMPING: false,
+      LOCK:    false
     };
+
+    /**
+     * Shadow offsets
+     * @type {Number}
+     */
+    this.shadowX = 0;
+    this.shadowY = -1.75;
 
     /**
      * Local player check
@@ -232,7 +240,7 @@ export class Player extends Entity {
    */
   refreshState() {
     this.STATES.RUNNING = this.velocity === .5 ? false : this.velocity === 1 && this.STATES.WALKING === true ? true : false;
-    this.STATES.JUMPING = this.z < 0;
+    this.STATES.JUMPING = this.z !== 0;
   }
 
 }

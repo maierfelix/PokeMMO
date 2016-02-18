@@ -1,13 +1,15 @@
 import {
-  DIMENSION,
+  DIMENSION, GRAVITY,
   BGM, BGS,
   LEFT, RIGHT, UP, DOWN,
-  VOLUME
+  VOLUME, GOD_MODE
 } from "../../../cfg";
 
 import {
   Maps
 } from "../../../Engine/utils";
+
+import math from "../../../Math";
 
 import Audio from "../../../Engine/Audio";
 
@@ -18,37 +20,38 @@ export function jump() {
 
   this.refreshState();
 
-  if (this.STATES.JUMPING === true) return void 0;
-
-  this.animations.push({
-    type: "jumping",
-    gravity: -.9375
-  });
+  if (
+    this.STATES.JUMPING === true ||
+    this.STATES.LOCK === true
+  ) return void 0;
 
   this.STATES.JUMPING = true;
 
-  this.playStateSound();
-
   this.idleTime = 0;
+
+  this.jumping();
 
 }
 
 /**
  * Jumping
- * @param {Object} animation
  */
-export function jumping(animation) {
+export function jumping() {
 
   this.frame = 3;
 
-  this.z += animation.gravity;
+  if (this.z === 0) {
+    this.playStateSound();
+  }
+
+  this.z += this.gravity;
 
   if (this.z < 0) {
-    animation.gravity += 0.1;
-    this.shadow.position.set(0, -1.75 - (this.z));
-    this.shadow.scale.set(-(this.z / 4), -(this.z / 4));
+    this.gravity += .1;
+    this.shadow.position.set(-(this.z / 2), -1.75 - (this.z));
+    this.shadow.scale.set(-this.z, -this.z);
   } else {
-    this.animations.shift();
+    this.gravity = GRAVITY;
     this.z = 0;
     this.resetFrame();
     this.refreshState();
@@ -63,6 +66,8 @@ export function jumping(animation) {
  * @param {Number} dir
  */
 export function move(dir) {
+
+  if (this.STATES.LOCK === true) return void 0;
 
   /** Wait until we finished */
   if (this.moving === true) return void 0;
@@ -86,7 +91,7 @@ export function move(dir) {
  */
 export function changeFacing(dir) {
 
-  if (this.STATES.JUMPING === true) return void 0;
+  if (this.STATES.LOCK === true) return void 0;
 
   this.idleTime = 0;
 
@@ -149,12 +154,16 @@ export function bump(animation) {
 
   this.stepCount += .5;
 
-  this.halfStep();
+  if (this.STATES.JUMPING === false) {
+    this.halfStep();
+  }
 
   if (this.stepCount >= DIMENSION * 2) {
-    this.halfStep();
+    if (this.STATES.JUMPING === false) {
+      this.halfStep();
+      this.resetFrame();
+    }
     this.stepCount = 0;
-    this.resetFrame();
     this.animations.shift();
     this.STATES.BUMPING = false;
   }
@@ -202,7 +211,9 @@ export function playStateSound() {
 export function walk(animation) {
 
   if (this.stepCount <= 0) {
-    this.resetFrame();
+    if (this.STATES.JUMPING === false) {
+      this.resetFrame();
+    }
     if (animation.obstacle === false) {
       /** onEnter event => animation.x, animation.y */
     }
@@ -211,7 +222,9 @@ export function walk(animation) {
   this.playStateSound();
 
   if (animation.obstacle === false) {
-    this.halfStep();
+    if (this.STATES.JUMPING === false) {
+      this.halfStep();
+    }
     if (this.x > animation.x) {
       this.x -= this.velocity;
     }
@@ -246,8 +259,12 @@ export function walk(animation) {
  */
 export function startMoving(dir) {
 
-  let position = this.getTilePosition(this.x, this.y, dir);
-  let obstacle = Maps[this.map].isObstacle(position.x, position.y);
+  let position = math.getTilePosition(this.x, this.y, dir);
+  let obstacle = Maps[this.map].isObstacle(this, dir);
+
+  if (GOD_MODE === true && this.isLocalPlayer === true) {
+    obstacle = false;
+  }
 
   /** Blocked, bump so */
   if (obstacle === true) {

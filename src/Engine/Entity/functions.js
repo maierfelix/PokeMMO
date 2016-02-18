@@ -12,7 +12,9 @@ export function addEntity(entity) {
     this.localEntity = entity;
   }
 
-  this.entities.push(entity);
+  entity.fadeIn();
+
+  this.currentMap.entities.push(entity);
 
 }
 
@@ -28,24 +30,33 @@ export function getEntityByProperty(key, prop) {
   var ii = 0;
   var length = 0;
 
-  length = this.entities.length;
+  length = this.currentMap.entities.length;
 
   for (; ii < length; ++ii) {
-    if (this.entities[ii][prop] === key) {
-      return (ii);
+    if (this.currentMap.entities[ii][prop] === key) {
+      return (this.currentMap.entities[ii]);
     }
   };
 
 }
 
 /**
- * Remove a entity by its index
- * @param {Number} index
+ * Remove a entity
+ * @param {Object} entity
  */
-export function removeEntityByIndex(index) {
+export function removeEntity(entity) {
 
-  this.entities[index] = null;
-  this.entities.splice(index, 1);
+  var ii = 0;
+  var length = 0;
+
+  length = this.currentMap.entities.length;
+
+  for (; ii < length; ++ii) {
+    if (this.currentMap.entities[ii].id === entity.id) {
+      this.currentMap.entities[ii] = null;
+      this.currentMap.entities[ii].splice(ii, 1);
+    }
+  };
 
 }
 
@@ -60,9 +71,7 @@ export function getEntityById(id) {
 
   var index = 0;
 
-  return (
-    (index = this.getEntityByProperty(id, property)) >= 0 ? index : -1
-  );
+  return (this.getEntityByProperty(id, property));
 
 }
 
@@ -72,10 +81,10 @@ export function getEntityById(id) {
  */
 export function removeEntityById(id) {
 
-  var index = 0;
+  var entity = null;
 
-  if ((index = this.getEntityById(id)) < 0) return void 0;
+  if ((entity = this.getEntityByProperty(id, property)) === void 0) return void 0;
 
-  this.removeEntityByIndex(index);
+  this.removeEntity(entity);
 
 }

@@ -197,7 +197,7 @@ export default class Renderer {
   sort() {
 
     this.depthSort(this.layers, "zIndex");
-
+/*
     var ii = 0;
     var length = 0;
 
@@ -208,6 +208,9 @@ export default class Renderer {
     };
 
     this.connectLayersWithEntities();
+*/
+
+  this.depthSortEntities(this.instance.currentMap.entities);
 
     return void 0;
 
@@ -218,16 +221,18 @@ export default class Renderer {
    */
   connectLayersWithEntities() {
 
+    var entities = this.instance.currentMap.entities;
+
     var ii = 0;
     var length = 0;
 
     var entity = null;
     var layer = null;
 
-    length = this.entities.length;
+    length = entities.length;
 
     for (; ii < length; ++ii) {
-      entity = this.entities[ii];
+      entity = entities[ii];
       layer  = this.layers[this.getLayerByProperty(entity.zIndex, "zIndex")];
       if (layer === void 0) continue;
       if (layer.hasEntity(entity.id) === -1) {

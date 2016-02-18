@@ -1,4 +1,7 @@
-import { DIMENSION } from "./cfg";
+import {
+  DIMENSION,
+  LEFT, UP, RIGHT, DOWN
+} from "./cfg";
 
 /**
  * Math
@@ -51,6 +54,24 @@ export default class Math {
   }
 
   /**
+   * Cubic collision
+   * @param {Number} xx
+   * @param {Number} yy
+   * @param {Number} width
+   * @param {Number} height
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} scale
+   * @return {Boolean}
+   */
+  static cubicCollision(xx, yy, width, height, x, y, scale) {
+    return (
+      window.Math.abs(2 * (x - ((xx * scale))) + -(width * scale)) <= (width * scale) &&
+      window.Math.abs(2 * (y - ((yy * scale))) + -(height * scale)) <= (height * scale)
+    );
+  }
+
+  /**
    * Round integer to its nearst X integer
    * @param  {Number} a Number
    * @param  {Number} b Round to
@@ -66,13 +87,11 @@ export default class Math {
    * @param {Number} factor
    */
   static zoomScale(factor) {
-
     return (
       factor >= 0 ? factor + 1    :
       factor < 0  ? -(factor) + 1 :
       factor + 1
     );
-
   }
 
   /**
@@ -82,9 +101,7 @@ export default class Math {
    * @return {Number}
    */
   static hypot(x, y) {
-
     return (window.Math.sqrt((x * x) + (y * y)));
-
   }
 
   /**
@@ -103,6 +120,49 @@ export default class Math {
     return ({
       x: x1 - x2 < 0 ? -x : x,
       y: y1 - y2 < 0 ? -y : y,
+    });
+
+  }
+
+  /**
+   * Get tile position
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} dir
+   */
+  static getTilePosition(x, y, dir) {
+
+    var facing = -1;
+
+    var x = x;
+    var y = y;
+
+    switch (dir) {
+      case LEFT:
+        x -= DIMENSION;
+        facing = 3;
+      break;
+      case UP:
+        y -= DIMENSION;
+        facing = 1;
+      break;
+      case RIGHT:
+        x += DIMENSION;
+        facing = 2;
+      break;
+      case DOWN:
+        y += DIMENSION;
+        facing = 0;
+      break;
+      default:
+        facing = 0;
+      break;
+    };
+
+    return ({
+      x: x,
+      y: y,
+      facing: facing
     });
 
   }

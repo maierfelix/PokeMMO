@@ -1,5 +1,5 @@
 import { TextureCache } from "../utils";
-import { DIMENSION } from "../../cfg";
+import { DIMENSION, GOD_MODE } from "../../cfg";
 
 /**
  * Render debug scene
@@ -7,13 +7,13 @@ import { DIMENSION } from "../../cfg";
 export function renderDebugScene() {
 
   this.drawPixelText(
-    `Width: ${this.width} Height ${this.height}`,
+    `WIDTH: ${this.width} HEIGHT ${this.height}`,
     15, 30,
     20, 1.5
   );
 
   this.drawPixelText(
-    `Dimension: ${DIMENSION}`,
+    `DIMENSION: ${DIMENSION}`,
     15, 60,
     20, 1.5
   );
@@ -25,19 +25,19 @@ export function renderDebugScene() {
   );
 
   this.drawPixelText(
-    `Delta: ${this.delta * 1E3} ms`,
+    `DELTA: ${this.delta * 1E3} ms`,
     15, 120,
     20, 1.5
   );
 
   this.drawPixelText(
-    `Scale: ${this.camera.resolution.toFixed(6)}`,
+    `SCALE: ${this.camera.resolution.toFixed(6)}`,
     15, 150,
     20, 1.5
   );
 
   this.drawPixelText(
-    `Entities: ${this.instance.entities.length}`,
+    `ENTITIES: ${this.instance.entities.length}`,
     15, 180,
     20, 1.5
   );
@@ -59,23 +59,29 @@ export function renderDebugScene() {
   };
 
   this.drawPixelText(
-    `Entities in view: ${kk}`,
+    `ENTITIES IN VIEW: ${kk}`,
     15, 210,
     20, 1.5
   );
 
   this.drawPixelText(
-    `Textures: ${Object.keys(TextureCache).length}`,
+    `TEXTURES: ${Object.keys(TextureCache).length}`,
     15, 240,
     20, 1.5
   );
 
   if (this.instance.localEntity !== null) {
     this.drawPixelText(
-      `Local X: ${this.instance.localEntity.x} Y: ${this.instance.localEntity.y}`,
+      `LOCAL X: ${this.instance.localEntity.x} Y: ${this.instance.localEntity.y}`,
       15, 270,
       20, 1.5
     );
   }
+
+  this.drawPixelText(
+    `GOD MODE: ${GOD_MODE === true ? "enabled" : "disabled"}`,
+    15, 300,
+    20, 1.5
+  );
 
 }

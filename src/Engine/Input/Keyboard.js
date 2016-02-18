@@ -950,8 +950,6 @@ export default class Keyboard {
       this.switchKey(this.hash, e.keyCode, 0, e);
     });
 
-    return void 0;
-
   }
 
   /**
@@ -975,6 +973,12 @@ export default class Keyboard {
 
     if (state === 0) {
       this.KEYS[name].left = 1;
+    }
+
+    if (this.KEYS[name].spam === false) {
+      if (state === 0) {
+        this.KEYS[name].fireable = true;
+      }
     }
 
     event.preventDefault();
@@ -1003,13 +1007,13 @@ export default class Keyboard {
 
   /**
    * Register a key
-   * @param {Number | String} name
-   * @param {Function}        fire
-   * @param {Function}        leave
+   * @param {Object}   obj
+   * @param {Function} fire
+   * @param {Function} leave
    */
-  registerKey(name, fire, leave) {
+  registerKey(obj, fire, leave) {
 
-    const key = String(name);
+    const key = String(obj.name);
 
     let code = null;
 
@@ -1025,7 +1029,9 @@ export default class Keyboard {
       fire:  fire,
       leave: leave,
       left:  0,
-      state: 0
+      state: 0,
+      fireable: true,
+      spam:  obj.spam
     };
 
     return void 0;
@@ -1061,7 +1067,12 @@ export default class Keyboard {
       this.validKey(key)
     ) {
       if (this.KEYS[name].state === 1) {
-        this.KEYS[name].fire();
+        if (this.KEYS[name].fireable === true) {
+          this.KEYS[name].fire();
+          if (this.KEYS[name].spam !== void 0) {
+            this.KEYS[name].fireable = false;
+          }
+        }
       } else {
         if (
             this.KEYS[name].leave !== void 0 &&
@@ -1073,6 +1084,8 @@ export default class Keyboard {
         }
       }
     }
+
+    return void 0;
 
   }
 

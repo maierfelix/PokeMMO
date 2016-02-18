@@ -1,0 +1,11 @@
+{
+  "name"   : "TreeStub",
+  "sprite" : "treestub.png",
+  "width"  : 16,
+  "height" : 16,
+  "scale"  : 1,
+  "zIndex" : 4,
+  "shadow" : true,
+  "collidable": true,
+  "shadowY": -12
+}

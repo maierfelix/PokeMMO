@@ -1,15 +1,29 @@
+import {
+  ajax as $GET,
+  getPath as getPath
+} from "../utils";
 import math from "../../Math";
+
+import Map from "../Map";
 
 /**
  * Add a new map
- * @param {Object} map
- * @export
+ * @param {String}   path
+ * @param {Function} resolve
  */
-export function addMap(map) {
+export function addMap(path, resolve) {
 
-  map.instance = this;
-
-  this.maps[map.name] = map;
+  $GET(path).then(
+    JSON.parse
+  ).then(this::function(data) {
+    data.path = getPath(path);
+    let map = new Map(data, this::function() {
+      map.instance = this;
+      this.maps[map.name] = map;
+      this.currentMap = this.maps[map.name];
+      return (resolve());
+    });
+  });
 
 }
 

@@ -1,0 +1,10 @@
+{
+  "name"   : "Tree",
+  "sprite" : "tree.png",
+  "width"  : 32,
+  "height" : 32,
+  "scale"  : 1,
+  "zIndex" : 4, 
+  "shadow" : true,
+  "collidable": true
+}

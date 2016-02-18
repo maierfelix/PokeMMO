@@ -1,5 +1,9 @@
 import Texture from "../Texture";
 
+let rx = {
+  path: /[^\\/]+$/
+};
+
 /**
  * Cached textures
  * @type {Object}
@@ -49,6 +53,17 @@ export function uHash() {
 
   return (index);
 
+}
+
+/**
+ * Get path without file ext
+ * @param  {String} path
+ * @return {String}
+ */
+export function getPath(path) {
+  return (
+    path.replace(rx.path.exec(path)[0], "")
+  );
 }
 
 /**

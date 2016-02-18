@@ -15,15 +15,6 @@ export function render() {
 
   this.sort();
 
-  if (this.spriteQueue.length >= 1) {
-    this.drawPixelText(
-      "Loading" + "...",
-      15, 30,
-      20, 1.5);
-    this.loadSprites(this.spriteQueue, () => window.rAF(() => this.render()));
-    return void 0;
-  }
-
   this.draw();
 
   if (DEBUG === true) {
@@ -45,6 +36,8 @@ export function draw() {
 
   this.clear();
 
+  this.renderMap();
+
   if (DEBUG === true) {
     drawGrid(
       this.context,
@@ -57,10 +50,6 @@ export function draw() {
     );
   }
 
-  this.renderMap();
-
-  this.renderLayers();
-
   return void 0;
 
 }
@@ -70,27 +59,12 @@ export function draw() {
  */
 export function renderMap() {
 
-  var map = null;
+  let map = null;
 
   if ((map = this.instance.maps["Town"]) === void 0) return void 0;
   if (map.buffers[1] === void 0) return void 0;
 
-  this.context.drawImage(
-    map.buffers[1].canvas,
-    this.camera.x << 0,
-    this.camera.y << 0,
-    (map.width * this.dimension) * this.scale << 0,
-    (map.height * this.dimension) * this.scale << 0
-  );
-
-  return void 0;
-
-}
-
-/**
- * Render layers
- */
-export function renderLayers() {
+  let buffer = null;
 
   let ii = 0;
   let length = 0;
@@ -98,7 +72,45 @@ export function renderLayers() {
   length = this.layers.length;
 
   for (; ii < length; ++ii) {
-    this.renderEntities(this.layers[ii].entities);
+    if ((buffer = map.buffers[this.layers[ii].zIndex]) === void 0) continue;
+    if (this.layers[ii].name === "Entities") {
+      this.renderEntities(this.layers[ii].entities);
+      this.renderEntities(map.entities);
+    } else {
+      this.context.drawImage(
+        buffer.canvas,
+        this.camera.x << 0,
+        this.camera.y << 0,
+        (map.width * this.dimension) * this.scale << 0,
+        (map.height * this.dimension) * this.scale << 0
+      );
+    }
+  };
+
+  return void 0;
+
+}
+
+/**
+ * Render map entities
+ * @param {Object} map
+ */
+export function renderMapEntities(map) {
+
+  let entity = null;
+
+  let ii = 0;
+  let length = 0;
+
+  length = map.entities.length;
+
+  for (; ii < length; ++ii) {
+    entity = map.entities[ii];
+    if (!this.instance.camera.isInView(
+      entity.x, entity.y,
+      entity.width, entity.height
+    )) continue;
+    this.renderEntity(entity);
   };
 
   return void 0;
@@ -176,14 +188,14 @@ export function renderEntity(entity) {
       (entity.frames[entity.frame] + frameIndex) * eWidth,
       eHeight * entity.shadowFacing(entity.facing),
       /** Scale */
-      eWidth + (entity.shadow.scale.x * this.scale),
-      eHeight + (entity.shadow.scale.y * this.scale),
+      eWidth,
+      eHeight,
       /** Position */
-      x + (entity.shadow.position.x * this.scale) + (entity.shadow.scale.x * this.scale) << 0,
-      y + (entity.shadow.position.y * this.scale) + (entity.shadow.scale.y * this.scale) + ((eHeight / 2 * entity.scale) * this.scale) << 0,
+      x + (entity.shadow.position.x * this.scale) << 0,
+      y + (entity.shadow.position.y * this.scale) + ((eHeight / 2 * entity.scale) * this.scale) << 0,
       /** Scretch */
-      width / SHADOW_X << 0,
-      height / SHADOW_Y << 0
+      (width - (entity.shadow.scale.x * this.scale)) / SHADOW_X << 0,
+      (height - (entity.shadow.scale.y * this.scale)) / SHADOW_Y << 0
     );
   }
 
@@ -195,7 +207,7 @@ export function renderEntity(entity) {
     eHeight * entity.facing,
     /** Scale */
     eWidth, eHeight,
-    x << 0, y << 0,
+    x, y,
     width << 0, height << 0
   );
 
