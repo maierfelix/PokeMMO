@@ -13,16 +13,17 @@ export function isEntityCollidable(entity, x, y) {
   let entities = this.entities;
 
   let ii = 0;
-  let length = 0;
-
-  length = entities.length;
+  let length = entities.length;
 
   for (; ii < length; ++ii) {
     if (entities[ii].id === entity.id) continue;
-    if (entities[ii].collidable === true) {
-      if (math.cubicCollision(entities[ii].x, entities[ii].y, entities[ii].width / 2, entities[ii].height / 2, x, y, 1) === true) {
-        return (true);
-      }
+    if (entities[ii].collidable === false) continue;
+    if (
+      math.cubicCollision(
+        x, y, entity.width / DIMENSION, entity.height / DIMENSION,
+        entities[ii].x, entities[ii].y, entities[ii].width / DIMENSION, entities[ii].height / DIMENSION
+      ) === true) {
+      return (true);
     }
   };
 
@@ -41,7 +42,7 @@ export function isObstacle(entity, dir) {
   let position = math.getTilePosition(entity.x, entity.y, dir);
 
   return (
-    this.collisionLayer.data[position.y / DIMENSION][position.x / DIMENSION] === 0 ||
+    this.collisionLayer.data[(position.y << 0) / DIMENSION][(position.x << 0) / DIMENSION] === 0 ||
     this.isEntityCollidable(entity, position.x, position.y) === true
   );
 

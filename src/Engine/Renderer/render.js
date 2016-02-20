@@ -4,12 +4,19 @@ import {
   DIMENSION,
   SHADOW_X, SHADOW_Y
 } from "../../cfg";
+
+import math from "../../Math";
+
 import { drawGrid } from "./grid";
 
 /**
  * Rendering
  */
 export function render() {
+
+  if (DEBUG === true) {
+    this.clear();
+  }
 
   this.update();
 
@@ -30,11 +37,17 @@ export function render() {
 }
 
 /**
+ * Clear
+ */
+export function clear() {
+  this.node.width = this.node.width;
+  this.context.setImageSmoothing(this.imageSmoothing);
+}
+
+/**
  * Draw
  */
 export function draw() {
-
-  this.clear();
 
   this.renderMap();
 
@@ -118,6 +131,21 @@ export function renderMapEntities(map) {
 }
 
 /**
+ * Get animation frame
+ * @param  {Object} entity
+ * @return {Number}
+ */
+export function getAnimationFrame(entity) {
+  return (
+    Math.floor(
+      (this.now - entity.animationStart) / entity.animationSpeed
+    ) %
+    (entity.animationFrames + (entity.loop === true ? 1 : 0)) *
+    ((entity.width * 2) << 0 * entity.width / entity.frames)
+  );
+}
+
+/**
  * Render entities
  * @param {Array} entities
  */
@@ -126,24 +154,53 @@ export function renderEntities(entities) {
   let entity = null;
 
   let ii = 0;
-  let length = 0;
+  let length = entities.length;
 
-  length = entities.length;
+  let x = .0;
+  let y = .0;
+
+  let width  = .0;
+  let height = .0;
+
+  let eWidth  = .0;
+  let eHeight = .0;
+
+  let frame = 0;
+
+  let dim = DIMENSION;
 
   for (; ii < length; ++ii) {
 
     entity = entities[ii];
-    entity.animate();
+
     entity.idleTime++;
 
-    if (entity.texture !== null && entity.texture.hasLoaded === false) continue;
-    if (!this.instance.camera.isInView(
+    if (entity.static === false) entity.animate();
+
+    if (this.instance.camera.isInView(
       entity.x, entity.y,
       entity.width, entity.height
-    )) continue;
+    ) === false) continue;
     if (entity.opacity === .0) continue;
+    if (entity.texture === null || entity.shadow === null) continue;
 
-    this.renderEntity(entity);
+    x = (this.camera.x + entity.x * this.scale) - (((dim / 2) * entity.scale) * this.scale);
+    y = (this.camera.y + (entity.y + entity.z) * this.scale) - ((dim * entity.scale) * this.scale);
+
+    width  = entity.width  * this.scale;
+    height = entity.height * this.scale;
+
+    eWidth  = (entity.width  / entity.scale) * 2;
+    eHeight = (entity.height / entity.scale) * 2;
+
+    if (entity.animation === true) {
+      frame = this.getAnimationFrame(entity);
+    } else {
+      frame = (entity.frames[entity.frame] + entity.getFrameIndex()) * eWidth;
+    }
+
+    /** Rendering */
+    this.renderEntity(entity, frame, x, y, width, height, eWidth, eHeight);
 
   };
 
@@ -153,25 +210,16 @@ export function renderEntities(entities) {
 
 /**
  * Render a single entity
- * @param  {Object} entity
+ * @param {Object} entity
+ * @param {Number} frame
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Number} eWidth
+ * @param {Number} eHeight
  */
-export function renderEntity(entity) {
-
-  if (entity.texture === null) return void 0;
-
-  let frameIndex = entity.getFrameIndex();
-
-  let width  = entity.width  * this.scale;
-  let height = entity.height * this.scale;
-
-  let eWidth  = (entity.width  / entity.scale) * 2;
-  let eHeight = (entity.height / entity.scale) * 2;
-
-  let cX = ((DIMENSION / 2) * entity.scale) * this.scale;
-  let cY = (DIMENSION * entity.scale) * this.scale;
-
-  let x = (this.camera.x + entity.x * this.scale) - cX;
-  let y = (this.camera.y + (entity.y + entity.z) * this.scale) - cY;
+export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight) {
 
   let cOpacity = entity.customOpacity();
 
@@ -181,21 +229,12 @@ export function renderEntity(entity) {
 
   /** Shadow */
   if (entity.hasShadow === true) {
-    this.context.drawImage(
-      /** Texture */
-      entity.shadow.texture.canvas,
-      /** Frame */
-      (entity.frames[entity.frame] + frameIndex) * eWidth,
-      eHeight * entity.shadowFacing(entity.facing),
-      /** Scale */
-      eWidth,
-      eHeight,
-      /** Position */
-      x + (entity.shadow.position.x * this.scale) << 0,
-      y + (entity.shadow.position.y * this.scale) + ((eHeight / 2 * entity.scale) * this.scale) << 0,
-      /** Scretch */
-      (width - (entity.shadow.scale.x * this.scale)) / SHADOW_X << 0,
-      (height - (entity.shadow.scale.y * this.scale)) / SHADOW_Y << 0
+    this.renderShadow(
+      entity,
+      frame,
+      x, y,
+      width, height,
+      eWidth, eHeight
     );
   }
 
@@ -203,7 +242,7 @@ export function renderEntity(entity) {
   this.context.drawImage(
     entity.texture.texture_effect.canvas,
     /** Frame */
-    (entity.frames[entity.frame] + frameIndex) * eWidth,
+    frame,
     eHeight * entity.facing,
     /** Scale */
     eWidth, eHeight,
@@ -215,6 +254,40 @@ export function renderEntity(entity) {
   if (cOpacity === true) {
     this.context.globalAlpha = 1.0;
   }
+
+  return void 0;
+
+}
+
+/**
+ * Render shadow
+ * @param {Object} entity
+ * @param {Number} frame
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Number} eWidth
+ * @param {Number} eHeight
+ */
+export function renderShadow(entity, frame, x, y, width, height, eWidth, eHeight) {
+
+  this.context.drawImage(
+    /** Texture */
+    entity.shadow.texture.canvas,
+    /** Frame */
+    frame,
+    eHeight * entity.shadowFacing(entity.facing),
+    /** Scale */
+    eWidth,
+    eHeight,
+    /** Position */
+    x + (entity.shadow.position.x * this.scale) << 0,
+    y + (entity.shadow.position.y * this.scale) + ((eHeight / 2 * entity.scale) * this.scale) << 0,
+    /** Scretch */
+    ((width + (entity.shadow.scale.x * this.scale)) / SHADOW_X) << 0,
+    ((height + (entity.shadow.scale.y * this.scale)) / SHADOW_Y) << 0
+  );
 
   return void 0;
 

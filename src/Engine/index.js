@@ -2,7 +2,7 @@ import math from "../Math";
 
 import {
   DIMENSION,
-  MIN_SCALE, MAX_SCALE
+  LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 import * as map from "./Map/functions";
 import * as layer from "./Layer/functions";
@@ -77,18 +77,6 @@ export default class Engine extends DisplayObject {
     this.camera = new Camera(this.width, this.height);
 
     /**
-     * Drag offset
-     * @type {Object}
-     */
-    this.drag = new math.Point();
-
-    /**
-     * Dragging state
-     * @type {Boolean}
-     */
-    this.dragging = false;
-
-    /**
      * Local entity ref
      * @type {Object}
      */
@@ -103,50 +91,73 @@ export default class Engine extends DisplayObject {
   }
 
   /**
-   * Move
-   * @param {Number} x
-   * @param {Number} y
+   * Get game relative mouse offset
+   * @param  {Number} x clientX
+   * @param  {Number} y clientY
+   * @return {Object}
    */
-  move(x, y) {
+  getGameMouseOffset(x, y) {
 
-    this.drag.x = x;
-    this.drag.y = y;
+    let xx = ((x - this.camera.x) / this.camera.resolution);
+    let yy = ((y - this.camera.y) / this.camera.resolution);
+
+    return ({
+      x: (Math.ceil(xx / DIMENSION) * DIMENSION) - DIMENSION,
+      y: (Math.ceil(yy / DIMENSION) * DIMENSION) - DIMENSION
+    });
 
   }
 
   /**
-   * Click
+   * Local entity walk to
    * @param {Number} x
    * @param {Number} y
    */
-  click(x, y) {
+  walkTo(x, y) {
 
-    this.drag.x = x;
-    this.drag.y = y;
+    let ii = 0;
+    let length = 0;
 
-  }
+    let lastX = this.localEntity.x;
+    let lastY = this.localEntity.y;
 
-  /**
-   * Zoom
-   * @param {Object} e
-   */
-  zoom(e) {
+    let xx = 0;
+    let yy = 0;
 
-    let camera = this.camera;
-    let amount = (e.deltaY ? -e.deltaY : e.deltaY);
+    let offset = this.getGameMouseOffset(x, y);
 
-    amount = amount / 2 / (math.hypot(this.renderer.width, this.renderer.height) / Math.PI) * math.zoomScale(camera.scale);
+    let dir = 0;
 
-    camera.scale += amount / 2;
+    let path = this.currentMap.path.getShortestPath(
+      this.localEntity.x, this.localEntity.y,
+      offset.x, offset.y
+    );
 
-    if (camera.scale < MIN_SCALE) camera.scale = MIN_SCALE;
-    if (camera.scale > MAX_SCALE) camera.scale = MAX_SCALE;
+    if (
+      path === void 0 ||
+      path === null   ||
+      path.length <= 0
+    ) return void 0;
 
-    if (this.dragging) {
-      this.move(e.clientX, e.clientY);
-    }
+    length = path.length;
 
-    this.click(e.clientX, e.clientY);
+    for (; ii < length; ++ii) {
+      xx = path[ii].x * DIMENSION;
+      yy = path[ii].y * DIMENSION;
+      if (xx !== lastX) {
+        dir = xx < lastX ? LEFT : RIGHT;
+      } else {
+        if (yy !== lastY) {
+          dir = yy < lastY ? UP : DOWN;
+        }
+      }
+      if (dir !== this.localEntity.facing) {
+        this.localEntity.move(dir);
+      }
+      this.localEntity.move(dir);
+      lastX = xx;
+      lastY = yy;
+    };
 
   }
 

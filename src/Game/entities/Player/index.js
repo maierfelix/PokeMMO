@@ -94,12 +94,6 @@ export class Player extends Entity {
     this.lastFacing = 0;
 
     /**
-     * Idle timer
-     * @type {Number}
-     */
-    this.idleTime = 0;
-
-    /**
      * Step count
      * @type {Number}
      */

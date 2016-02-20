@@ -137,14 +137,6 @@ export default class Renderer {
   }
 
   /**
-   * Clear
-   */
-  clear() {
-    this.node.width = this.node.width;
-    this.context.setImageSmoothing(this.imageSmoothing);
-  }
-
-  /**
    * Update
    */
   update() {
@@ -188,6 +180,7 @@ export default class Renderer {
     this.camera.height = this.height;
     this.instance.width = this.width;
     this.instance.height = this.height;
+    this.clear();
     this.draw();
   }
 

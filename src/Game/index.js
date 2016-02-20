@@ -98,29 +98,8 @@ export default class Game {
     });
 
     this.engine.addLayer({
-      name: "Bottom",
-      zIndex: 2,
-      zShadow: 3,
-      shadowCast: true
-    });
-
-    this.engine.addLayer({
       name: "Entities",
       zIndex: 4,
-      zShadow: 3,
-      shadowCast: true
-    });
-
-    this.engine.addLayer({
-      name: "Foreground",
-      zIndex: 5,
-      zShadow: 3,
-      shadowCast: true
-    });
-
-    this.engine.addLayer({
-      name: "Top",
-      zIndex: 6,
       zShadow: 3,
       shadowCast: true
     });

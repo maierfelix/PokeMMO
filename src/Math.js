@@ -54,20 +54,36 @@ export default class Math {
   }
 
   /**
+   * Clamp
+   * @param  {Number} value
+   * @param  {Number} min
+   * @param  {Number} max
+   * @return {Number}
+   */
+  static clamp(value, min, max) {
+    return (
+      window.Math.min(max, window.Math.max(min, value))
+    );
+  }
+
+  /**
    * Cubic collision
-   * @param {Number} xx
-   * @param {Number} yy
-   * @param {Number} width
-   * @param {Number} height
    * @param {Number} x
    * @param {Number} y
-   * @param {Number} scale
+   * @param {Number} w
+   * @param {Number} h
+   * @param {Number} xx
+   * @param {Number} yy
+   * @param {Number} ww
+   * @param {Number} hh
    * @return {Boolean}
    */
-  static cubicCollision(xx, yy, width, height, x, y, scale) {
+  static cubicCollision(x, y, w, h, xx, yy, ww, hh) {
     return (
-      window.Math.abs(2 * (x - ((xx * scale))) + -(width * scale)) <= (width * scale) &&
-      window.Math.abs(2 * (y - ((yy * scale))) + -(height * scale)) <= (height * scale)
+      x < xx + ww &&
+      x + w > xx  &&
+      y < yy + hh &&
+      h + y > yy
     );
   }
 

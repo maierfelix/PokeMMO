@@ -1,5 +1,5 @@
 import {
-  DIMENSION,
+  DIMENSION, GRAVITY,
   LEFT, RIGHT, UP, DOWN
 } from "../../cfg";
 
@@ -53,10 +53,40 @@ export default class Entity extends DisplayObject {
     this.texture = null;
 
     /**
+     * Animation
+     * @type {Boolean}
+     */
+    this.animation = obj.animation === true || false;
+
+    /**
+     * Animation start
+     * @type {Number}
+     */
+    this.animationStart = obj.animationStart === void 0 ? 0 : obj.animationStart;
+
+    /**
+     * Animation speed
+     * @type {Number}
+     */
+    this.animationSpeed = obj.animationSpeed === void 0 ? 300 : obj.animationSpeed;
+
+    /**
+     * Looped animation
+     * @type {Boolean}
+     */
+    this.loop = obj.loop === void 0 ? false : obj.loop;
+
+    /**
+     * Animation frames
+     * @type {Number}
+     */
+    this.animationFrames = obj.animationFrames === void 0 ? 0 : obj.animationFrames;
+
+    /**
      * Frames
      * @type {Array}
      */
-    this.frames = obj.frames || [0];
+    this.frames = obj.frames === void 0 ? [0] : obj.frames;
 
     /**
      * Current frame
@@ -65,10 +95,22 @@ export default class Entity extends DisplayObject {
     this.frame = 0;
 
     /**
+     * Last frame
+     * @type {Number}
+     */
+    this.lastFrame = 0;
+
+    /**
      * Opacity
      * @type {Number}
      */
     this.opacity = .0;
+
+    /**
+     * Gravity
+     * @type {Number}
+     */
+    this.gravity = GRAVITY;
 
     /**
      * Sprite
@@ -139,6 +181,12 @@ export default class Entity extends DisplayObject {
      */
     this.z = .0;
 
+    /**
+     * Idle time
+     * @type {Number}
+     */
+    this.idleTime = 0;
+
     if (
       obj.x !== void 0 &&
       obj.y !== void 0
@@ -157,6 +205,15 @@ export default class Entity extends DisplayObject {
      */
     this.shadowX = obj.shadowX === void 0 ? 0 : obj.shadowX;
     this.shadowY = obj.shadowY === void 0 ? -this.height / 2 : obj.shadowY;
+
+    /**
+     * States
+     * @type {Object}
+     */
+    this.STATES = {
+      JUMPING: false,
+      LOCK:    false
+    };
 
     /** Load texture */
     getSprite(this.sprite, this::function(texture) {
@@ -187,6 +244,56 @@ export default class Entity extends DisplayObject {
         this.position.y = value;
       }
     });
+
+  }
+
+  /**
+   * Refresh entity states
+   */
+  refreshState() {
+    this.STATES.JUMPING = this.z !== 0;
+  }
+
+  /**
+   * Jump
+   */
+  jump() {
+
+    this.refreshState();
+
+    if (
+      this.STATES.JUMPING === true ||
+      this.STATES.LOCK === true
+    ) return void 0;
+
+    this.STATES.JUMPING = true;
+
+    this.idleTime = 0;
+
+  }
+
+  /**
+   * Jumping
+   */
+  jumping() {
+
+    this.z += this.gravity;
+
+    if (this.z < 0) {
+      this.gravity += .1;
+      if (this.hasShadow === true) {
+        this.shadow.position.set(-(this.z / 2), this.shadowY - (this.z));
+        this.shadow.scale.set(this.z, this.z);
+      }
+    } else {
+      this.gravity = GRAVITY;
+      this.z = 0;
+      this.refreshState();
+      if (this.hasShadow === true) {
+        this.shadow.position.set(this.shadowX, this.shadowY);
+        this.shadow.scale.set(0, 0);
+      }
+    }
 
   }
 

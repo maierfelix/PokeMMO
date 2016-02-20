@@ -34,8 +34,8 @@ export default class Path {
     return (
       path.astar.search(
         this.grid,
-        this.grid.grid[x1 / DIMENSION * 2][y1 / DIMENSION * 2],
-        this.grid.grid[x2 / DIMENSION * 2][y2 / DIMENSION * 2]
+        this.grid.grid[(x1 << 0) / DIMENSION][(y1 << 0) / DIMENSION],
+        this.grid.grid[(x2 << 0) / DIMENSION][(y2 << 0) / DIMENSION]
       )
     );
 

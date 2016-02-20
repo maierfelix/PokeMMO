@@ -9,7 +9,7 @@ import {
   ajax as $GET,
 } from "../utils";
 
-import MapEntity from "./object";
+import MapEntity from "./MapEntity";
 import DisplayObject from "../DisplayObject";
 import Texture from "../Texture";
 import Path from "../Path";

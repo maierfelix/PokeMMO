@@ -1,4 +1,5 @@
 import {
+  WALK_BY_KEYBOARD,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 
@@ -32,28 +33,28 @@ export const keys = [
     name: "←",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(LEFT);
+      if (WALK_BY_KEYBOARD) local.move(LEFT);
     }
   },
   {
     name: "→",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(RIGHT);
+      if (WALK_BY_KEYBOARD) local.move(RIGHT);
     }
   },
   {
     name: "↑",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(UP);
+      if (WALK_BY_KEYBOARD) local.move(UP);
     }
   },
   {
     name: "↓",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(DOWN);
+      if (WALK_BY_KEYBOARD) local.move(DOWN);
     }
   },
     {
@@ -84,29 +85,19 @@ export const keys = [
 
 export const mouse = [
   {
-    name: "mousemove",
+    name: "contextmenu",
     fire: function(e) {
-      this.engine.move(e.clientX, e.clientY);
-    }
-  },
-  {
-    name: "mousedown",
-    fire: function(e) {
-      this.engine.dragging = true;
-      this.engine.click(e.clientX, e.clientY);
-    }
-  },
-  {
-    name: "mouseup",
-    fire: function(e) {
-      this.engine.dragging = false;
+      e.preventDefault();
+      if (!WALK_BY_KEYBOARD) {
+        this.engine.walkTo(e.clientX, e.clientY);
+      }
     }
   },
   {
     name: "mousewheel",
     fire: function(e) {
       if (this.engine.camera.queue.length <= 0) {
-        this.engine.zoom(e);
+        this.engine.camera.zoom(e);
       }
     }
   }

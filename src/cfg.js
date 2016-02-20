@@ -19,6 +19,13 @@ export const __dirname = "./src/";
 export const VERSION = "0.0.1";
 
 /**
+ * Walk by keyboard
+ * @constant
+ * @type {Boolean}
+ */
+export const WALK_BY_KEYBOARD = false;
+
+/**
  * Debug mode
  * @constant
  * @type {Boolean}

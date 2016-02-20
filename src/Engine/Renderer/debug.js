@@ -37,7 +37,7 @@ export function renderDebugScene() {
   );
 
   this.drawPixelText(
-    `ENTITIES: ${this.instance.entities.length}`,
+    `ENTITIES: ${this.instance.currentMap.entities.length}`,
     15, 180,
     20, 1.5
   );
@@ -47,7 +47,7 @@ export function renderDebugScene() {
 
   var length = 0;
 
-  var entities = this.instance.entities;
+  var entities = this.instance.currentMap.entities;
 
   length = entities.length;
 

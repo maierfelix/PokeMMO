@@ -41,8 +41,4 @@ export default class MapEntity extends Entity {
     return (0);
   }
 
-  animate() {
-    return void 0;
-  }
-
 }

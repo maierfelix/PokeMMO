@@ -1,5 +1,6 @@
 import {
   DIMENSION,
+  MIN_SCALE, MAX_SCALE,
   PIXEL_SCALE
 } from "../../cfg";
 import math from "../../Math";
@@ -21,6 +22,18 @@ export default class Camera extends DisplayObject {
   constructor(width, height) {
 
     super(null);
+
+    /**
+     * Drag offset
+     * @type {Object}
+     */
+    this.drag = new math.Point();
+
+    /**
+     * Dragging state
+     * @type {Boolean}
+     */
+    this.dragging = false;
 
     /**
      * Animation queue
@@ -59,6 +72,23 @@ export default class Camera extends DisplayObject {
         this.scale = value;
       }
     });
+
+  }
+
+  /**
+   * Zoom
+   * @param {Object} e
+   */
+  zoom(e) {
+
+    let amount = (e.deltaY ? -e.deltaY : e.deltaY);
+
+    amount = amount / 2 / (math.hypot(this.width, this.height) / Math.PI) * math.zoomScale(this.scale);
+
+    this.scale += amount / 2;
+
+    if (this.scale < MIN_SCALE) this.scale = MIN_SCALE;
+    if (this.scale > MAX_SCALE) this.scale = MAX_SCALE;
 
   }
 
@@ -193,7 +223,7 @@ export default class Camera extends DisplayObject {
         ((x * this.scale) + this.x) << 0,
         ((y * this.scale) + this.y) << 0,
         width * this.scale << 0,
-        (height * 3) * this.scale << 0
+        height * this.scale << 0
       )
     );
 

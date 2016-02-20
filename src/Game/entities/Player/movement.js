@@ -29,8 +29,6 @@ export function jump() {
 
   this.idleTime = 0;
 
-  this.jumping();
-
 }
 
 /**
@@ -48,15 +46,23 @@ export function jumping() {
 
   if (this.z < 0) {
     this.gravity += .1;
-    this.shadow.position.set(-(this.z / 2), -1.75 - (this.z));
-    this.shadow.scale.set(-this.z, -this.z);
+    this.shadow.position.set(-(this.z / 2), this.shadowY - (this.z));
+    this.shadow.scale.set(this.z, this.z);
   } else {
     this.gravity = GRAVITY;
     this.z = 0;
     this.resetFrame();
     this.refreshState();
-    this.shadow.position.set(0, -1.75);
+    this.shadow.position.set(0, this.shadowY);
     this.shadow.scale.set(0, 0);
+  }
+
+  if (this.isLocalPlayer === true) {
+    for (let entity of game.engine.currentMap.entities) {
+      if (entity.id !== this.id) {
+        entity.jump();
+      }
+    };
   }
 
 }
@@ -72,14 +78,9 @@ export function move(dir) {
   /** Wait until we finished */
   if (this.moving === true) return void 0;
 
-  if (this.facing !== dir) {
-    this.changeFacing(dir);
-    return void 0;
-  }
-
   if (this.STATES.BUMPING === true) return void 0;
 
-  this.startMoving(dir);
+  this.startMoving(this.x, this.y, dir);
 
   this.refreshState();
 
@@ -255,14 +256,21 @@ export function walk(animation) {
 
 /**
  * Start moving
+ * @param {Number} x
+ * @param {Number} y
  * @param {Number} dir
  */
-export function startMoving(dir) {
+export function startMoving(x, y, dir) {
 
-  let position = math.getTilePosition(this.x, this.y, dir);
+  if (this.facing !== dir) {
+    this.changeFacing(dir);
+    return void 0;
+  }
+
+  let position = math.getTilePosition(x, y, dir);
   let obstacle = Maps[this.map].isObstacle(this, dir);
 
-  if (GOD_MODE === true && this.isLocalPlayer === true) {
+  if (this.isLocalPlayer === true && GOD_MODE === true) {
     obstacle = false;
   }
 
@@ -270,8 +278,8 @@ export function startMoving(dir) {
   if (obstacle === true) {
     this.animations.push({
       type: "bump",
-      x: this.x,
-      y: this.y
+      x: x,
+      y: y
     });
     this.STATES.BUMPING = true;
   /** Crossable */
@@ -281,11 +289,10 @@ export function startMoving(dir) {
       obstacle: obstacle,
       x: position.x,
       y: position.y,
-      oX: this.x,
-      oY: this.y
+      oX: x,
+      oY: y
     });
     this.moving = true;
-    //console.log(Maps[this.map].path.getShortestPath(this.x, this.y, 32, 32));
   }
 
   this.idleTime = 0;
@@ -299,7 +306,8 @@ export function startMoving(dir) {
 export function stopMoving(animation) {
 
   this.x = animation.x;
-  this.y = animation.y;
+  /** Depth sorting vertical hack */
+  this.y = animation.y + .0001;
 
   this.last.x = animation.oX;
   this.last.y = animation.oY;
