@@ -220,10 +220,10 @@ export default class Camera extends DisplayObject {
 
     return (
       this.inView(
-        ((x * this.scale) + this.x) << 0,
-        ((y * this.scale) + this.y) << 0,
-        width * this.scale << 0,
-        height * this.scale << 0
+        ((x * this.resolution) + this.x) << 0,
+        ((y * this.resolution) + this.y) << 0,
+        width * this.resolution << 0,
+        height * this.resolution << 0
       )
     );
 

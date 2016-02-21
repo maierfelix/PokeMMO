@@ -123,7 +123,7 @@ export function changeFacing(dir) {
    */
   if (this.STATES.BUMPING === true) {
     this.stepCount = 0;
-    this.animations.shift();
+    this.stopAnimation();
     this.moving = false;
     this.STATES.BUMPING = false;
   }
@@ -165,7 +165,7 @@ export function bump(animation) {
       this.resetFrame();
     }
     this.stepCount = 0;
-    this.animations.shift();
+    this.stopAnimation();
     this.STATES.BUMPING = false;
   }
 
@@ -326,7 +326,7 @@ export function stopMoving(animation) {
     }
   }, 100);
 
-  this.animations.shift();
+  this.stopAnimation();
 
   /** Continue moving */
   if (this.isLocalPlayer === true) {

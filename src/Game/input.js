@@ -33,28 +33,28 @@ export const keys = [
     name: "←",
     fire: function() {
       let local = this.engine.localEntity;
-      if (WALK_BY_KEYBOARD) local.move(LEFT);
+      local.move(LEFT);
     }
   },
   {
     name: "→",
     fire: function() {
       let local = this.engine.localEntity;
-      if (WALK_BY_KEYBOARD) local.move(RIGHT);
+      local.move(RIGHT);
     }
   },
   {
     name: "↑",
     fire: function() {
       let local = this.engine.localEntity;
-      if (WALK_BY_KEYBOARD) local.move(UP);
+      local.move(UP);
     }
   },
   {
     name: "↓",
     fire: function() {
       let local = this.engine.localEntity;
-      if (WALK_BY_KEYBOARD) local.move(DOWN);
+      local.move(DOWN);
     }
   },
     {
@@ -88,9 +88,7 @@ export const mouse = [
     name: "contextmenu",
     fire: function(e) {
       e.preventDefault();
-      if (!WALK_BY_KEYBOARD) {
-        this.engine.walkTo(e.clientX, e.clientY);
-      }
+      this.engine.getEntityByMouse(e.clientX, e.clientY);
     }
   },
   {

@@ -109,6 +109,36 @@ export default class Engine extends DisplayObject {
   }
 
   /**
+   * Get a entity by mouse offset
+   * @param {Number} x
+   * @param {Number} y
+   */
+  getEntityByMouse(x, y) {
+
+    let object = null;
+
+    let offset = this.getGameMouseOffset(x, y);
+
+    let xx = offset.x << 0;
+    let yy = offset.y << 0;
+
+    let ii = 0;
+    let length = this.currentMap.entities.length;;
+
+    for (; ii < length; ++ii) {
+      if (
+        this.currentMap.entities[ii].x << 0 === xx &&
+        this.currentMap.entities[ii].y << 0 === yy
+      ) {
+        object = this.currentMap.entities[ii];
+      }
+    };
+
+    console.log(object);
+
+  }
+
+  /**
    * Local entity walk to
    * @param {Number} x
    * @param {Number} y
@@ -151,10 +181,15 @@ export default class Engine extends DisplayObject {
           dir = yy < lastY ? UP : DOWN;
         }
       }
-      if (dir !== this.localEntity.facing) {
-        this.localEntity.move(dir);
-      }
-      this.localEntity.move(dir);
+      this.localEntity.animations.push({
+        type: "walk",
+        facing: dir,
+        obstacle: false,
+        x: xx,
+        y: yy,
+        oX: this.localEntity.x,
+        oY: this.localEntity.y
+      });
       lastX = xx;
       lastY = yy;
     };

@@ -23,7 +23,7 @@ export const VERSION = "0.0.1";
  * @constant
  * @type {Boolean}
  */
-export const WALK_BY_KEYBOARD = false;
+export const WALK_BY_KEYBOARD = true;
 
 /**
  * Debug mode
@@ -58,7 +58,7 @@ export const BGS = true;
  * @constant
  * @type {Boolean}
  */
-export const GOD_MODE = false;
+export const GOD_MODE = true;
 
 /**
  * @constant

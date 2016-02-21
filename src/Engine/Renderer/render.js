@@ -120,8 +120,8 @@ export function renderMapEntities(map) {
   for (; ii < length; ++ii) {
     entity = map.entities[ii];
     if (!this.instance.camera.isInView(
-      entity.x, entity.y,
-      entity.width, entity.height
+      entity.position.x, entity.position.y,
+      entity.size.x, entity.size.y
     )) continue;
     this.renderEntity(entity);
   };
@@ -141,7 +141,7 @@ export function getAnimationFrame(entity) {
       (this.now - entity.animationStart) / entity.animationSpeed
     ) %
     (entity.animationFrames + (entity.loop === true ? 1 : 0)) *
-    ((entity.width * 2) << 0 * entity.width / entity.frames)
+    ((entity.size.x * 2) << 0 * entity.size.x / entity.frames)
   );
 }
 
@@ -178,20 +178,20 @@ export function renderEntities(entities) {
     if (entity.static === false) entity.animate();
 
     if (this.instance.camera.isInView(
-      entity.x, entity.y,
-      entity.width, entity.height
+      entity.position.x, entity.position.y,
+      entity.size.x, entity.size.y
     ) === false) continue;
     if (entity.opacity === .0) continue;
     if (entity.texture === null || entity.shadow === null) continue;
 
-    x = (this.camera.x + entity.x * this.scale) - (((dim / 2) * entity.scale) * this.scale);
-    y = (this.camera.y + (entity.y + entity.z) * this.scale) - ((dim * entity.scale) * this.scale);
+    x = (this.camera.x + entity.position.x * this.scale);
+    y = (this.camera.y + (entity.position.y + entity.z) * this.scale);
 
-    width  = entity.width  * this.scale;
-    height = entity.height * this.scale;
+    width  = entity.size.x  * this.scale;
+    height = entity.size.y * this.scale;
 
-    eWidth  = (entity.width  / entity.scale) * 2;
-    eHeight = (entity.height / entity.scale) * 2;
+    eWidth  = (entity.size.x  / entity.scale) * 2;
+    eHeight = (entity.size.y / entity.scale) * 2;
 
     if (entity.animation === true) {
       frame = this.getAnimationFrame(entity);

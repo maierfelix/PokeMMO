@@ -116,7 +116,7 @@ export default class Game {
 
     let player = this.entities.Player;
 
-    this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 120, y: 112, zIndex: 4, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true, shadow: true }));
+    this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 112, y: 112, zIndex: 4, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true, shadow: true }));
 
     this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, collidable: true }));
 

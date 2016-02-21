@@ -161,6 +161,8 @@ export default class Entity extends DisplayObject {
      */
     this.hasShadow = obj.shadow || false;
 
+    this.animationIndex = 0;
+
     /**
      * Sizes
      * @type {Number}
@@ -306,14 +308,20 @@ export default class Entity extends DisplayObject {
 
     if (this.animations.length <= 0) return void 0;
 
+    this.animationIndex = 0;
+
     for (var ii = 0; ii < this.animations.length; ++ii) {
-      /*if (this.animations[ii].simultaneous === false) {
-        this[this.animations[ii].type](this.animations[ii]);
-        break;
-      }*/
-      this[this.animations[ii].type](this.animations[ii]);
+      this[this.animations[this.animationIndex].type](this.animations[this.animationIndex]);
+      this.animationIndex++;
     };
 
+  }
+
+  /**
+   * Stop current animation
+   */
+  stopAnimation() {
+    this.animations.splice(this.animationIndex, 1);
   }
 
   /**
@@ -357,10 +365,10 @@ export default class Entity extends DisplayObject {
 
     if (animation.fade === 1 && this.opacity > 1) {
       this.opacity = 1.0;
-      this.animations.shift();
+      this.stopAnimation();
     } else if (animation.fade === 0 && this.opacity < 0) {
       this.opacity = .0;
-      this.animations.shift();
+      this.stopAnimation();
     }
 
   }
@@ -393,6 +401,20 @@ export default class Entity extends DisplayObject {
       facing === UP    ? 38 :
       facing === RIGHT ? 39 :
       facing === DOWN  ? 40 : 38
+    );
+  }
+
+  /**
+   * Key to facing
+   * @param  {Number} key
+   * @return {Number}
+   */
+  keyToFacing(key) {
+    return (
+      key === 37 ? LEFT  :
+      key === 38 ? UP    :
+      key === 39 ? RIGHT :
+      key === 40 ? DOWN  : UP
     );
   }
 
