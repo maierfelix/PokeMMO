@@ -86,30 +86,34 @@ export function renderEntityCollisionBox(entity, x, y) {
 
   let tile = 0;
 
+  let ii = 0;
+
   let xx = 0;
   let yy = 0;
 
-  let xxx = 0;
-  let yyy = 0;
-
-  let xLength = 0;
-  let yLength = collision.length;
-
   let dim = DIMENSION * resolution;
 
-  for (; yy < yLength; ++yy) {
-    for (!(xxx = xx = 0) && (xLength = collision[yy].length) > 0; xx < xLength; ++xx) {
-      xxx += DIMENSION;
-      if ((tile = collision[yy][xx]) === 0) continue;
+  let width  = entity.width / DIMENSION;
+  let height = entity.height / DIMENSION;
+
+  let length = width * height;
+
+  for (; ii < length; ++ii) {
+    tile = collision[yy + xx];
+    if (tile === 1) {
       this.context.fillStyle = "red";
       this.context.fillRect(
-        x + ((xxx - DIMENSION) * resolution),
-        y + (yyy * resolution),
+        x + (xx * dim),
+        y + ((yy / width) * dim),
         dim, dim
       );
       this.context.fill();
-    };
-    yyy += DIMENSION;
+    }
+    ++xx;
+    if (xx >= width) {
+      yy += width;
+      xx = 0;
+    }
   };
 
 }

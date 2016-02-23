@@ -61,6 +61,12 @@ export default class Editor {
     };
 
     /**
+     * Drag helper
+     * @type {Object}
+     */
+    this.drag = new math.Point(0, 0);
+
+    /**
      * Dragging
      * @type {Boolean}
      * @getter
@@ -99,6 +105,10 @@ export default class Editor {
   dragEntity(x, y) {
 
     let entity = null;
+    let offset = null;
+
+    let xx = 0;
+    let yy = 0;
 
     if ((entity = this.entitySelection) === null) return void 0;
 
@@ -112,7 +122,7 @@ export default class Editor {
       return void 0;
     }
 
-    let offset = this.camera.getGameMouseOffset(x, y);
+    offset = this.camera.getGameMouseOffset(x, y);
 
     entity.x <<= 0;
     entity.y <<= 0;
@@ -127,8 +137,11 @@ export default class Editor {
       entity.last.y = entity.y;
     }
 
-    entity.x = offset.x;
-    entity.y = offset.y + Y_DEPTH_HACK;
+    entity.x += offset.x - this.drag.x;
+    entity.y += (offset.y - this.drag.y) + Y_DEPTH_HACK;
+
+    this.drag.x = offset.x;
+    this.drag.y = offset.y;
 
   }
 
@@ -145,6 +158,11 @@ export default class Editor {
 
     this.entitySelection = null;
     this.entitySelection = this.getEntityByMouse(x, y);
+
+    let offset = this.camera.getGameMouseOffset(x, y);
+
+    this.drag.x = offset.x;
+    this.drag.y = offset.y;
 
   }
 
@@ -231,21 +249,26 @@ export default class Editor {
     tpl.y = entity.y;
     tpl.z = entity.z;
 
-    map.entities.push(
-      map.addEntity(tpl)
-    );
+    let pushEntity = map.addEntity(tpl);
+
+    this.entityCopy = pushEntity;
+
+    map.entities.push(pushEntity);
 
   }
 
   /**
    * Get a entity by mouse offset
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Object}
+   * @param  {Number} x
+   * @param  {Number} y
+   * @param  {Object}
+   * @return {Object}
    */
   getEntityByMouse(x, y) {
 
     let object = null;
+
+    let entity = null;
 
     let offset = this.camera.getGameMouseOffset(x, y);
 
@@ -255,16 +278,28 @@ export default class Editor {
     let ii = 0;
     let length = this.map.entities.length;;
 
+    let entities = [];
+
     for (; ii < length; ++ii) {
+      entity = this.map.entities[ii];
       if (
-        math.roundTo(this.map.entities[ii].x, DIMENSION) === xx &&
-        math.roundTo(this.map.entities[ii].y, DIMENSION) === yy
+        math.cubicCollision(
+          entity.x << 0, entity.y << 0,
+          (entity.width  + entity.xMargin) - DIMENSION,
+          (entity.height + entity.yMargin) - DIMENSION,
+          xx, yy,
+          1
+        ) === true
       ) {
-        object = this.map.entities[ii];
+        entities.push(entity);
       }
     };
 
-    return (object);
+    if (entities.length <= 0) return (null);
+
+    return (
+      entities[math.get2DClosest(entities, xx, yy)]
+    );
 
   }
 

@@ -67,23 +67,51 @@ export default class Math {
   }
 
   /**
+   * Get closest point
+   * @param  {Array} array
+   * @param  {Number} x
+   * @param  {Number} y
+   * @return {Number} index
+   */
+  static get2DClosest(array, x, y) {
+
+    let ii = 0;
+    let length = array.length;
+
+    let distance = null;
+
+    let distances = [];
+
+    for (; ii < length; ++ii) {
+      distance = this.distance(array[ii].x, array[ii].y, x, y);
+      distance.index = ii;
+      distances.push(distance);
+    };
+
+    distances.sort(function(a, b){
+      if (a.y === b.y) return (a.x - b.x);
+      return (a.y - b.y);
+    });
+
+    return (distances[distances.length - 1].index);
+
+  }
+
+  /**
    * Cubic collision
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} w
-   * @param {Number} h
    * @param {Number} xx
    * @param {Number} yy
-   * @param {Number} ww
-   * @param {Number} hh
+   * @param {Number} width
+   * @param {Number} height
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} scale
    * @return {Boolean}
    */
-  static cubicCollision(x, y, w, h, xx, yy, ww, hh) {
+  static cubicCollision(xx, yy, width, height, x, y, scale) {
     return (
-      x < xx + ww &&
-      x + w > xx  &&
-      y < yy + hh &&
-      h + y > yy
+      window.Math.abs(2 * (x - ((xx * scale))) + -(width * scale)) <= (width * scale) &&
+      window.Math.abs(2 * (y - ((yy * scale))) + -(height * scale)) <= (height * scale)
     );
   }
 

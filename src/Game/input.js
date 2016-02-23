@@ -43,6 +43,10 @@ export const keys = [
     spam: false,
     fire: function() {
       cfg.DEBUG_MODE = cfg.DEBUG_MODE ? false : true;
+      if (!cfg.DEBUG_MODE) {
+        cfg.EDIT_MODE = false;
+        cfg.FREE_CAMERA = false;
+      }
       this.engine.renderer.clear();
       this.engine.renderer.draw();
     }
