@@ -100,32 +100,6 @@ export function renderMap() {
 }
 
 /**
- * Render map entities
- * @param {Object} map
- */
-export function renderMapEntities(map) {
-
-  let entity = null;
-
-  let ii = 0;
-  let length = 0;
-
-  length = map.entities.length;
-
-  for (; ii < length; ++ii) {
-    entity = map.entities[ii];
-    if (!this.instance.camera.isInView(
-      entity.position.x, entity.position.y,
-      entity.size.x, entity.size.y
-    )) continue;
-    this.renderEntity(entity);
-  };
-
-  return void 0;
-
-}
-
-/**
  * Get animation frame
  * @param  {Object} entity
  * @return {Number}
@@ -173,6 +147,13 @@ export function renderEntities() {
 
     entity.idleTime++;
 
+    if (entity.lifeTime > 0) {
+      if (this.now >= entity.lifeTime) {
+        entity.lifeTime = 0;
+        entity.fadeOut(1, true);
+      }
+    }
+
     if (entity.static === false) entity.animate();
 
     if (this.instance.camera.isInView(
@@ -181,6 +162,13 @@ export function renderEntities() {
     ) === false) continue;
     if (entity.opacity === .0) continue;
     if (entity.texture === null || entity.shadow === null) continue;
+
+    if (entity.opacity < 0) {
+      this.instance.removeEntity(entity);
+      --length;
+      --ii;
+      continue;
+    }
 
     x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
     y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;

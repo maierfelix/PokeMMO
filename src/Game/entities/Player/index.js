@@ -20,6 +20,12 @@ export class Player extends Entity {
     super(obj);
 
     /**
+     * Local entity requires instance ref
+     * @type {Object}
+     */
+    this.instance = null;
+
+    /**
      * Gravity
      * @type {Number}
      */

@@ -35,6 +35,12 @@ export default class Entity extends DisplayObject {
     this.last = new math.Point();
 
     /**
+     * Life time
+     * @type {Number}
+     */
+    this.lifeTime = 0;
+
+    /**
      * Z priority
      * @type {Number}
      */
@@ -369,21 +375,27 @@ export default class Entity extends DisplayObject {
 
   /**
    * Fade in
+   * @param {Number} speed
    */
-  fadeIn() {
+  fadeIn(speed = speed || 1) {
     this.animations.push({
       type: "fade",
-      fade: 1
+      fade: 1,
+      speed: speed
     });
   }
 
   /**
    * Fade out
+   * @param {Number} speed
+   * @param {Boolean} kill
    */
-  fadeOut() {
+  fadeOut(speed = speed || 1, kill) {
     this.animations.push({
       type: "fade",
-      fade: 0
+      fade: 0,
+      kill: kill,
+      speed: speed
     });
   }
 
@@ -393,13 +405,15 @@ export default class Entity extends DisplayObject {
    */
   fade(animation) {
 
-    this.opacity += (animation.fade === 1) ? .025 : -(.025);
+    let speed = animation.speed / 4 / 10;
+
+    this.opacity += animation.fade === 1 ? speed : -speed;
 
     if (animation.fade === 1 && this.opacity > 1) {
       this.opacity = 1.0;
       this.stopAnimation();
     } else if (animation.fade === 0 && this.opacity < 0) {
-      this.opacity = .0;
+      this.opacity = animation.kill === true ? -.01 : .0;
       this.stopAnimation();
     }
 

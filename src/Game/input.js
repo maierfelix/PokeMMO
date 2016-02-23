@@ -78,6 +78,10 @@ export const keys = [
       }
     }
   },
+  {
+    name: "G",
+    fire: function() {}
+  },
   /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
   {
     name: "V",
@@ -176,6 +180,10 @@ export const mouse = [
     name: "mousedown",
     fire: function(e) {
       e.preventDefault();
+      if (this.input.KeyBoard.isKeyPressed("G") === true) {
+        this.engine.ping(e.clientX, e.clientY, "notify");
+        return void 0;
+      }
       if (cfg.FREE_CAMERA && e.which !== 1) {
         this.engine.camera.dragging = true;
         this.engine.camera.click(e.clientX, e.clientY);

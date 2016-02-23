@@ -12,7 +12,7 @@ export function addEntity(entity) {
     this.localEntity = entity;
   }
 
-  entity.fadeIn();
+  entity.fadeIn(1);
 
   this.currentMap.entities.push(entity);
 
@@ -50,6 +50,14 @@ export function removeEntity(entity) {
   var length = 0;
 
   length = this.currentMap.entities.length;
+
+  /** Clear entity selection */
+  if (
+    this.editor.entitySelection !== null &&
+    entity.id === this.editor.entitySelection.id
+  ) {
+    this.editor.entitySelection = null;
+  }
 
   for (; ii < length; ++ii) {
     if (this.currentMap.entities[ii].id === entity.id) {

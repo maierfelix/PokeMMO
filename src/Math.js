@@ -83,15 +83,38 @@ export default class Math {
     let distances = [];
 
     for (; ii < length; ++ii) {
-      distance = this.distance(array[ii].x, array[ii].y, x, y);
+      distance = this.distance(array[ii].x, array[ii].y, x, y + (array[ii].height / 2));
       distance.index = ii;
+      distance.width = array[ii].width;
+      distance.height = array[ii].height;
       distances.push(distance);
     };
 
-    distances.sort(function(a, b){
-      if (a.y === b.y) return (a.x - b.x);
-      return (a.y - b.y);
-    });
+    /**
+     * Depth sorting
+     * ^= y - (width * height)
+     */
+    (function(array) {
+
+      let ii = 0;
+      let jj = 0;
+
+      let key = null;
+
+      let length = array.length;
+
+      for (; ii < length; ++ii) {
+        jj = ii;
+        key = array[jj];
+        for (; jj > 0 && array[jj - 1].y > key.y; --jj) {
+          array[jj] = array[jj - 1];
+        };
+        array[jj] = key;
+      };
+
+      return void 0;
+
+    })(distances);
 
     return (distances[distances.length - 1].index);
 

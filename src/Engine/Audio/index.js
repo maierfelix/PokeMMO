@@ -9,7 +9,7 @@ class Audio {
    * @constructor
    */
   constructor() {
-    this.player = new window.Sound();
+    this.player = new window.AudioPlayer();
     this.sounds = [];
     this.file = {
       name: null,

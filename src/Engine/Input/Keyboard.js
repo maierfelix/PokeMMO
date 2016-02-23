@@ -1215,4 +1215,26 @@ export default class Keyboard {
 
   }
 
+  /**
+   * Check if a key is pressed
+   * @param {String|Number} key
+   * @return {Boolean}
+   */
+  isKeyPressed(key) {
+    let isString = typeof key === "string";
+    if (isString === true) {
+      if (this[key] !== void 0) {
+        return (
+          this.KEYS[this[key]] !== void 0 &&
+          this.KEYS[this[key]].state === 1
+        );
+      }
+      return (false);
+    }
+    return (
+      this.KEYS[key] !== void 0 &&
+      this.KEYS[key].state === 1
+    );
+  }
+
 }

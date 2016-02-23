@@ -116,6 +116,35 @@ export default class Engine extends DisplayObject {
   }
 
   /**
+   * Trigger a ping
+   * @param {Number} x
+   * @param {Number} y
+   */
+  ping(x, y) {
+
+    let offset = this.camera.getGameMouseOffset(x, y);
+
+    let map = this.currentMap;
+
+    let tpl = map.objectTemplates["ping"];
+
+    tpl.x = offset.x;
+    tpl.y = offset.y;
+    tpl.z = 0;
+
+    let pushEntity = map.addEntity(tpl);
+
+    pushEntity.opacity = .0;
+
+    pushEntity.fadeIn(2);
+
+    pushEntity.lifeTime = this.renderer.now + 60;
+
+    map.entities.push(pushEntity);
+
+  }
+
+  /**
    * Local entity walk to
    * @param {Number} x
    * @param {Number} y
@@ -131,7 +160,7 @@ export default class Engine extends DisplayObject {
     let xx = 0;
     let yy = 0;
 
-    let offset = this.getGameMouseOffset(x, y);
+    let offset = this.camera.getGameMouseOffset(x, y);
 
     let dir = 0;
 

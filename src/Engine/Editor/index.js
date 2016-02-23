@@ -1,4 +1,5 @@
 import {
+  FREE_CAMERA,
   Y_DEPTH_HACK,
   DIMENSION,
   MIN_SCALE, MAX_SCALE,
@@ -116,6 +117,7 @@ export default class Editor {
 
     /** Don't allow dragging of focused entity */
     if (
+      FREE_CAMERA === false &&
       this.instance.camera.entityFocus !== void 0 &&
       entity.id === this.instance.camera.entityFocus.id
     ) {
@@ -139,6 +141,9 @@ export default class Editor {
 
     entity.x += offset.x - this.drag.x;
     entity.y += (offset.y - this.drag.y) + Y_DEPTH_HACK;
+
+    entity.x = math.roundTo(entity.x, DIMENSION);
+    entity.y = math.roundTo(entity.y, DIMENSION);
 
     this.drag.x = offset.x;
     this.drag.y = offset.y;

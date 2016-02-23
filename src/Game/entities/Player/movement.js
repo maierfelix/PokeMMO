@@ -334,16 +334,16 @@ export function stopMoving(animation) {
 
   /** Continue moving */
   if (this.isLocalPlayer === true) {
-    if (this.instance.input.KeyBoard.KEYS[this.facingToKey(LEFT)].state === 1) {
+    if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(LEFT)) === true) {
       this.move(LEFT);
     }
-    else if (this.instance.input.KeyBoard.KEYS[this.facingToKey(UP)].state === 1) {
+    else if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(UP)) === true) {
       this.move(UP);
     }
-    else if (this.instance.input.KeyBoard.KEYS[this.facingToKey(RIGHT)].state === 1) {
+    else if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(RIGHT)) === true) {
       this.move(RIGHT);
     }
-    else if (this.instance.input.KeyBoard.KEYS[this.facingToKey(DOWN)].state === 1) {
+    else if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(DOWN)) === true) {
       this.move(DOWN);
     } else {
       this.soundSteps = DIMENSION;
