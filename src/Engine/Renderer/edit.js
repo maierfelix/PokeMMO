@@ -40,6 +40,7 @@ export function renderSelection() {
   this.context.beginPath();
 
   this.context.strokeStyle = "red";
+  this.context.lineWidth = (resolution / 2) << 0;
   this.context.strokeRect(
     x, y,
     width, height
@@ -49,8 +50,6 @@ export function renderSelection() {
   this.context.closePath();
 
   this.renderSelectionText(entity, x, y);
-
-  //this.renderEntityCollisionBox();
 
   this.context.globalAlpha = .25;
 

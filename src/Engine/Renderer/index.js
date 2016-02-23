@@ -4,7 +4,6 @@ import { DIMENSION } from "../../cfg";
 
 import { inherit } from "../utils";
 
-import * as layer  from "../Layer/functions";
 import * as entity from "../Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
@@ -72,12 +71,6 @@ export default class Renderer {
     this.dimension = DIMENSION;
 
     /**
-     * Scale
-     * @type {Number}
-     */
-    this.scale = .0;
-
-    /**
      * Delta timer
      * @type {Number}
      */
@@ -119,7 +112,7 @@ export default class Renderer {
      */
     this.spriteQueue = [];
 
-    this.resize();
+    this.resize(false);
 
   }
 
@@ -143,9 +136,6 @@ export default class Renderer {
   update() {
 
     this.updateTimers();
-
-    /** Pixel friendly scaling */
-    this.scale = this.camera.resolution;
 
     if (this.camera.entityfocus !== null) {
       this.camera.animate();
@@ -171,8 +161,9 @@ export default class Renderer {
 
   /**
    * Resize
+   * @param {Boolean} redraw
    */
-  resize() {
+  resize(redraw) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.node.width = this.width;
@@ -182,7 +173,9 @@ export default class Renderer {
     this.instance.width = this.width;
     this.instance.height = this.height;
     this.clear();
-    this.draw();
+    if (redraw === true) {
+      this.draw();
+    }
   }
 
   /**
@@ -190,75 +183,7 @@ export default class Renderer {
    */
   sort() {
 
-    this.depthSort(this.layers, "zIndex");
-/*
-    var ii = 0;
-    var length = 0;
-
-    length = this.layers.length;
-
-    for (; ii < length; ++ii) {
-      this.depthSortEntities(this.layers[ii].entities);
-    };
-
-    this.connectLayersWithEntities();
-*/
-
-  this.depthSortEntities(this.instance.currentMap.entities);
-
-    return void 0;
-
-  }
-
-  /**
-   * Connect layers with entities
-   */
-  connectLayersWithEntities() {
-
-    var entities = this.instance.currentMap.entities;
-
-    var ii = 0;
-    var length = 0;
-
-    var entity = null;
-    var layer = null;
-
-    length = entities.length;
-
-    for (; ii < length; ++ii) {
-      entity = entities[ii];
-      layer  = this.layers[this.getLayerByProperty(entity.zIndex, "zIndex")];
-      if (layer === void 0) continue;
-      if (layer.hasEntity(entity.id) === -1) {
-        layer.entities.push(entity);
-      }
-    };
-
-    return void 0;
-
-  }
-
-  /**
-   * @param {Array}  array
-   * @param {String} prop
-   */
-  depthSort(array, prop) {
-      
-    var ii = 0;
-    var jj = 0;
-
-    var key = null;
-
-    var length = array.length;
-
-    for (; ii < length; ++ii) {
-      jj = ii;
-      key = array[jj];
-      for (; jj > 0 && array[jj - 1][prop] > key[prop]; --jj) {
-        array[jj] = array[jj - 1];
-      };
-      array[jj] = key;
-    };
+    this.depthSort(this.instance.currentMap.entities);
 
     return void 0;
 
@@ -267,14 +192,14 @@ export default class Renderer {
   /**
    * @param {Array} array
    */
-  depthSortEntities(array) {
+  depthSort(array) {
 
-    var ii = 0;
-    var jj = 0;
+    let ii = 0;
+    let jj = 0;
 
-    var key = null;
+    let key = null;
 
-    var length = array.length;
+    let length = array.length;
 
     for (; ii < length; ++ii) {
       jj = ii;
@@ -292,7 +217,6 @@ export default class Renderer {
 }
 
 inherit(Renderer, debug);
-inherit(Renderer, layer);
 inherit(Renderer, render);
 inherit(Renderer, entity);
 inherit(Renderer, edit);

@@ -25,12 +25,7 @@ export function render() {
 
   this.draw();
 
-  if (EDIT_MODE === true) {
-    this.renderEditorMode();
-  }
-
   if (DEBUG_MODE === true) {
-    this.renderDebugScene();
     setTimeout(() => this.render(), 1E3 / DEBUG_FPS);
     return void 0;
   }
@@ -56,6 +51,8 @@ export function draw() {
 
   this.renderMap();
 
+  this.renderEntities();
+
   if (DEBUG_MODE === true) {
     this.context.beginPath();
     drawGrid(
@@ -63,11 +60,19 @@ export function draw() {
       this.camera.x, this.camera.y,
       this.width, this.height,
       this.dimension,
-      this.scale,
+      this.camera.resolution,
       .05,
       "#FFF"
     );
     this.context.closePath();
+  }
+
+  if (EDIT_MODE === true) {
+    this.renderEditorMode();
+  }
+
+  if (DEBUG_MODE === true) {
+    this.renderDebugScene();
   }
 
   return void 0;
@@ -79,33 +84,16 @@ export function draw() {
  */
 export function renderMap() {
 
-  let map = null;
+  let map = this.instance.currentMap;
 
-  if ((map = this.instance.maps["Town"]) === void 0) return void 0;
-  if (map.buffers[1] === void 0) return void 0;
-
-  let buffer = null;
-
-  let ii = 0;
-  let length = 0;
-
-  length = this.layers.length;
-
-  for (; ii < length; ++ii) {
-    if ((buffer = map.buffers[this.layers[ii].zIndex]) === void 0) continue;
-    if (this.layers[ii].name === "Entities") {
-      this.renderEntities(this.layers[ii].entities);
-      this.renderEntities(map.entities);
-    } else {
-      this.context.drawImage(
-        buffer.canvas,
-        this.camera.x << 0,
-        this.camera.y << 0,
-        (map.width * this.dimension) * this.scale << 0,
-        (map.height * this.dimension) * this.scale << 0
-      );
-    }
-  };
+  /** Render background layer */
+  this.context.drawImage(
+    map.buffers[1].canvas,
+    this.camera.x << 0,
+    this.camera.y << 0,
+    (map.width * this.dimension) * this.camera.resolution << 0,
+    (map.height * this.dimension) * this.camera.resolution << 0
+  );
 
   return void 0;
 
@@ -154,11 +142,14 @@ export function getAnimationFrame(entity) {
 
 /**
  * Render entities
- * @param {Array} entities
  */
-export function renderEntities(entities) {
+export function renderEntities() {
+
+  let entities = this.instance.currentMap.entities;
 
   let entity = null;
+
+  let resolution = this.camera.resolution;
 
   let ii = 0;
   let length = entities.length;
@@ -191,11 +182,11 @@ export function renderEntities(entities) {
     if (entity.opacity === .0) continue;
     if (entity.texture === null || entity.shadow === null) continue;
 
-    x = (this.camera.x + (entity.position.x + entity.xMargin) * this.scale) << 0;
-    y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * this.scale) << 0;
+    x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
+    y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
 
-    width  = (entity.size.x * this.scale) << 0;
-    height = (entity.size.y * this.scale) << 0;
+    width  = (entity.size.x * resolution) << 0;
+    height = (entity.size.y * resolution) << 0;
 
     eWidth  = ((entity.size.x / entity.scale) * 2) << 0;
     eHeight = ((entity.size.y / entity.scale) * 2) << 0;
@@ -279,6 +270,8 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
  */
 export function renderShadow(entity, frame, x, y, width, height, eWidth, eHeight) {
 
+  let resolution = this.camera.resolution;
+
   this.context.drawImage(
     /** Texture */
     entity.shadow.texture.canvas,
@@ -289,11 +282,11 @@ export function renderShadow(entity, frame, x, y, width, height, eWidth, eHeight
     eWidth,
     eHeight,
     /** Position */
-    x + (entity.shadow.position.x * this.scale) << 0,
-    y + (entity.shadow.position.y * this.scale) + ((eHeight / 2 * entity.scale) * this.scale) << 0,
+    x + (entity.shadow.position.x * resolution) << 0,
+    y + (entity.shadow.position.y * resolution) + ((eHeight / 2 * entity.scale) * resolution) << 0,
     /** Scretch */
-    ((width + (entity.shadow.scale.x * this.scale)) / SHADOW_X) << 0,
-    ((height + (entity.shadow.scale.y * this.scale)) / SHADOW_Y) << 0
+    ((width + (entity.shadow.scale.x * resolution)) / SHADOW_X) << 0,
+    ((height + (entity.shadow.scale.y * resolution)) / SHADOW_Y) << 0
   );
 
   return void 0;

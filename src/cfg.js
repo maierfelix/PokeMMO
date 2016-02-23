@@ -29,27 +29,27 @@ export const WALK_BY_KEYBOARD = true;
  * Edit mode
  * @type {Boolean}
  */
-export const EDIT_MODE = true;
+export let EDIT_MODE = true;
 
 /**
  * Free camera
  * @type {Boolean}
  */
-export const FREE_CAMERA = false;
+export let FREE_CAMERA = false;
 
 /**
  * God mode
  * @constant
  * @type {Boolean}
  */
-export const GOD_MODE = false;
+export let GOD_MODE = false;
 
 /**
  * Debug mode
  * @constant
  * @type {Boolean}
  */
-export const DEBUG_MODE = false;
+export let DEBUG_MODE = true;
 
 /**
  * Debug fps

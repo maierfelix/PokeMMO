@@ -74,6 +74,12 @@ export default class Map extends DisplayObject {
     this.objects = {};
 
     /**
+     * Object templates
+     * @type {Array}
+     */
+    this.objTpl = [];
+
+    /**
      * Map object templates
      * @type {Object}
      */
@@ -103,13 +109,6 @@ export default class Map extends DisplayObject {
      */
     this.collisionLayer = null;
 
-    /** Attach map objects */
-    if (obj.objects !== void 0) {
-      if (obj.objects instanceof Array) {
-        this.objTpl = obj.objects;
-      }
-    }
-
     /** Load texture */
     getSprite(this.tileset, this::function(texture) {
       this.texture = TextureCache[this.tileset];
@@ -118,9 +117,7 @@ export default class Map extends DisplayObject {
       this.path = new Path(this.collisionLayer.data);
       Maps[this.name] = this;
       this.loadMapFile(this::function() {
-        this.loadObjects(function() {
-          if (resolve instanceof Function) resolve();
-        });
+        if (resolve instanceof Function) resolve();
       });
     });
 
@@ -137,8 +134,32 @@ export default class Map extends DisplayObject {
     $GET(path).then(this::function(data) {
       let map = new Function(data)();
       this.entities = map.entities;
-      return (resolve());
+      this.loadMapObjectTypes();
+      this.loadMapObjects(function() {
+        if (resolve instanceof Function) {
+          return (resolve());
+        }
+      });
     });
+
+  }
+
+  /**
+   * Load all map object types
+   */
+  loadMapObjectTypes() {
+
+    let ii = 0;
+    let length = this.entities.length;
+
+    let entity = null;
+
+    for (; ii < length; ++ii) {
+      entity = this.entities[ii];
+      if (this.objTpl.indexOf(entity.type) <= -1) {
+        this.objTpl.push(entity.type);
+      }
+    };
 
   }
 
@@ -146,7 +167,7 @@ export default class Map extends DisplayObject {
    * Load map objects
    * @param {Function} resolve
    */
-  loadObjects(resolve) {
+  loadMapObjects(resolve) {
     let length = this.objTpl.length;
     for (let key of this.objTpl) {
       let path = `${this.mapPath}objects/${key}`;

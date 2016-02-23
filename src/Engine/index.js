@@ -5,8 +5,8 @@ import {
   DIMENSION,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
+
 import * as map from "./Map/functions";
-import * as layer from "./Layer/functions";
 import * as entity from "./Entity/functions";
 
 import Renderer from "./Renderer";
@@ -176,5 +176,4 @@ export default class Engine extends DisplayObject {
 }
 
 inherit(Engine, map);
-inherit(Engine, layer);
 inherit(Engine, entity);

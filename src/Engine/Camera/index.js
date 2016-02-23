@@ -1,4 +1,5 @@
 import {
+  FREE_CAMERA,
   DIMENSION,
   MIN_SCALE, MAX_SCALE,
   PIXEL_SCALE
@@ -27,7 +28,13 @@ export default class Camera extends DisplayObject {
      * Drag offset
      * @type {Object}
      */
-    this.drag = new math.Point();
+    this.drag = {
+      px: 0,
+      py: 0,
+      pz: 0,
+      sx: 0,
+      sy: 0
+    };
 
     /**
      * Dragging state
@@ -51,7 +58,13 @@ export default class Camera extends DisplayObject {
      * Camera scaling
      * @type {Number}
      */
-    this.scale = .0;
+    this.scaling = .0;
+
+    /**
+     * Camera calculated resolution
+     * @type {Number}
+     */
+    this.resolution = .0;
 
     /**
      * Entity to focus
@@ -59,20 +72,59 @@ export default class Camera extends DisplayObject {
      */
     this.entityFocus = null;
 
-    /** Camera resolution */
-    Object.defineProperty(this, "resolution", {
+    /**
+     * Scale
+     * @type {Number}
+     * @getter
+     * @setter
+     */
+    Object.defineProperty(this, "scale", {
       get: function() {
-        return (
-          math.roundTo(
-            parseFloat(math.zoomScale(this.scale))
-          , PIXEL_SCALE)
-        );
+        return (this.scaling);
       },
       set: function(value) {
-        this.scale = value;
+        this.scaling = value;
+        this.refreshResolution();
       }
     });
 
+  }
+
+  /**
+   * Move
+   * @param {Number} x
+   * @param {Number} y
+   */
+  move(x, y) {
+
+    this.x += x - this.drag.px;
+    this.y += y - this.drag.py;
+
+    this.drag.px = x;
+    this.drag.py = y;
+
+  }
+
+  /**
+   * Click
+   * @param {Number} x
+   * @param {Number} y
+   */
+  click(x, y) {
+
+    this.drag.sx = (x - this.x) / this.resolution;
+    this.drag.sy = (y - this.y) / this.resolution;
+
+    this.drag.px = x;
+    this.drag.py = y;
+
+  }
+
+  /**
+   * Refresh the resolution
+   */
+  refreshResolution() {
+    this.resolution = math.roundTo(parseFloat(math.zoomScale(this.scale)), PIXEL_SCALE);
   }
 
   /**
@@ -85,32 +137,37 @@ export default class Camera extends DisplayObject {
 
     amount = amount / 2 / (math.hypot(this.width, this.height) / Math.PI) * math.zoomScale(this.scale);
 
+    this.drag.pz = this.resolution;
+
     this.scale += amount / 2;
 
     if (this.scale < MIN_SCALE) this.scale = MIN_SCALE;
     if (this.scale > MAX_SCALE) this.scale = MAX_SCALE;
 
+    this.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+    this.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+
   }
 
   /**
    * Get x center position
-   * @param  {Object} entity
+   * @param  {Number} x
    * @return {Number}
    */
-  getX(entity) {
+  getX(x) {
     return (
-      this.width / 2 - (entity.x * this.resolution) - ((((entity.width) / DIMENSION)) * this.resolution)
+      this.size.x / 2 - (x * this.resolution) - ((DIMENSION / 2) * this.resolution)
     );
   }
 
   /**
    * Get y center position
-   * @param  {Object} entity
+   * @param  {Number} y
    * @return {Number}
    */
-  getY(entity) {
+  getY(y) {
     return (
-      this.height / 2 - (entity.y * this.resolution) - ((((entity.height) / DIMENSION)) * this.resolution)
+      this.size.y / 2 - (y * this.resolution)
     );
   }
 
@@ -123,8 +180,8 @@ export default class Camera extends DisplayObject {
 
     let velocity = this.queue[0];
 
-    let x = this.getX(this.queue[0].entity);
-    let y = this.getY(this.queue[0].entity);
+    let x = this.getX(this.queue[0].entity.x);
+    let y = this.getY(this.queue[0].entity.y);
 
     /**
      * TODO: Get camera movement working
@@ -168,14 +225,19 @@ export default class Camera extends DisplayObject {
    */
   focusEntity() {
 
+    if (FREE_CAMERA === true) {
+      return void 0;
+    }
+
     if (
       this.entityFocus === null ||
       this.entityFocus === void 0
     ) return void 0;
 
-    /** Immediate camera value injection */
-    this.position.x = this.getX(this.entityFocus);
-    this.position.y = this.getY(this.entityFocus);
+    this.position.x = this.getX(this.entityFocus.x);
+    this.position.y = this.getY(this.entityFocus.y);
+
+    return void 0;
 
   }
 
@@ -203,8 +265,8 @@ export default class Camera extends DisplayObject {
   inView(x, y, width, height) {
 
     return (
-      x + width >= 0 && x - width <= this.width &&
-      y + height >= 0 && y - height <= this.height
+      x + width >= 0 && x - width <= this.size.x &&
+      y + height >= 0 && y - height <= this.size.y
     );
 
   }
@@ -220,8 +282,8 @@ export default class Camera extends DisplayObject {
 
     return (
       this.inView(
-        ((x * this.resolution) + this.x) << 0,
-        ((y * this.resolution) + this.y) << 0,
+        ((x * this.resolution) + this.position.x) << 0,
+        ((y * this.resolution) + this.position.y) << 0,
         width * this.resolution << 0,
         height * this.resolution << 0
       )

@@ -46,31 +46,28 @@ export default class Game {
         this.addMap(() => this.setup(stage));
       return void 0;
       case 2:
-        this.addLayers(() => this.setup(stage));
-      return void 0;
-      case 3:
         this.addEntities(() => this.setup(stage));
       return void 0;
-      case 4:
+      case 3:
         this.animateNPC();
         this.setup(stage);
       return void 0;
-      case 5:
+      case 4:
         /** Instant focus local player */
         this.engine.camera.focus(this.engine.localEntity, true);
         this.setup(stage);
       return void 0;
-      case 6:
+      case 5:
         if (EDIT_MODE) {
           this.engine.editor = new Editor(this.engine);
         }
         this.setup(stage);
       return void 0;
-      case 7:
+      case 6:
         this.engine.renderer.render();
         this.setup(stage);
       return void 0;
-      case 8:
+      case 7:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
@@ -95,28 +92,6 @@ export default class Game {
    */
   addMap(resolve) {
     this.engine.addMap("shared/maps/town/town.json", resolve);
-  }
-
-  /**
-   * Add layers
-   * @param {Function} resolve
-   */
-  addLayers(resolve) {
-
-    this.engine.addLayer({
-      name: "Background",
-      zIndex: 1
-    });
-
-    this.engine.addLayer({
-      name: "Entities",
-      zIndex: 4,
-      zShadow: 3,
-      shadowCast: true
-    });
-
-    return (resolve());
-
   }
 
   /**

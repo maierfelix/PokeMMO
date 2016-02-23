@@ -1,5 +1,9 @@
 import { TextureCache } from "../utils";
-import { DIMENSION, GOD_MODE, EDIT_MODE } from "../../cfg";
+import {
+  DIMENSION,
+  GOD_MODE, EDIT_MODE,
+  FREE_CAMERA
+} from "../../cfg";
 
 /**
  * Render debug scene
@@ -96,8 +100,15 @@ export function renderDebugScene() {
   );
 
   this.drawPixelText(
-    `EDIT MODE: ${EDIT_MODE === true ? "enabled" : "disabled"}`,
+    `FREE CAMERA: ${FREE_CAMERA === true ? "enabled" : "disabled"}`,
     15, 330,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `EDIT MODE: ${EDIT_MODE === true ? "enabled" : "disabled"}`,
+    15, 360,
     20, 1.5,
     color
   );

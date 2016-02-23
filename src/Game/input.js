@@ -1,15 +1,11 @@
-import {
-  EDIT_MODE,
-  WALK_BY_KEYBOARD,
-  LEFT, RIGHT, UP, DOWN
-} from "../cfg";
+import * as cfg from "../cfg";
 
 export const keys = [
   {
     name: "CTRL+C",
     simultaneous: false,
     fire: function() {
-      if (EDIT_MODE) {
+      if (cfg.EDIT_MODE) {
         this.engine.editor.copyEntity();
       }
     }
@@ -18,7 +14,7 @@ export const keys = [
     name: "CTRL+V",
     simultaneous: false,
     fire: function() {
-      if (EDIT_MODE) {
+      if (cfg.EDIT_MODE) {
         this.engine.editor.pasteEntity();
       }
     }
@@ -26,8 +22,44 @@ export const keys = [
   {
     name: "DELETE",
     fire: function() {
-      if (EDIT_MODE) {
+      if (cfg.EDIT_MODE) {
         this.engine.editor.deleteEntity();
+      }
+    }
+  },
+  {
+    name: "F1",
+    spam: false,
+    fire: function() {
+      cfg.DEBUG_MODE = cfg.DEBUG_MODE ? false : true;
+      this.engine.renderer.clear();
+      this.engine.renderer.draw();
+    }
+  },
+  {
+    name: "F2",
+    spam: false,
+    fire: function() {
+      if (cfg.DEBUG_MODE) {
+        cfg.EDIT_MODE = cfg.EDIT_MODE ? false : true;
+      }
+    }
+  },
+  {
+    name: "F3",
+    spam: false,
+    fire: function() {
+      if (cfg.DEBUG_MODE) {
+        cfg.FREE_CAMERA = cfg.FREE_CAMERA ? false : true;
+      }
+    }
+  },
+  {
+    name: "F4",
+    spam: false,
+    fire: function() {
+      if (cfg.DEBUG_MODE) {
+        cfg.GOD_MODE = cfg.GOD_MODE ? false : true;
       }
     }
   },
@@ -70,52 +102,56 @@ export const keys = [
     name: "←",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(LEFT);
+      local.move(cfg.LEFT);
     }
   },
   {
     name: "→",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(RIGHT);
+      local.move(cfg.RIGHT);
     }
   },
   {
     name: "↑",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(UP);
+      local.move(cfg.UP);
     }
   },
   {
     name: "↓",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(DOWN);
+      local.move(cfg.DOWN);
     }
   },
     {
     name: "W",
     fire: function() {
-      console.log(UP);
+      let local = this.engine.localEntity;
+      local.move(cfg.UP);
     }
   },
   {
     name: "A",
     fire: function() {
-      console.log(LEFT);
+      let local = this.engine.localEntity;
+      local.move(cfg.LEFT);
     }
   },
   {
     name: "S",
     fire: function() {
-      console.log(DOWN);
+      let local = this.engine.localEntity;
+      local.move(cfg.DOWN);
     }
   },
   {
     name: "D",
     fire: function() {
-      console.log(RIGHT);
+      let local = this.engine.localEntity;
+      local.move(cfg.RIGHT);
     }
   }
 ];
@@ -125,7 +161,11 @@ export const mouse = [
     name: "mousedown",
     fire: function(e) {
       e.preventDefault();
-      if (EDIT_MODE && e.which === 1) {
+      if (cfg.FREE_CAMERA && e.which !== 1) {
+        this.engine.camera.dragging = true;
+        this.engine.camera.click(e.clientX, e.clientY);
+      }
+      if (cfg.EDIT_MODE && e.which === 1) {
         this.engine.editor.dragging = true;
         this.engine.editor.selectEntity(e.clientX, e.clientY);
       }
@@ -135,9 +175,11 @@ export const mouse = [
     name: "mouseup",
     fire: function(e) {
       e.preventDefault();
-      if (EDIT_MODE) {
+      if (cfg.FREE_CAMERA) {
+        this.engine.camera.dragging = false;
+      }
+      if (cfg.EDIT_MODE) {
         this.engine.editor.dragging = false;
-        //this.engine.editor.looseEntity(e.clientX, e.clientY);
       }
     }
   },
@@ -145,7 +187,10 @@ export const mouse = [
     name: "mousemove",
     fire: function(e) {
       e.preventDefault();
-      if (EDIT_MODE) {
+      if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
+        this.engine.camera.move(e.clientX, e.clientY);
+      }
+      if (cfg.EDIT_MODE) {
         this.engine.editor.dragEntity(e.clientX, e.clientY);
       }
     }
@@ -154,7 +199,7 @@ export const mouse = [
     name: "contextmenu",
     fire: function(e) {
       e.preventDefault();
-      if (EDIT_MODE) {
+      if (cfg.EDIT_MODE) {
         this.engine.editor.editEntity(e.clientX, e.clientY);
       }
     }
@@ -166,6 +211,9 @@ export const mouse = [
       if (this.engine.camera.queue.length <= 0) {
         this.engine.camera.zoom(e);
       }
+      if (cfg.FREE_CAMERA) {
+        this.engine.camera.click(e.clientX, e.clientY);
+      }
     }
   }
 ];
@@ -174,7 +222,7 @@ export const global = [
   {
     name: "resize",
     fire: function(e) {
-      this.engine.renderer.resize();
+      this.engine.renderer.resize(true);
     }
   }
 ];
