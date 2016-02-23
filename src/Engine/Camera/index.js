@@ -4,6 +4,7 @@ import {
   MIN_SCALE, MAX_SCALE,
   PIXEL_SCALE
 } from "../../cfg";
+
 import math from "../../Math";
 
 import DisplayObject from "../DisplayObject";
@@ -86,6 +87,24 @@ export default class Camera extends DisplayObject {
         this.scaling = value;
         this.refreshResolution();
       }
+    });
+
+  }
+
+  /**
+   * Get game relative mouse offset
+   * @param  {Number} x clientX
+   * @param  {Number} y clientY
+   * @return {Object}
+   */
+  getGameMouseOffset(x, y) {
+
+    let xx = ((x - this.x) / this.resolution);
+    let yy = ((y - this.y) / this.resolution);
+
+    return ({
+      x: (Math.ceil(xx / DIMENSION) * DIMENSION) - DIMENSION,
+      y: (Math.ceil(yy / DIMENSION) * DIMENSION) - DIMENSION
     });
 
   }
@@ -186,6 +205,7 @@ export default class Camera extends DisplayObject {
     /**
      * TODO: Get camera movement working
      * while change resolution
+     * TODO: Make more stable
      */
  
     /**

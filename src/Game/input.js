@@ -178,7 +178,7 @@ export const mouse = [
       if (cfg.FREE_CAMERA) {
         this.engine.camera.dragging = false;
       }
-      if (cfg.EDIT_MODE) {
+      if (cfg.EDIT_MODE && e.which === 1) {
         this.engine.editor.dragging = false;
       }
     }
@@ -190,7 +190,7 @@ export const mouse = [
       if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
         this.engine.camera.move(e.clientX, e.clientY);
       }
-      if (cfg.EDIT_MODE) {
+      if (cfg.EDIT_MODE && this.engine.editor.dragging === true) {
         this.engine.editor.dragEntity(e.clientX, e.clientY);
       }
     }
@@ -208,11 +208,11 @@ export const mouse = [
     name: "mousewheel",
     fire: function(e) {
       event.preventDefault();
-      if (this.engine.camera.queue.length <= 0) {
-        this.engine.camera.zoom(e);
-      }
       if (cfg.FREE_CAMERA) {
         this.engine.camera.click(e.clientX, e.clientY);
+      }
+      if (this.engine.camera.queue.length <= 0) {
+        this.engine.camera.zoom(e);
       }
     }
   }

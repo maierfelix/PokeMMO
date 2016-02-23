@@ -45,6 +45,12 @@ export default class DisplayObject {
      */
     this.scale = new math.Point(1, 1);
 
+    /**
+     * X
+     * @type {Number}
+     * @getter
+     * @setter
+     */
     Object.defineProperty(this, "x", {
       get: function() {
         return (this.position.x);
@@ -56,6 +62,12 @@ export default class DisplayObject {
       enumerable: true
     });
 
+    /**
+     * Y
+     * @type {Number}
+     * @getter
+     * @setter
+     */
     Object.defineProperty(this, "y", {
       get: function() {
         return (this.position.y);
@@ -67,6 +79,12 @@ export default class DisplayObject {
       enumerable: true
     });
 
+    /**
+     * Width
+     * @type {Number}
+     * @getter
+     * @setter
+     */
     Object.defineProperty(this, "width", {
       get: function() {
         return (this.size.x);
@@ -78,6 +96,12 @@ export default class DisplayObject {
       enumerable: true
     });
 
+    /**
+     * Height
+     * @type {Number}
+     * @getter
+     * @setter
+     */
     Object.defineProperty(this, "height", {
       get: function() {
         return (this.size.y);

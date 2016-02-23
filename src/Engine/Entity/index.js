@@ -247,6 +247,13 @@ export default class Entity extends DisplayObject {
       ) resolve();
     });
 
+    /**
+     * X
+     * @type {Number}
+     * @getter
+     * @setter
+     * @overwrite
+     */
     Object.defineProperty(this, "x", {
       get: function() {
         return (this.position.x);
@@ -256,6 +263,13 @@ export default class Entity extends DisplayObject {
       }
     });
 
+    /**
+     * Y
+     * @type {Number}
+     * @getter
+     * @setter
+     * @overwrite
+     */
     Object.defineProperty(this, "y", {
       get: function() {
         return (this.position.y);

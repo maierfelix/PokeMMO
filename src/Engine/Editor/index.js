@@ -58,6 +58,12 @@ export default class Editor {
       DRAGGING: false
     };
 
+    /**
+     * Dragging
+     * @type {Boolean}
+     * @getter
+     * @setter
+     */
     Object.defineProperty(this, "dragging", {
       get: function() {
         return (this.STATES.DRAGGING);
@@ -84,31 +90,11 @@ export default class Editor {
   }
 
   /**
-   * Get game relative mouse offset
-   * @param  {Number} x clientX
-   * @param  {Number} y clientY
-   * @return {Object}
-   */
-  getGameMouseOffset(x, y) {
-
-    let xx = ((x - this.camera.x) / this.camera.resolution);
-    let yy = ((y - this.camera.y) / this.camera.resolution);
-
-    return ({
-      x: (Math.ceil(xx / DIMENSION) * DIMENSION) - DIMENSION,
-      y: (Math.ceil(yy / DIMENSION) * DIMENSION) - DIMENSION
-    });
-
-  }
-
-  /**
    * Drag a entity
    * @param {Number} x
    * @param {Number} y
    */
   dragEntity(x, y) {
-
-    if (this.dragging === false) return void 0;
 
     let entity = null;
 
@@ -121,7 +107,7 @@ export default class Editor {
       return void 0;
     }
 
-    let offset = this.getGameMouseOffset(x, y);
+    let offset = this.camera.getGameMouseOffset(x, y);
 
     /** Entity contains last coordinate offset */
     if (
@@ -241,7 +227,7 @@ export default class Editor {
 
     let object = null;
 
-    let offset = this.getGameMouseOffset(x, y);
+    let offset = this.camera.getGameMouseOffset(x, y);
 
     let xx = offset.x << 0;
     let yy = offset.y << 0;
