@@ -8,6 +8,7 @@ import * as layer  from "../Layer/functions";
 import * as entity from "../Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
+import * as edit from "./edit";
 
 /**
  * Renderer
@@ -278,7 +279,7 @@ export default class Renderer {
     for (; ii < length; ++ii) {
       jj = ii;
       key = array[jj];
-      for (; jj > 0 && array[jj - 1].y + array[jj - 1].height > key.y + key.height; --jj) {
+      for (; jj > 0 && array[jj - 1].position.y + array[jj - 1].yMargin + array[jj - 1].size.y > key.position.y + key.yMargin + key.size.y; --jj) {
         array[jj] = array[jj - 1];
       };
       array[jj] = key;
@@ -294,3 +295,4 @@ inherit(Renderer, debug);
 inherit(Renderer, layer);
 inherit(Renderer, render);
 inherit(Renderer, entity);
+inherit(Renderer, edit);

@@ -1,9 +1,46 @@
 import {
+  EDIT_MODE,
   WALK_BY_KEYBOARD,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 
 export const keys = [
+  {
+    name: "CTRL+C",
+    simultaneous: false,
+    fire: function() {
+      if (EDIT_MODE) {
+        this.engine.editor.copyEntity();
+      }
+    }
+  },
+  {
+    name: "CTRL+V",
+    simultaneous: false,
+    fire: function() {
+      if (EDIT_MODE) {
+        this.engine.editor.pasteEntity();
+      }
+    }
+  },
+  {
+    name: "DELETE",
+    fire: function() {
+      if (EDIT_MODE) {
+        this.engine.editor.deleteEntity();
+      }
+    }
+  },
+  /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
+  {
+    name: "V",
+    fire: function() {}
+  },
+  /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
+  {
+    name: "CTRL",
+    fire: function() {}
+  },
   {
     name: "ESCAPE",
     fire: function() {
@@ -85,15 +122,47 @@ export const keys = [
 
 export const mouse = [
   {
+    name: "mousedown",
+    fire: function(e) {
+      e.preventDefault();
+      if (EDIT_MODE && e.which === 1) {
+        this.engine.editor.dragging = true;
+        this.engine.editor.selectEntity(e.clientX, e.clientY);
+      }
+    }
+  },
+  {
+    name: "mouseup",
+    fire: function(e) {
+      e.preventDefault();
+      if (EDIT_MODE) {
+        this.engine.editor.dragging = false;
+        //this.engine.editor.looseEntity(e.clientX, e.clientY);
+      }
+    }
+  },
+  {
+    name: "mousemove",
+    fire: function(e) {
+      e.preventDefault();
+      if (EDIT_MODE) {
+        this.engine.editor.dragEntity(e.clientX, e.clientY);
+      }
+    }
+  },
+  {
     name: "contextmenu",
     fire: function(e) {
       e.preventDefault();
-      this.engine.getEntityByMouse(e.clientX, e.clientY);
+      if (EDIT_MODE) {
+        this.engine.editor.editEntity(e.clientX, e.clientY);
+      }
     }
   },
   {
     name: "mousewheel",
     fire: function(e) {
+      event.preventDefault();
       if (this.engine.camera.queue.length <= 0) {
         this.engine.camera.zoom(e);
       }

@@ -41,14 +41,11 @@ export class Player extends Entity {
      * States
      * @type {Object}
      */
-    this.STATES = {
-      WALKING: false,
-      RUNNING: false,
-      FACING:  false,
-      BUMPING: false,
-      JUMPING: false,
-      LOCK:    false
-    };
+    this.STATES["WALKING"] = false;
+    this.STATES["RUNNING"] = false;
+    this.STATES["BUMPING"] = false;
+    this.STATES["WALKING"] = false;
+    this.STATES["FACING"]  = false;
 
     /**
      * Shadow offsets
@@ -122,6 +119,9 @@ export class Player extends Entity {
      * @type {Number}
      */
     this.soundSteps = DIMENSION * 2;
+
+    this.xMargin = -(DIMENSION / 2);
+    this.yMargin = -DIMENSION;
 
     if (
       obj.x !== void 0 &&

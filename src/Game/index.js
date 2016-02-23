@@ -1,10 +1,12 @@
 import {
+  EDIT_MODE,
   MIN_SCALE,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
 
-import Input from "../Engine/Input";
 import Engine from "../Engine";
+import Input  from "../Engine/Input";
+import Editor from "../Engine/Editor";
 
 import * as Events from "./input.js";
 import * as entities from "./entities";
@@ -25,7 +27,6 @@ export default class Game {
 
     this.entities = entities;
 
-    this.input = new Input(Events, this);
     this.engine = new Engine(this);
 
     this.engine.camera.scale = MIN_SCALE;
@@ -60,7 +61,17 @@ export default class Game {
         this.setup(stage);
       return void 0;
       case 6:
+        if (EDIT_MODE) {
+          this.engine.editor = new Editor(this.engine);
+        }
+        this.setup(stage);
+      return void 0;
+      case 7:
         this.engine.renderer.render();
+        this.setup(stage);
+      return void 0;
+      case 8:
+        this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
     };

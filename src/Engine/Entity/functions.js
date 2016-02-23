@@ -54,7 +54,8 @@ export function removeEntity(entity) {
   for (; ii < length; ++ii) {
     if (this.currentMap.entities[ii].id === entity.id) {
       this.currentMap.entities[ii] = null;
-      this.currentMap.entities[ii].splice(ii, 1);
+      this.currentMap.entities.splice(ii, 1);
+      break;
     }
   };
 

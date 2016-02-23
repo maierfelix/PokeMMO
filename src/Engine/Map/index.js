@@ -74,6 +74,12 @@ export default class Map extends DisplayObject {
     this.objects = {};
 
     /**
+     * Map object templates
+     * @type {Object}
+     */
+    this.objectTemplates = {};
+
+    /**
      * Map entities
      * @type {Array}
      */
@@ -166,15 +172,31 @@ export default class Map extends DisplayObject {
     let ii = 0;
     let length = 0;
 
+    let name = null;
+
     length = this.entities.length;
 
     for (; ii < length; ++ii) {
-      this.entities[ii] = new MapEntity(Object.assign(
+      name = this.entities[ii].type;
+      this.objectTemplates[name] = this.objects[this.entities[ii].type];
+      this.entities[ii] = this.addEntity(Object.assign(
         this.objects[this.entities[ii].type],
         this.entities[ii]
       ));
     };
 
+  }
+
+  /**
+   * Add entity to map
+   * @param {Object} obj
+   */
+  addEntity(obj) {
+    return (
+      new MapEntity(
+        obj
+      )
+    );
   }
 
   /**

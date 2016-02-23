@@ -26,11 +26,30 @@ export const VERSION = "0.0.1";
 export const WALK_BY_KEYBOARD = true;
 
 /**
+ * Edit mode
+ * @type {Boolean}
+ */
+export const EDIT_MODE = true;
+
+/**
+ * Free camera
+ * @type {Boolean}
+ */
+export const FREE_CAMERA = false;
+
+/**
+ * God mode
+ * @constant
+ * @type {Boolean}
+ */
+export const GOD_MODE = false;
+
+/**
  * Debug mode
  * @constant
  * @type {Boolean}
  */
-export const DEBUG = true;
+export const DEBUG_MODE = false;
 
 /**
  * Debug fps
@@ -54,11 +73,11 @@ export const BGM = false;
 export const BGS = true;
 
 /**
- * God mode
+ * Vertical depth sorting hack
  * @constant
- * @type {Boolean}
+ * @type {Number}
  */
-export const GOD_MODE = true;
+export const Y_DEPTH_HACK = .0001;
 
 /**
  * @constant

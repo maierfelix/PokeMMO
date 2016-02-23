@@ -1,4 +1,6 @@
-import { uHash } from "../utils";
+import {
+  uHash
+} from "../utils";
 
 /**
  * Keyboard
@@ -19,7 +21,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.ENTER = 13;
 
     /**
@@ -37,7 +39,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.BACKSPACE = 8;
 
     /**
@@ -46,7 +48,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.TAB = 9;
 
     /**
@@ -55,7 +57,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.SHIFT = 16;
 
     /**
@@ -64,7 +66,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.CTRL = 17;
 
     /**
@@ -73,7 +75,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.ALT = 18;
 
     /**
@@ -82,7 +84,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.PAUSE = 19;
 
     /**
@@ -91,7 +93,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.CAPSLOCK = 20;
 
     /**
@@ -100,7 +102,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.ESCAPE = 27;
 
     /**
@@ -109,7 +111,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.PAGEUP = 33;
 
     /**
@@ -118,7 +120,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.PAGEDOWN = 34;
 
     /**
@@ -127,7 +129,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.END = 35;
 
     /**
@@ -136,7 +138,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.HOME = 36;
 
     /**
@@ -145,7 +147,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["←"] = 37;
 
     /**
@@ -154,7 +156,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["↑"] = 38;
 
     /**
@@ -163,7 +165,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["→"] = 39;
 
     /**
@@ -172,7 +174,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["↓"] = 40;
 
     /**
@@ -181,7 +183,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.INSERT = 45;
 
     /**
@@ -190,7 +192,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.DELETE = 46;
 
     /**
@@ -208,7 +210,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["1"] = 49;
 
     /**
@@ -217,7 +219,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["2"] = 50;
 
     /**
@@ -226,7 +228,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["3"] = 51;
 
     /**
@@ -235,7 +237,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["4"] = 52;
 
     /**
@@ -244,7 +246,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["5"] = 53;
 
     /**
@@ -253,7 +255,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["6"] = 54;
 
     /**
@@ -262,7 +264,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["7"] = 55;
 
     /**
@@ -271,7 +273,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["8"] = 56;
 
     /**
@@ -280,7 +282,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this["9"] = 57;
 
     /**
@@ -289,7 +291,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.A = 65;
 
     /**
@@ -298,7 +300,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.B = 66;
 
     /**
@@ -307,7 +309,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.C = 67;
 
     /**
@@ -316,7 +318,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.D = 68;
 
     /**
@@ -325,7 +327,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.E = 69;
 
     /**
@@ -334,7 +336,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F = 70;
 
     /**
@@ -343,7 +345,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.G = 71;
 
     /**
@@ -352,7 +354,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.H = 72;
 
     /**
@@ -361,7 +363,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.I = 73;
 
     /**
@@ -370,7 +372,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.J = 74;
 
     /**
@@ -379,7 +381,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.K = 75;
 
     /**
@@ -388,7 +390,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.L = 76;
 
     /**
@@ -397,7 +399,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.M = 77;
 
     /**
@@ -406,7 +408,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.N = 78;
 
     /**
@@ -415,7 +417,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.O = 79;
 
     /**
@@ -424,7 +426,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.P = 80;
 
     /**
@@ -433,7 +435,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.Q = 81;
 
     /**
@@ -442,7 +444,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.R = 82;
 
     /**
@@ -451,7 +453,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.S = 83;
 
     /**
@@ -460,7 +462,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.T = 84;
 
     /**
@@ -469,7 +471,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.U = 85;
 
     /**
@@ -478,7 +480,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.V = 86;
 
     /**
@@ -487,7 +489,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.W = 87;
 
     /**
@@ -496,7 +498,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.X = 88;
 
     /**
@@ -505,7 +507,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.Y = 89;
 
     /**
@@ -514,7 +516,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.Z = 90;
 
     /**
@@ -523,7 +525,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.SELECT = 93;
 
     /**
@@ -532,7 +534,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD0 = 96;
 
     /**
@@ -541,7 +543,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD1 = 97;
 
     /**
@@ -550,7 +552,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD2 = 98;
 
     /**
@@ -559,7 +561,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD3 = 99;
 
     /**
@@ -568,7 +570,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD4 = 100;
 
     /**
@@ -577,7 +579,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD5 = 101;
 
     /**
@@ -586,7 +588,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD6 = 102;
 
     /**
@@ -595,7 +597,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD7 = 103;
 
     /**
@@ -604,7 +606,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD8 = 104;
 
     /**
@@ -613,7 +615,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMPAD9 = 105;
 
     /**
@@ -622,7 +624,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.MULTIPLY = 106;
 
     /**
@@ -631,7 +633,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.ADD = 107;
 
     /**
@@ -640,7 +642,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.SUBTRACT = 109;
 
     /**
@@ -649,7 +651,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.DECIMALPOINT = 110;
 
     /**
@@ -658,7 +660,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.DIVIDE = 111;
 
     /**
@@ -667,7 +669,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F1 = 112;
 
     /**
@@ -676,7 +678,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F2 = 113;
 
     /**
@@ -685,7 +687,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F3 = 114;
 
     /**
@@ -694,7 +696,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F4 = 115;
 
     /**
@@ -703,7 +705,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F5 = 116;
 
     /**
@@ -712,7 +714,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F6 = 117;
 
     /**
@@ -721,7 +723,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F7 = 118;
 
     /**
@@ -730,7 +732,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F8 = 119;
 
     /**
@@ -739,7 +741,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F9 = 120;
 
     /**
@@ -748,7 +750,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F10 = 121;
 
     /**
@@ -757,7 +759,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F11 = 122;
 
     /**
@@ -766,7 +768,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.F12 = 123;
 
     /**
@@ -775,7 +777,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.NUMLOCK = 144;
 
     /**
@@ -784,7 +786,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.SCROLLLOCK = 145;
 
     /**
@@ -793,7 +795,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.SEMICOLON = 186;
 
     /**
@@ -802,7 +804,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.EQUALSIGN = 187;
 
     /**
@@ -811,7 +813,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.COMMA = 188;
 
     /**
@@ -820,7 +822,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.DASH = 189;
 
     /**
@@ -829,7 +831,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.PERIOD = 190;
 
     /**
@@ -838,7 +840,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.FORWARDSLASH = 191;
 
     /**
@@ -847,7 +849,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.GRAVEACCENT = 192;
 
     /**
@@ -856,7 +858,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.OPENBRACKET = 219;
 
     /**
@@ -865,7 +867,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.BACKSLASH = 220;
 
     /**
@@ -874,7 +876,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.CLOSEBRACKET = 221;
 
     /**
@@ -883,7 +885,7 @@ export default class Keyboard {
      * @type {Number}
      * @static
      * @final
-     */ 
+     */
     this.SINGLEQUOTE = 222;
 
     /**
@@ -892,6 +894,13 @@ export default class Keyboard {
      * @type {Object}
      */
     this.KEYS = {};
+
+    /**
+     * Registered key combos
+     * @attribute COMBOS
+     * @type {Object}
+     */
+    this.COMBOS = {};
 
     /**
      * Hash table
@@ -936,20 +945,33 @@ export default class Keyboard {
     }
 
     /** Key loop */
-    this.keyLoop = setInterval(this::function() {
+    this.keyLoop = setInterval(this:: function() {
       this.fireKeys();
     }, this.rate);
 
     this.fireKeys();
 
-    window.addEventListener('keydown', this::function(e) {
+    window.addEventListener('keydown', this:: function(e) {
       this.switchKey(this.hash, e.keyCode, 1, e);
     });
 
-    window.addEventListener('keyup', this::function(e) {
+    window.addEventListener('keyup', this:: function(e) {
       this.switchKey(this.hash, e.keyCode, 0, e);
     });
 
+  }
+
+  /**
+   * Fire a combo
+   * @param {Object} combo
+   */
+  fireCombo(combo, name, state, event) {
+    this.COMBOS[name].state = state;
+    combo.state = 0;
+    for (let key of combo.combo) {
+      if (this.COMBOS[key].state !== 1) return void 0;
+    };
+    combo.state = 1;
   }
 
   /**
@@ -963,11 +985,19 @@ export default class Keyboard {
 
     const key = String(name);
 
+    if (this.isComboKey(name) === true) {
+      let combo = this.COMBOS[name].parent;
+      this.COMBOS[key].state = state;
+      this.fireCombo(combo, name, state, event);
+    }
+
     if (
       this.hash !== hash ||
       this.validKey(key) === false ||
       state > 1 || state < 0
-    ) { return void 0; }
+    ) {
+      return void 0;
+    }
 
     this.KEYS[key].state = state;
 
@@ -1006,6 +1036,66 @@ export default class Keyboard {
   }
 
   /**
+   * Validate a key code
+   * @param  {String} code
+   * @return {Boolean}
+   */
+  validCode(code) {
+    let key = code;
+    if (
+      (code = this[key] || -1) === -1 ||
+      this.KEYS[key] !== void 0
+    ) {
+      throw new Error(`${key} is a invalid key!`);
+      return (false);
+    }
+    return (true);
+  }
+
+  /**
+   * Register key combo
+   * @param {Object}   obj
+   * @param {Function} fire
+   * @param {Function} leave
+   */
+  registerKeyCombo(obj, fire, leave) {
+
+    const key = String(obj.name);
+
+    let combo = key.split("+");
+
+    let codes = [];
+
+    this.COMBOS[key] = {};
+
+    for (let code of combo) {
+      if (this.validCode(code) === false) {
+        return void 0;
+      }
+      codes.push(this[code]);
+      this.COMBOS[this[code]] = {
+        parent: this.COMBOS[key],
+        name: code,
+        fire: fire,
+        leave: leave,
+        left: 0,
+        state: 0,
+        fireable: true,
+        spam: obj.spam
+      };
+    };
+
+    this.COMBOS[key].combo = codes;
+    this.COMBOS[key].fire  = fire;
+    this.COMBOS[key].leave = leave;
+    this.COMBOS[key].left  = 0;
+    this.COMBOS[key].state = 0;
+    this.COMBOS[key].fireable = true;
+    this.COMBOS[key].spam = obj.spam;
+
+  }
+
+  /**
    * Register a key
    * @param {Object}   obj
    * @param {Function} fire
@@ -1015,23 +1105,25 @@ export default class Keyboard {
 
     const key = String(obj.name);
 
+    let isCombo = key.split("+").length > 1;
+
     let code = null;
 
-    if (
-      (code = this[key] || -1) === -1 ||
-      this.KEYS[key] !== void 0
-    ) {
-      throw new Error(`${key} is a invalid key!`);
+    if (isCombo === true) {
+      this.registerKeyCombo(obj, fire, leave);
       return void 0;
     }
 
-    this.KEYS[code] = {
-      fire:  fire,
+    if (this.validCode(key) === false) return void 0;
+
+    this.KEYS[this[key]] = {
+      name: obj.name,
+      fire: fire,
       leave: leave,
-      left:  0,
+      left: 0,
       state: 0,
       fireable: true,
-      spam:  obj.spam
+      spam: obj.spam
     };
 
     return void 0;
@@ -1043,9 +1135,27 @@ export default class Keyboard {
    */
   fireKeys() {
 
-    for (let key in this.KEYS) {
+    let key = null;
+
+    for (key in this.KEYS) {
       if (this.validKey(key) === true) {
-        this.fireKey(this.hash, key);
+        if (this.isComboKey(key) === true) {
+            let combo = this.COMBOS[key].parent;
+            if (
+              combo.simultaneous !== false &&
+              combo.state === 0
+            ) {
+              this.fireKey(this.hash, this.KEYS[key]);
+            }
+        } else {
+          this.fireKey(this.hash, this.KEYS[key]);
+        }
+      }
+    };
+
+    for (key in this.COMBOS) {
+      if (this.COMBOS[key].parent === void 0) {
+        this.fireKey(this.hash, this.COMBOS[key]);
       }
     };
 
@@ -1054,34 +1164,39 @@ export default class Keyboard {
   }
 
   /**
+   * Key is a combo key
+   * @param  {String} key
+   * @return {Boolean}
+   */
+  isComboKey(key) {
+    return (
+      this.COMBOS[key] !== void 0 &&
+      (this.COMBOS[key] instanceof Object) === true
+    );
+  }
+
+  /**
    * Fire a single key
    * @param {Number} hash
-   * @param {Number} name
+   * @param {Object} key
    */
-  fireKey(hash, name) {
+  fireKey(hash, key) {
 
-    const key = String(name);
-
-    if (
-      this.hash === hash &&
-      this.validKey(key)
-    ) {
-      if (this.KEYS[name].state === 1) {
-        if (this.KEYS[name].fireable === true) {
-          this.KEYS[name].fire();
-          if (this.KEYS[name].spam !== void 0) {
-            this.KEYS[name].fireable = false;
-          }
+    if (key.state === 1) {
+      if (key.fireable === true) {
+        key.fire();
+        if (key.spam !== void 0) {
+          key.fireable = false;
         }
-      } else {
-        if (
-            this.KEYS[name].leave !== void 0 &&
-            this.KEYS[name].state === 0 &&
-            this.KEYS[name].left  === 1
-        ) {
-          this.KEYS[name].leave();
-          this.KEYS[name].left = 0;
-        }
+      }
+    } else {
+      if (
+        key.leave !== void 0 &&
+        key.state === 0 &&
+        key.left === 1
+      ) {
+        key.leave();
+        key.left = 0;
       }
     }
 

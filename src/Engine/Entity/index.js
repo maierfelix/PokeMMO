@@ -47,6 +47,12 @@ export default class Entity extends DisplayObject {
     this.collidable = obj.collidable || false;
 
     /**
+     * Collision box
+     * @type {Array}
+     */
+    this.collisionBox = obj.collisionBox === void 0 ? [] : obj.collisionBox;
+
+    /**
      * Texture
      * @type {Object}
      */
@@ -161,7 +167,18 @@ export default class Entity extends DisplayObject {
      */
     this.hasShadow = obj.shadow || false;
 
+    /**
+     * Animation index
+     * @type {Number}
+     */
     this.animationIndex = 0;
+
+    /**
+     * Sprite margin
+     * @type {Number}
+     */
+    this.xMargin = 0;
+    this.yMargin = 0;
 
     /**
      * Sizes
@@ -214,7 +231,8 @@ export default class Entity extends DisplayObject {
      */
     this.STATES = {
       JUMPING: false,
-      LOCK:    false
+      LOCK:    false,
+      EDITING: false
     };
 
     /** Load texture */

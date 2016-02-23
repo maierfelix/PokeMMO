@@ -1,5 +1,6 @@
 import {
-  DEBUG, DEBUG_FPS,
+  EDIT_MODE,
+  DEBUG_MODE, DEBUG_FPS,
   GRID_WIDTH,
   DIMENSION,
   SHADOW_X, SHADOW_Y
@@ -14,7 +15,7 @@ import { drawGrid } from "./grid";
  */
 export function render() {
 
-  if (DEBUG === true) {
+  if (DEBUG_MODE === true) {
     this.clear();
   }
 
@@ -24,7 +25,11 @@ export function render() {
 
   this.draw();
 
-  if (DEBUG === true) {
+  if (EDIT_MODE === true) {
+    this.renderEditorMode();
+  }
+
+  if (DEBUG_MODE === true) {
     this.renderDebugScene();
     setTimeout(() => this.render(), 1E3 / DEBUG_FPS);
     return void 0;
@@ -51,7 +56,8 @@ export function draw() {
 
   this.renderMap();
 
-  if (DEBUG === true) {
+  if (DEBUG_MODE === true) {
+    this.context.beginPath();
     drawGrid(
       this.context,
       this.camera.x, this.camera.y,
@@ -61,6 +67,7 @@ export function draw() {
       .05,
       "#FFF"
     );
+    this.context.closePath();
   }
 
   return void 0;
@@ -184,14 +191,14 @@ export function renderEntities(entities) {
     if (entity.opacity === .0) continue;
     if (entity.texture === null || entity.shadow === null) continue;
 
-    x = (this.camera.x + entity.position.x * this.scale);
-    y = (this.camera.y + (entity.position.y + entity.z) * this.scale);
+    x = (this.camera.x + (entity.position.x + entity.xMargin) * this.scale) << 0;
+    y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * this.scale) << 0;
 
-    width  = entity.size.x  * this.scale;
-    height = entity.size.y * this.scale;
+    width  = (entity.size.x * this.scale) << 0;
+    height = (entity.size.y * this.scale) << 0;
 
-    eWidth  = (entity.size.x  / entity.scale) * 2;
-    eHeight = (entity.size.y / entity.scale) * 2;
+    eWidth  = ((entity.size.x / entity.scale) * 2) << 0;
+    eHeight = ((entity.size.y / entity.scale) * 2) << 0;
 
     if (entity.animation === true) {
       frame = this.getAnimationFrame(entity);
@@ -247,7 +254,7 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
     /** Scale */
     eWidth, eHeight,
     x, y,
-    width << 0, height << 0
+    width, height
   );
 
   /** Reset ctx opacity */
@@ -300,11 +307,12 @@ export function renderShadow(entity, frame, x, y, width, height, eWidth, eHeight
  * @param {Number} y
  * @param {Number} fontSize
  * @param {Number} lineWidth
+ * @param {String} color
  */
-export function drawPixelText(str, x, y, fontSize, lineWidth) {
+export function drawPixelText(str, x, y, fontSize, lineWidth, color) {
 
   this.context.font = fontSize + "px AdvoCut";
-  this.context.strokeStyle = '#313131';
+  this.context.strokeStyle = color;
   this.context.lineWidth = lineWidth;
   this.context.strokeText(str, x, y);
   this.context.fillStyle = 'white';

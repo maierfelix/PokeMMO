@@ -7,6 +7,13 @@
   "zIndex" : 4,
   "shadow" : true,
   "collidable": true,
-  "animated": true,
-  "frames": 1
+  "collisionBox": [
+    [0, 0, 0, 0],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1],
+    [1, 1, 1, 1]
+  ],
+  "animation": true,
+  "animationFrames": 3,
+  "loop": true
 }

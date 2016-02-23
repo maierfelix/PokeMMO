@@ -1,6 +1,7 @@
 import math from "../Math";
 
 import {
+  DEV_VERSION,
   DIMENSION,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
@@ -88,54 +89,30 @@ export default class Engine extends DisplayObject {
      */
     this.renderer = new Renderer(this);
 
-  }
-
-  /**
-   * Get game relative mouse offset
-   * @param  {Number} x clientX
-   * @param  {Number} y clientY
-   * @return {Object}
-   */
-  getGameMouseOffset(x, y) {
-
-    let xx = ((x - this.camera.x) / this.camera.resolution);
-    let yy = ((y - this.camera.y) / this.camera.resolution);
-
-    return ({
-      x: (Math.ceil(xx / DIMENSION) * DIMENSION) - DIMENSION,
-      y: (Math.ceil(yy / DIMENSION) * DIMENSION) - DIMENSION
-    });
+    /**
+     * Editor instance
+     * @type {Object}
+     */
+    this.editor = null;
 
   }
 
   /**
-   * Get a entity by mouse offset
-   * @param {Number} x
-   * @param {Number} y
+   * @param {Number} width
+   * @setter
    */
-  getEntityByMouse(x, y) {
+  set width(width) {
+    this.width = width || 0;
+    this.camera.width = this.width;
+  }
 
-    let object = null;
-
-    let offset = this.getGameMouseOffset(x, y);
-
-    let xx = offset.x << 0;
-    let yy = offset.y << 0;
-
-    let ii = 0;
-    let length = this.currentMap.entities.length;;
-
-    for (; ii < length; ++ii) {
-      if (
-        this.currentMap.entities[ii].x << 0 === xx &&
-        this.currentMap.entities[ii].y << 0 === yy
-      ) {
-        object = this.currentMap.entities[ii];
-      }
-    };
-
-    console.log(object);
-
+  /**
+   * @param {Number} height
+   * @setter
+   */
+  set height(height) {
+    this.height = height || 0;
+    this.camera.height = this.height;
   }
 
   /**
@@ -148,8 +125,8 @@ export default class Engine extends DisplayObject {
     let ii = 0;
     let length = 0;
 
-    let lastX = this.localEntity.x;
-    let lastY = this.localEntity.y;
+    let lastX = this.instance.localEntity.x;
+    let lastY = this.instance.localEntity.y;
 
     let xx = 0;
     let yy = 0;
@@ -158,8 +135,8 @@ export default class Engine extends DisplayObject {
 
     let dir = 0;
 
-    let path = this.currentMap.path.getShortestPath(
-      this.localEntity.x, this.localEntity.y,
+    let path = this.instance.currentMap.path.getShortestPath(
+      this.instance.localEntity.x, this.instance.localEntity.y,
       offset.x, offset.y
     );
 
@@ -181,37 +158,19 @@ export default class Engine extends DisplayObject {
           dir = yy < lastY ? UP : DOWN;
         }
       }
-      this.localEntity.animations.push({
+      this.instance.localEntity.animations.push({
         type: "walk",
         facing: dir,
         obstacle: false,
         x: xx,
         y: yy,
-        oX: this.localEntity.x,
-        oY: this.localEntity.y
+        oX: this.instance.localEntity.x,
+        oY: this.instance.localEntity.y
       });
       lastX = xx;
       lastY = yy;
     };
 
-  }
-
-  /**
-   * @param {Number} width
-   * @setter
-   */
-  set width(width) {
-    this.width = width || 0;
-    this.camera.width = this.width;
-  }
-
-  /**
-   * @param {Number} height
-   * @setter
-   */
-  set height(height) {
-    this.height = height || 0;
-    this.camera.height = this.height;
   }
 
 }

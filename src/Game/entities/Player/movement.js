@@ -1,4 +1,5 @@
 import {
+  Y_DEPTH_HACK,
   DIMENSION, GRAVITY,
   BGM, BGS,
   LEFT, RIGHT, UP, DOWN,
@@ -73,7 +74,10 @@ export function jumping() {
  */
 export function move(dir) {
 
-  if (this.STATES.LOCK === true) return void 0;
+  if (
+    this.STATES.LOCK    === true ||
+    this.STATES.EDITING === true
+  ) return void 0;
 
   /** Wait until we finished */
   if (this.moving === true) return void 0;
@@ -307,7 +311,7 @@ export function stopMoving(animation) {
 
   this.x = animation.x;
   /** Depth sorting vertical hack */
-  this.y = animation.y + .0001;
+  this.y = animation.y + Y_DEPTH_HACK;
 
   this.last.x = animation.oX;
   this.last.y = animation.oY;

@@ -1,0 +1,15 @@
+{
+  "name"   : "Flower",
+  "sprite" : "flower.png",
+  "width"  : 8,
+  "height" : 8,
+  "scale"  : 1,
+  "zIndex" : 3,
+  "shadow" : true,
+  "shadowY": -4,
+  "collidable": false,
+  "animation": true,
+  "animationFrames": 3,
+  "animationSpeed": 800,
+  "loop": true
+}

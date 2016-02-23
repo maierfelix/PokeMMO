@@ -1,10 +1,20 @@
 {
   "name"   : "Windmill",
   "sprite" : "windmill.png",
-  "width"  : 80,
-  "height" : 80,
+  "width"  : 40,
+  "height" : 56,
   "scale"  : 1,
   "zIndex" : 4,
+  "shadowY": -11,
   "shadow" : true,
-  "collidable": true
+  "collidable": true,
+  "collisionBox": [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 0, 1, 1]
+  ]
 }
