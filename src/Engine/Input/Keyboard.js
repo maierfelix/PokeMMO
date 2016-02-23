@@ -988,6 +988,7 @@ export default class Keyboard {
     if (this.isComboKey(name) === true) {
       let combo = this.COMBOS[name].parent;
       this.COMBOS[key].state = state;
+      this.updateKey(combo, state);
       this.fireCombo(combo, name, state, event);
     }
 
@@ -999,21 +1000,31 @@ export default class Keyboard {
       return void 0;
     }
 
-    this.KEYS[key].state = state;
-
-    if (state === 0) {
-      this.KEYS[name].left = 1;
-    }
-
-    if (this.KEYS[name].spam === false) {
-      if (state === 0) {
-        this.KEYS[name].fireable = true;
-      }
-    }
+    this.updateKey(this.KEYS[key], state);
 
     event.preventDefault();
 
     return void 0;
+
+  }
+
+  /**
+   * Update a key
+   * @param {Object} key
+   * @param {Number} state
+   */
+  updateKey(key, state) {
+
+   key.state = state;
+
+    if (state === 0) {
+      key.left = 1;
+    }
+    if (key.spam === false) {
+      if (state === 0) {
+        key.fireable = true;
+      }
+    }
 
   }
 

@@ -12,10 +12,21 @@ export const keys = [
   },
   {
     name: "CTRL+V",
+    spam: false,
     simultaneous: false,
     fire: function() {
       if (cfg.EDIT_MODE) {
         this.engine.editor.pasteEntity();
+      }
+    }
+  },
+  {
+    name: "CTRL+X",
+    spam: false,
+    simultaneous: false,
+    fire: function() {
+      if (cfg.EDIT_MODE) {
+        this.engine.editor.cutEntity();
       }
     }
   },
@@ -211,9 +222,7 @@ export const mouse = [
       if (cfg.FREE_CAMERA) {
         this.engine.camera.click(e.clientX, e.clientY);
       }
-      if (this.engine.camera.queue.length <= 0) {
-        this.engine.camera.zoom(e);
-      }
+      this.engine.camera.zoom(e);
     }
   }
 ];

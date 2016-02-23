@@ -7,6 +7,8 @@ import {
 
 import math from "../../Math";
 
+import MapEntity from "../Map/MapEntity";
+
 /**
  * Editor
  * @class Editor
@@ -102,12 +104,18 @@ export default class Editor {
 
     entity.STATES.EDITING = true;
 
-    /** Don't allow dragging of local player */
-    if (entity.id === this.instance.localEntity.id) {
+    /** Don't allow dragging of focused entity */
+    if (
+      this.instance.camera.entityFocus !== void 0 &&
+      entity.id === this.instance.camera.entityFocus.id
+    ) {
       return void 0;
     }
 
     let offset = this.camera.getGameMouseOffset(x, y);
+
+    entity.x <<= 0;
+    entity.y <<= 0;
 
     /** Entity contains last coordinate offset */
     if (
@@ -118,9 +126,6 @@ export default class Editor {
       entity.last.x = entity.x;
       entity.last.y = entity.y;
     }
-
-    entity.x <<= 0;
-    entity.y <<= 0;
 
     entity.x = offset.x;
     entity.y = offset.y + Y_DEPTH_HACK;
@@ -182,6 +187,19 @@ export default class Editor {
   }
 
   /**
+   * Cut out selected entity
+   */
+  cutEntity() {
+
+    if (this.entitySelection !== null) {
+      this.entityCopy = this.entitySelection;
+      this.instance.removeEntity(this.entitySelection);
+      this.entitySelection = null;
+    }
+
+  }
+
+  /**
    * Copy selected entity
    */
   copyEntity() {
@@ -204,6 +222,8 @@ export default class Editor {
     if (entity === null) return void 0;
 
     let map = this.instance.currentMap;
+
+    if ((entity instanceof MapEntity) === false) return void 0;
 
     let tpl = map.objectTemplates[entity.name.toLowerCase()];
 
