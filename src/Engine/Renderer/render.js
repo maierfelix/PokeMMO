@@ -156,8 +156,19 @@ export function renderEntities() {
 
     if (entity.static === false) entity.animate();
 
+    if (this.instance.camera.isInView(
+      entity.position.x, entity.position.y,
+      entity.size.x, (entity.size.y * 2) + entity.shadowY
+    ) === false) continue;
     if (entity.opacity === .0) continue;
     if (entity.texture === null || entity.shadow === null) continue;
+
+    if (entity.opacity < 0) {
+      this.instance.removeEntity(entity);
+      --length;
+      --ii;
+      continue;
+    }
 
     x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
     y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
