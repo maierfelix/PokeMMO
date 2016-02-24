@@ -285,8 +285,8 @@ export default class Camera extends DisplayObject {
   inView(x, y, width, height) {
 
     return (
-      x + width >= 0 && x - width <= this.size.x &&
-      y + height >= 0 && y - height <= this.size.y
+      x + width  >= 0 && x <= this.size.x &&
+      y + height >= 0 && y <= this.size.y
     );
 
   }

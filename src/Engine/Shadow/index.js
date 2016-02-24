@@ -39,6 +39,12 @@ export default class Shadow extends DisplayObject {
      */
     this.texture = null;
 
+    /**
+     * Splitted sprites
+     * @type {Object}
+     */
+    this.sprites = {};
+
     this.position.set(parent.shadowX, parent.shadowY);
 
     this.scale.set(0, 0);
@@ -65,28 +71,37 @@ export default class Shadow extends DisplayObject {
    */
   buildShadow() {
 
-    let texture = this.parent.texture.texture;
+    let ii = 0;
+    let length = 0;
 
-    const width  = texture.canvas.width;
-    const height = texture.canvas.height;
+    let buffer = null;
 
-    let shadow = createCanvasBuffer(width, height);
+    let parent = this.parent.texture;
 
-    shadow.translate(0, height);
-    shadow.scale(1, -1);
+    let width  = 0;
+    let height = 0;
 
-    this.drawShadow(
-      texture,
-      shadow,
-      0, -height,
-      width, height
-    );
+    length = parent.sprites.length;
 
-    shadow.setTransform(1, 0, 0, 1, 0, 0);
+    for (; ii < length; ++ii) {
+      width  = parent.sprites[ii].canvas.width;
+      height = parent.sprites[ii].canvas.height;
+      buffer = createCanvasBuffer(width, height);
+      buffer.translate(0, height);
+      buffer.scale(1, -1);
+      this.drawShadow(
+        parent.sprites[ii],
+        buffer,
+        width, height
+      );
+      buffer.setTransform(1, 0, 0, 1, 0, 0);
+      this.sprites[ii] = buffer;
+      buffer = null;
+    };
 
-    TextureCache[`Shadow:${this.parent.sprite}`] = shadow;
+    TextureCache[`Shadow:${this.parent.sprite}`] = this;
 
-    return (this.texture = shadow);
+    return (this.texture = this);
 
   }
 
@@ -94,12 +109,10 @@ export default class Shadow extends DisplayObject {
    * Create shadow of a sprite
    * @param {Object} buffer
    * @param {Object} ctx
-   * @param {Number} x
-   * @param {Number} y
    * @param {Number} width
    * @param {Number} height
    */
-  drawShadow(buffer, ctx, x, y, width, height) {
+  drawShadow(buffer, ctx, width, height) {
 
     ctx.clear();
 

@@ -18,10 +18,12 @@ export default class Texture {
 
   /**
    * @param {String}   url
+   * @param {Number}   width
+   * @param {Number}   height
    * @param {Function} resolve
    * @constructor
    */
-  constructor(url, resolve) {
+  constructor(url, width, height, resolve) {
 
     /**
      * Texture
@@ -30,10 +32,16 @@ export default class Texture {
     this.texture = null;
 
     /**
-     * Effect texture
+     * Texture effect
      * @type {Object}
      */
     this.texture_effect = null;
+
+    /**
+     * Effect texture
+     * @type {Object}
+     */
+    this.effect_sprites = [];
 
     /**
      * Image url
@@ -54,10 +62,40 @@ export default class Texture {
     this.height = 0;
 
     /**
+     * Sprite width
+     * @type {Number}
+     */
+    this.sWidth = width;
+
+    /**
+     * Sprite height
+     * @type {Number}
+     */
+    this.sHeight = height;
+
+    /**
+     * X multiplicator
+     * @type {Number}
+     */
+    this.xMul = 0;
+
+    /**
+     * Y multiplicator
+     * @type {Number}
+     */
+    this.yMul = 0;
+
+    /**
      * Loading state
      * @type {Boolean}
      */
     this.hasLoaded = false;
+
+    /**
+     * Splitted sprites
+     * @type {Array}
+     */
+    this.sprites = [];
 
     this.fromImage(this.imgUrl, this::function() {
       resolve(this);
@@ -89,8 +127,9 @@ export default class Texture {
       this.width  = img.width;
       this.height = img.height;
       this.hasLoaded = true;
-      TextureCache[url] = this;
       this.texture = imageToCanvas(img);
+      this.splitTexture();
+      TextureCache[url] = this;
       this.renderEffects();
       resolve();
     });
@@ -98,6 +137,47 @@ export default class Texture {
     img.src = url;
 
     return void 0;
+
+  }
+
+  /**
+   * Split texture into seperate sprites
+   */
+  splitTexture() {
+
+    if (this.sWidth === -1 && this.sHeight === -1) {
+      this.sWidth = this.width / 2;
+      this.sHeight = this.height / 2;
+    }
+
+    this.xMul = this.height / (this.sWidth * 2);
+    this.yMul = this.width / (this.sHeight * 2);
+
+    let buffer = null;
+
+    let ii = 0;
+
+    let xx = 0;
+    let yy = 0;
+
+    let width  = this.width / (this.sWidth * 2);
+    let height = this.height / (this.sHeight * 2);
+
+    for (; yy < height;) {
+      for (xx = 0; xx < width; ++xx) {
+        if (xx === 0) ++yy;
+        buffer = createCanvasBuffer(this.sWidth * 2, this.sHeight * 2);
+        buffer.drawImage(
+          this.texture.canvas,
+          (this.sWidth * 2) * xx, (this.sHeight * 2) * (yy - 1),
+          this.width, this.height,
+          0, 0,
+          this.width, this.height
+        );
+        this.sprites.push(buffer);
+        buffer = null;
+      };
+    };
 
   }
 
@@ -113,20 +193,33 @@ export default class Texture {
    */
   buildTimeLightning() {
 
-    var width  = this.texture.canvas.width;
-    var height = this.texture.canvas.height;
+    let ii = 0;
+    let length = 0;
 
-    var texture = createCanvasBuffer(width, height);
+    let buffer = null;
 
-    this.drawTimeLightning(
-      this.texture,
-      texture,
-      0, 0,
-      width, height,
-      ColorPalette
-    );
+    let width  = 0;
+    let height = 0;
 
-    this.texture_effect = texture;
+    length = this.sprites.length;
+
+    for (; ii < length; ++ii) {
+      width  = this.sprites[ii].canvas.width;
+      height = this.sprites[ii].canvas.height;
+      buffer = createCanvasBuffer(width, height);
+      buffer.translate(0, height);
+      buffer.scale(1, -1);
+      this.drawTimeLightning(
+        this.sprites[ii],
+        buffer,
+        0, 0,
+        width, height,
+        ColorPalette
+      );
+      buffer.setTransform(1, 0, 0, 1, 0, 0);
+      this.effect_sprites[ii] = buffer;
+      buffer = null;
+    };
 
   }
 

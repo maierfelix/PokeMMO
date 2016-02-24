@@ -221,7 +221,7 @@ export default class Entity extends DisplayObject {
     }
 
     /** Entity size */
-    if (obj.width) this.width = obj.width;
+    if (obj.width)  this.width = obj.width;
     if (obj.height) this.height = obj.height;
 
     /**
@@ -242,7 +242,8 @@ export default class Entity extends DisplayObject {
     };
 
     /** Load texture */
-    getSprite(this.sprite, this::function(texture) {
+    getSprite(
+      this.sprite, this.width, this.height, this::function(texture) {
       this.texture = texture;
       if (obj.shadow === true) {
         this.shadow = new Shadow(this);

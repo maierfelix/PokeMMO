@@ -156,19 +156,8 @@ export function renderEntities() {
 
     if (entity.static === false) entity.animate();
 
-    if (this.instance.camera.isInView(
-      entity.position.x, entity.position.y,
-      entity.size.x, entity.size.y
-    ) === false) continue;
     if (entity.opacity === .0) continue;
     if (entity.texture === null || entity.shadow === null) continue;
-
-    if (entity.opacity < 0) {
-      this.instance.removeEntity(entity);
-      --length;
-      --ii;
-      continue;
-    }
 
     x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
     y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
@@ -180,9 +169,9 @@ export function renderEntities() {
     eHeight = ((entity.size.y / entity.scale) * 2) << 0;
 
     if (entity.animation === true) {
-      frame = this.getAnimationFrame(entity);
+      frame = this.getAnimationFrame(entity) / (entity.size.x * 2);
     } else {
-      frame = (entity.frames[entity.frame] + entity.getFrameIndex()) * eWidth;
+      frame = (((entity.frames[entity.frame] + entity.getFrameIndex()) * eWidth) / (entity.size.x * 2)) + entity.facing * (entity.texture.yMul);
     }
 
     /** Rendering */
@@ -226,10 +215,8 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
 
   /** Sprite */
   this.context.drawImage(
-    entity.texture.texture_effect.canvas,
-    /** Frame */
-    frame,
-    eHeight * entity.facing,
+    entity.texture.effect_sprites[frame].canvas,
+    0, 0,
     /** Scale */
     eWidth, eHeight,
     x, y,
@@ -262,10 +249,8 @@ export function renderShadow(entity, frame, x, y, width, height, eWidth, eHeight
 
   this.context.drawImage(
     /** Texture */
-    entity.shadow.texture.canvas,
-    /** Frame */
-    frame,
-    eHeight * entity.shadowFacing(entity.facing),
+    entity.shadow.texture.sprites[frame].canvas,
+    0, 0,
     /** Scale */
     eWidth,
     eHeight,

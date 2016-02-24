@@ -110,7 +110,7 @@ export default class Map extends DisplayObject {
     this.collisionLayer = null;
 
     /** Load texture */
-    getSprite(this.tileset, this::function(texture) {
+    getSprite(this.tileset, -1, -1, this::function(texture) {
       this.texture = TextureCache[this.tileset];
       this.parseLayers();
       /** Attach path finder */
@@ -267,7 +267,7 @@ export default class Map extends DisplayObject {
     let xx = 0;
     let yy = 0;
 
-    let tileset = this.texture.texture_effect.canvas;
+    let tileset = this.texture.effect_sprites[0].canvas;
 
     let outerLength = layer.length;
     let innerLength = 0;

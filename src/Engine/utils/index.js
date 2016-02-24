@@ -22,16 +22,18 @@ export let Maps = {};
 /**
  * Get a sprite
  * @param {String}   sprite
+ * @param {Number}   width
+ * @param {Number}   height
  * @param {Function} resolve
  */
-export function getSprite(sprite, resolve) {
+export function getSprite(sprite, width, height, resolve) {
 
   if (TextureCache[sprite]) {
     resolve(TextureCache[sprite]);
     return void 0;
   }
 
-  new Texture(sprite, function(instance) {
+  new Texture(sprite, width, height, function(instance) {
     resolve(TextureCache[sprite] = instance);
   });
 

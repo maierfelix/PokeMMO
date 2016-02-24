@@ -2,7 +2,8 @@ import { TextureCache } from "../utils";
 import {
   DIMENSION,
   GOD_MODE, EDIT_MODE,
-  FREE_CAMERA
+  FREE_CAMERA,
+  SHADOW_Y
 } from "../../cfg";
 
 /**
@@ -65,8 +66,8 @@ export function renderDebugScene() {
 
   for (; ii < length; ++ii) {
     if (this.instance.camera.isInView(
-      entities[ii].x, entities[ii].y,
-      entities[ii].width, entities[ii].height,
+      entities[ii].position.x, entities[ii].position.y,
+      entities[ii].size.x, (entities[ii].size.y * 2) + entities[ii].shadowY
     ) && ++kk) {}
   };
 
