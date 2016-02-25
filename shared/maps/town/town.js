@@ -49,6 +49,11 @@ return (function() {
   };
 
   MAP.entities.push({
+    x: -112, y: -112,
+    type: "ping"
+  });
+
+  MAP.entities.push({
     x: 160, y: 112,
     type: "treestub"
   });

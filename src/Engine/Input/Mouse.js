@@ -1,3 +1,7 @@
+import {
+  uHash
+} from "../utils";
+
 import Wheel from "../../libs/wheel";
 
 /**

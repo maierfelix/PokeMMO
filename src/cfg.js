@@ -1,3 +1,5 @@
+import { supportWGL } from "./Engine/utils";
+
 /**
  * Grid width
  * @constant
@@ -17,6 +19,12 @@ export const __dirname = "./src/";
  * @type {String}
  */
 export const VERSION = "0.0.1";
+
+/**
+ * WebGL support
+ * @type {Boolean}
+ */
+export const WGL_SUPPORT = supportWGL();
 
 /**
  * Walk by keyboard
@@ -70,7 +78,7 @@ export const BGM = false;
  * @constant
  * @type {Number}
  */
-export const BGS = true;
+export const BGS = false;
 
 /**
  * Vertical depth sorting hack

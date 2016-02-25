@@ -1,0 +1,11 @@
+{
+  "name"   : "Ping",
+  "sprite" : "ping.png",
+  "width"  : 8,
+  "height" : 8,
+  "scale"  : 1,
+  "zIndex" : 3,
+  "shadow" : true,
+  "shadowY": 0,
+  "collidable": false
+}

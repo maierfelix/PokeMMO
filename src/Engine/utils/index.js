@@ -20,6 +20,38 @@ let hashes = [];
 export let Maps = {};
 
 /**
+ * Check if webgl is supported
+ * @return {Boolean}
+ */
+export function supportWGL() { 
+
+  let canvas = null;
+
+  try {
+    canvas = document.createElement("canvas");
+    if (window.WebGLRenderingContext !== void 0) {
+      return (!!getWGLContext(canvas));
+    }
+   } catch(e) {
+    return (false);
+  };
+
+  return (false);
+
+};
+
+/**
+ * Get wgl context of a canvas
+ * @return {Object}
+ */
+export function getWGLContext(canvas) {
+  return (
+    canvas.getContext("webgl") ||
+    canvas.getContext("experimental-webgl")
+  );
+}
+
+/**
  * Get a sprite
  * @param {String}   sprite
  * @param {Number}   width

@@ -2,6 +2,24 @@ import * as cfg from "../cfg";
 
 export const keys = [
   {
+    name: "CTRL+Z",
+    simultaneous: false,
+    fire: function() {
+      if (cfg.EDIT_MODE) {
+        this.engine.editor.commander.undo();
+      }
+    }
+  },
+  {
+    name: "CTRL+Y",
+    simultaneous: false,
+    fire: function() {
+      if (cfg.EDIT_MODE) {
+        this.engine.editor.commander.redo();
+      }
+    }
+  },
+  {
     name: "CTRL+C",
     simultaneous: false,
     fire: function() {
@@ -44,7 +62,6 @@ export const keys = [
     fire: function() {
       cfg.DEBUG_MODE = cfg.DEBUG_MODE ? false : true;
       if (!cfg.DEBUG_MODE) {
-        cfg.EDIT_MODE = false;
         cfg.FREE_CAMERA = false;
       }
       this.engine.renderer.clear();
@@ -78,6 +95,16 @@ export const keys = [
       }
     }
   },
+  /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
+  {
+    name: "Y",
+    fire: function() {}
+  },
+  {
+    name: "Z",
+    fire: function() {}
+  },
+  /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
   {
     name: "G",
     fire: function() {}
@@ -177,13 +204,26 @@ export const keys = [
 
 export const mouse = [
   {
+    name: "dblclick",
+    fire: function(e) {
+      e.preventDefault();
+      if (!cfg.DEBUG_MODE) return void 0;
+      if (cfg.EDIT_MODE) {
+        if (!this.engine.editor.dragging) {
+          this.engine.editor.editEntity(e.clientX, e.clientY);
+        }
+      }
+    }
+  },
+  {
     name: "mousedown",
     fire: function(e) {
       e.preventDefault();
-      if (this.input.KeyBoard.isKeyPressed("G") === true) {
+      if (this.input.KeyBoard.isKeyPressed("G")) {
         this.engine.ping(e.clientX, e.clientY, "notify");
         return void 0;
       }
+      if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.FREE_CAMERA && e.which !== 1) {
         this.engine.camera.dragging = true;
         this.engine.camera.click(e.clientX, e.clientY);
@@ -198,6 +238,7 @@ export const mouse = [
     name: "mouseup",
     fire: function(e) {
       e.preventDefault();
+      if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.FREE_CAMERA) {
         this.engine.camera.dragging = false;
       }
@@ -210,20 +251,12 @@ export const mouse = [
     name: "mousemove",
     fire: function(e) {
       e.preventDefault();
+      if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
         this.engine.camera.move(e.clientX, e.clientY);
       }
-      if (cfg.EDIT_MODE && this.engine.editor.dragging === true) {
+      if (cfg.EDIT_MODE && this.engine.editor.dragging) {
         this.engine.editor.dragEntity(e.clientX, e.clientY);
-      }
-    }
-  },
-  {
-    name: "contextmenu",
-    fire: function(e) {
-      e.preventDefault();
-      if (cfg.EDIT_MODE) {
-        this.engine.editor.editEntity(e.clientX, e.clientY);
       }
     }
   },
@@ -235,6 +268,12 @@ export const mouse = [
         this.engine.camera.click(e.clientX, e.clientY);
       }
       this.engine.camera.zoom(e);
+    }
+  },
+  {
+    name: "contextmenu",
+    fire: function(e) {
+      e.preventDefault();
     }
   }
 ];

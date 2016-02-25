@@ -3,6 +3,8 @@ import {
   LEFT, UP, RIGHT, DOWN
 } from "./cfg";
 
+import * as randSeed from "./libs/seed";
+
 /**
  * Math
  * @class Math
@@ -11,6 +13,45 @@ import {
 export default class Math {
 
   constructor() {}
+
+  static get Seed() {
+
+    return (
+      /**
+       * Seed
+       * @class Seed
+       */
+      class Seed {
+
+        /**
+         * @constructor
+         * @param {String} seed
+         */
+        constructor(seed) {
+
+          /**
+           * Seed
+           * @type {String}
+           */
+          this.seed = seed;
+
+          this.generator = randSeed.create(this.seed);
+
+        }
+
+        /**
+         * Get a randomized float
+         * based on own seed
+         * @return {Number}
+         */
+        random() {
+          return (this.generator(1e9));
+        }
+
+      }
+    );
+
+  }
 
   static get Point() {
 

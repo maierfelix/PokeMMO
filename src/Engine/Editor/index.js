@@ -8,6 +8,8 @@ import {
 
 import math from "../../Math";
 
+import Commander from "../Commander";
+
 import MapEntity from "../Map/MapEntity";
 
 /**
@@ -28,6 +30,12 @@ export default class Editor {
      * @type {Object}
      */
     this.instance = instance;
+
+    /**
+     * Instance reference
+     * @type {Object}
+     */
+    this.commander = new Commander();
 
     /**
      * Map reference
@@ -84,6 +92,8 @@ export default class Editor {
 
     this.inheritInstance(instance);
 
+    this.init();
+
   }
 
   /**
@@ -95,6 +105,56 @@ export default class Editor {
     this.map = instance.currentMap;
 
     this.camera = instance.camera;
+
+  }
+
+  /**
+   * Initialise
+   */
+  init() {
+
+    /** Select command */
+    this.commander.newCommand({
+      action: "select",
+      onUndo: function(entity, selection) {
+        this.entitySelection = null;
+        this.entitySelection = selection;
+      },
+      onRedo: function(entity, selection) {
+        this.entitySelection = null;
+        this.entitySelection = entity;
+      }
+    });
+
+    /** Drag command */
+    this.commander.newCommand({
+      action: "drag",
+      onUndo: function(x, y) {
+        this.x -= x;
+        this.y -= y;
+        this.last.x = this.x;
+        this.last.y = this.y;
+      },
+      onRedo: function(x, y) {
+        this.x += x;
+        this.y += y;
+        this.last.x = this.x;
+        this.last.y = this.y;
+      }
+    });
+
+    /** Delete command */
+    this.commander.newCommand({
+      action: "delete",
+      onUndo: function(entity) {
+        this.instance.addEntity(entity);
+        this.entitySelection = entity;
+      },
+      onRedo: function(entity) {
+        this.instance.removeEntity(entity);
+        this.entitySelection = null;
+      }
+    });
 
   }
 
@@ -111,39 +171,35 @@ export default class Editor {
     let xx = 0;
     let yy = 0;
 
-    if ((entity = this.entitySelection) === null) return void 0;
+    let rX = 0;
+    let rY = 0;
 
-    entity.STATES.EDITING = true;
+    if ((entity = this.entitySelection) === null) return void 0;
 
     /** Don't allow dragging of focused entity */
     if (
       FREE_CAMERA === false &&
-      this.instance.camera.entityFocus !== void 0 &&
-      entity.id === this.instance.camera.entityFocus.id
+      this.camera.entityFocus !== void 0 &&
+      entity.id === this.camera.entityFocus.id
     ) {
       return void 0;
     }
 
     offset = this.camera.getGameMouseOffset(x, y);
 
-    entity.x <<= 0;
-    entity.y <<= 0;
+    rX = offset.x - (entity.x << 0);
+    rY = offset.y - (entity.y << 0);
 
-    /** Entity contains last coordinate offset */
+    /** Only fire drag if we got a new offset to drag to */
     if (
-      entity.last   !== void 0 &&
-      entity.last.x !== void 0 &&
-      entity.last.y !== void 0
-    ) {
-      entity.last.x = entity.x;
-      entity.last.y = entity.y;
-    }
+      offset.x === this.drag.x &&
+      offset.y === this.drag.y
+    ) return void 0;
 
-    entity.x += offset.x - this.drag.x;
-    entity.y += (offset.y - this.drag.y) + Y_DEPTH_HACK;
+    xx = offset.x - this.drag.x;
+    yy = (offset.y - this.drag.y) + Y_DEPTH_HACK;
 
-    entity.x = math.roundTo(entity.x, DIMENSION);
-    entity.y = math.roundTo(entity.y, DIMENSION);
+    this.commander.push("drag", entity, [xx, yy]);
 
     this.drag.x = offset.x;
     this.drag.y = offset.y;
@@ -157,30 +213,12 @@ export default class Editor {
    */
   selectEntity(x, y) {
 
-    if (this.entitySelection !== null) {
-      this.entitySelection.STATES.EDITING = false;
-    }
-
-    this.entitySelection = null;
-    this.entitySelection = this.getEntityByMouse(x, y);
+    this.commander.push("select", this, [this.getEntityByMouse(x, y), this.entitySelection]);
 
     let offset = this.camera.getGameMouseOffset(x, y);
 
     this.drag.x = offset.x;
     this.drag.y = offset.y;
-
-  }
-
-  /**
-   * Loose selected entity
-   */
-  looseEntity() {
-
-    if (this.entitySelection !== null) {
-      this.STATES.DRAGGING = false;
-      this.entitySelection.STATES.EDITING = false;
-      this.entitySelection = null;
-    }
 
   }
 
@@ -195,6 +233,8 @@ export default class Editor {
 
     if (entity === null) return void 0;
 
+    console.log(entity);
+
   }
 
   /**
@@ -203,7 +243,7 @@ export default class Editor {
   deleteEntity() {
 
     if (this.entitySelection !== null) {
-      this.instance.removeEntity(this.entitySelection);
+      this.commander.push("delete", this, [this.entitySelection]);
       this.entitySelection = null;
     }
 
@@ -244,7 +284,7 @@ export default class Editor {
 
     if (entity === null) return void 0;
 
-    let map = this.instance.currentMap;
+    let map = this.map;
 
     if ((entity instanceof MapEntity) === false) return void 0;
 
