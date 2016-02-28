@@ -35,12 +35,6 @@ export default class Renderer {
     this.size = instance.size;
 
     /**
-     * Entities ref
-     * @type {Object}
-     */
-    this.entities = instance.entities;
-
-    /**
      * Layers ref
      * @type {Object}
      */
@@ -154,7 +148,7 @@ export default class Renderer {
    */
   updateTimers() {
     this.now = Date.now();
-    this.delta = (this.now - this.then) / 1E3;
+    this.delta = (this.now - this.then) / 1e3;
     this.then = this.now;
     return void 0;
   }

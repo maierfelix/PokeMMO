@@ -11,12 +11,100 @@ export function renderEditorMode() {
 
   this.renderSelection();
 
+  if (this.instance.editor.STATES.SELECTING === true) {
+    //this.renderSelectedEntities();
+  }
+
+  this.renderEntitySelection();
+
+}
+
+/**
+ * Render selected entities
+ */
+export function renderSelectedEntities() {
+
+  let ii = 0;
+  let length = 0;
+
+  let entity = null;
+  let entities = this.instance.editor.selectedEntities;
+
+  length = entities.length;
+
+  let resolution = 0;
+
+  let x = 0;
+  let y = 0;
+
+  let width  = 0;
+  let height = 0;
+
+  for (; ii < length; ++ii) {
+
+    entity = entities[ii];
+
+    resolution = this.camera.resolution;
+
+    x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
+    y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
+
+    width  = (entity.size.x * resolution) << 0;
+    height = (entity.size.y * resolution) << 0;
+
+    this.context.beginPath();
+
+    this.context.strokeStyle = "red";
+    this.context.lineWidth = (resolution / 2) << 0;
+    this.context.strokeRect(
+      x, y,
+      width, height
+    );
+    this.context.stroke();
+
+    this.context.closePath();
+
+  };
+
+}
+
+/**
+ * Render selection
+ */
+export function renderSelection() {
+
+  if (this.instance.editor.STATES.SELECTING === false) return void 0;
+
+  let selection = this.instance.editor.selection;
+
+  let resolution = this.camera.resolution;
+
+  let x = (this.camera.x + selection.x1 * resolution) << 0;
+  let y = (this.camera.y + selection.y1 * resolution) << 0;
+
+  let width  = ((selection.x2 - selection.x1) * resolution) << 0;
+  let height = ((selection.y2 - selection.y1) * resolution) << 0;
+
+  this.context.beginPath();
+
+  this.context.strokeStyle = "red";
+  this.context.lineWidth = (resolution / 2) << 0;
+  this.context.strokeRect(
+    x, y,
+    width, height
+  );
+  this.context.stroke();
+
+  this.context.closePath();
+
+  return void 0;
+
 }
 
 /**
  * Render entity selection
  */
-export function renderSelection() {
+export function renderEntitySelection() {
 
   let entity = this.instance.editor.entitySelection;
 
@@ -116,6 +204,8 @@ export function renderEntityCollisionBox(entity, x, y) {
     }
   };
 
+  return void 0;
+
 }
 
 /**
@@ -154,5 +244,7 @@ export function renderSelectionText(entity, x, y) {
     size, ln,
     color
   );
+
+  return void 0;
 
 }

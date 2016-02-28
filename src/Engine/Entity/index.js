@@ -4,7 +4,7 @@ import {
 } from "../../cfg";
 
 import math from "../../Math";
-import { TextureCache, getSprite } from "../utils";
+import { TextureCache, getSprite, createCanvasBuffer } from "../utils";
 
 import DisplayObject from "../DisplayObject";
 import Texture from "../Texture";
@@ -26,6 +26,10 @@ export default class Entity extends DisplayObject {
 
     super(null);
 
+    /**
+     * Name
+     * @type {String}
+     */
     this.name = obj.name || null;
 
     /**
@@ -463,6 +467,31 @@ export default class Entity extends DisplayObject {
       key === 39 ? RIGHT :
       key === 40 ? DOWN  : UP
     );
+  }
+
+  /**
+   * Check if tile contains any image data
+   * @param {Number} x
+   * @param {Number} y
+   * @return {Boolean}
+   */
+  tileContainsImageData(x, y) {
+
+    let ii = 0;
+    let length = 0;
+
+    let dim = DIMENSION * 2;
+
+    let data = this.texture.texture.getImageData(0, 0, dim, dim).data;
+
+    length = data.length;
+
+    for (; ii < length; ii += 4) {
+      if (data[ii] > 0) return (true);
+    };
+
+    return (false);
+
   }
 
 }

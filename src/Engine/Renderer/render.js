@@ -115,6 +115,28 @@ export function getAnimationFrame(entity) {
 }
 
 /**
+ * Check if entity is in selection range
+ * @param  {Number}  id
+ * @return {Boolean}
+ */
+export function entityInSelectionRange(id) {
+
+  let ii = 0;
+  let length = 0;
+
+  let entities = this.instance.editor.selectedEntities;
+
+  length = entities.length;
+
+  for (; ii < length; ++ii) {
+    if (entities[ii] === id) return (true);
+  };
+
+  return (false);
+
+}
+
+/**
  * Render entities
  */
 export function renderEntities() {
@@ -224,6 +246,13 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
     );
   }
 
+  if (EDIT_MODE === true) {
+    if (this.entityInSelectionRange(entity.id)) {
+      this.context.globalAlpha = .75;
+      this.context.globalCompositeOperation = "screen";
+    }
+  }
+
   /** Sprite */
   this.context.drawImage(
     entity.texture.effect_sprites[frame].canvas,
@@ -237,6 +266,11 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
   /** Reset ctx opacity */
   if (cOpacity === true) {
     this.context.globalAlpha = 1.0;
+  }
+
+  if (EDIT_MODE === true) {
+    this.context.globalAlpha = 1.0;
+    this.context.globalCompositeOperation = "source-over";
   }
 
   return void 0;

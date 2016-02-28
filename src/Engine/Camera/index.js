@@ -152,7 +152,9 @@ export default class Camera extends DisplayObject {
    */
   zoom(e) {
 
-    let amount = (e.deltaY ? -e.deltaY : e.deltaY);
+    let delta = e.deltaY === -0 ? e.deltaX : e.deltaY;
+
+    let amount = (delta ? -delta : delta);
 
     amount = amount / 2 / (math.hypot(this.width, this.height) / Math.PI) * math.zoomScale(this.scale);
 
@@ -215,7 +217,9 @@ export default class Camera extends DisplayObject {
     if (this.position.x !== x) {
       this.position.x += this.position.x < x ? this.resolution : -this.resolution;
     } else {
-      this.position.y += this.position.y < y ? this.resolution : -this.resolution;
+      if (this.position.y !== y) {
+        this.position.y += this.position.y < y ? this.resolution : -this.resolution;
+      }
     }
 
     if (

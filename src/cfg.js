@@ -34,6 +34,12 @@ export const WGL_SUPPORT = supportWGL();
 export const WALK_BY_KEYBOARD = true;
 
 /**
+ * Record mode
+ * @type {Boolean}
+ */
+export let RECORD_MODE = true;
+
+/**
  * Edit mode
  * @type {Boolean}
  */
@@ -43,7 +49,7 @@ export let EDIT_MODE = true;
  * Free camera
  * @type {Boolean}
  */
-export let FREE_CAMERA = false;
+export let FREE_CAMERA = true;
 
 /**
  * God mode

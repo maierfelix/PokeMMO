@@ -64,7 +64,7 @@ export default class Game {
         this.setup(stage);
       return void 0;
       case 6:
-        this.engine.renderer.render();
+        window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
       case 7:

@@ -2,7 +2,18 @@ import * as cfg from "../cfg";
 
 export const keys = [
   {
+    name: "SHIFT",
+    fire: function() {},
+    leave: function() {
+      if (cfg.EDIT_MODE) {
+        this.engine.editor.STATES.SELECTING = false;
+        this.engine.editor.selectedEntities = [];
+      }
+    }
+  },
+  {
     name: "CTRL+Z",
+    spam: false,
     simultaneous: false,
     fire: function() {
       if (cfg.EDIT_MODE) {
@@ -12,6 +23,7 @@ export const keys = [
   },
   {
     name: "CTRL+Y",
+    spam: false,
     simultaneous: false,
     fire: function() {
       if (cfg.EDIT_MODE) {
@@ -21,6 +33,7 @@ export const keys = [
   },
   {
     name: "CTRL+C",
+    spam: false,
     simultaneous: false,
     fire: function() {
       if (cfg.EDIT_MODE) {
@@ -224,6 +237,12 @@ export const mouse = [
         return void 0;
       }
       if (!cfg.DEBUG_MODE) return void 0;
+      if (cfg.EDIT_MODE && e.which === 1 && this.input.KeyBoard.isKeyPressed("SHIFT")) {
+        this.engine.editor.STATES.SELECTING = true;
+        this.engine.editor.select(e.clientX, e.clientY);
+        this.engine.editor.selectTo(e.clientX, e.clientY);
+        return void 0;
+      }
       if (cfg.FREE_CAMERA && e.which !== 1) {
         this.engine.camera.dragging = true;
         this.engine.camera.click(e.clientX, e.clientY);
@@ -242,8 +261,12 @@ export const mouse = [
       if (cfg.FREE_CAMERA) {
         this.engine.camera.dragging = false;
       }
-      if (cfg.EDIT_MODE && e.which === 1) {
-        this.engine.editor.dragging = false;
+      if (cfg.EDIT_MODE) {
+        if (e.which === 1) {
+          this.engine.editor.dragging = false;
+          this.engine.editor.STATES.SELECTING = false;
+          this.engine.editor.selectedEntities = [];
+        }
       }
     }
   },
@@ -255,6 +278,10 @@ export const mouse = [
       if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
         this.engine.camera.move(e.clientX, e.clientY);
       }
+      if (this.input.KeyBoard.isKeyPressed("SHIFT") && this.engine.editor.STATES.SELECTING) {
+        this.engine.editor.selectTo(e.clientX, e.clientY);
+        return void 0;
+      }
       if (cfg.EDIT_MODE && this.engine.editor.dragging) {
         this.engine.editor.dragEntity(e.clientX, e.clientY);
       }
@@ -263,7 +290,7 @@ export const mouse = [
   {
     name: "mousewheel",
     fire: function(e) {
-      event.preventDefault();
+      e.preventDefault();
       if (cfg.FREE_CAMERA) {
         this.engine.camera.click(e.clientX, e.clientY);
       }

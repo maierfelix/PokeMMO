@@ -2,6 +2,7 @@ import math from "../Math";
 
 import {
   DEV_VERSION,
+  RECORD_MODE,
   DIMENSION,
   LEFT, RIGHT, UP, DOWN
 } from "../cfg";
@@ -51,22 +52,10 @@ export default class Engine extends DisplayObject {
     this.context = this.node.getContext("2d");
 
     /**
-     * Active entities
-     * @type {Array}
-     */
-    this.entities = [];
-
-    /**
      * Parsed maps
      * @type {Object}
      */
     this.maps = {};
-
-    /**
-     * Active layers
-     * @type {Array}
-     */
-    this.layers = [];
 
     this.width = width || 0;
     this.height = height || 0;

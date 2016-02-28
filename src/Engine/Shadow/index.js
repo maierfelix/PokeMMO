@@ -26,11 +26,9 @@ export default class Shadow extends DisplayObject {
     super(null);
 
     /**
-     * Unique id
-     * @type {Number}
+     * Parent ref
+     * @type {Object}
      */
-    this.id = uHash();
-
     this.parent = parent;
 
     /**
