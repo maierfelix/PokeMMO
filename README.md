@@ -1,25 +1,31 @@
  - [ ] Engine
    - [x] Collisions
    - [x] Camera
-   - [x] Camera movement animation
    - [x] 3D Audio implementation
    - [x] Grid based path finding
    - [ ] Maps
    - [ ] Map connections
-   - [ ] Map layer depth based rendering
    - [ ] Dynamic multi-lingual support
    - [ ] Mini map?
+   - [ ] Pings
+   - [ ] Notifications (Map name, dialog boxes etc)
+   - [ ] Record/Replay Mode
+   - [ ] Seed based animations
 
  - [ ] Editor
+   - [ ] Undo & Redo
+   - [ ] Select, Copy, Paste, Cut, Delete
+   - [ ] Range map entity selections
+   - [ ] Map entities
+   - [ ] Map entities settings
+   - [ ] Map entity add & edit support
+   - [ ] Map entity collison box editor
+   - [x] Draggable map entities
    - [ ] UI
-   - [ ] Dynamic layers
-   - [ ] Layer tile drawing
-   - [ ] Drawing tools
-   - [ ] Objects
-   - [ ] Object tools
-   - [ ] Object add & edit support
-   - [ ] Collison layer
+   - [ ] Background map tile drawing
+   - [ ] Background map collisions
    - [ ] Map connections
+   - [ ] Map entity event code editor
 
  - [ ] Interpreter
    - [ ] Syntax
