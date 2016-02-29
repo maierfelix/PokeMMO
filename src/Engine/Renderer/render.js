@@ -202,13 +202,13 @@ export function renderEntities() {
     eHeight = ((entity.size.y / entity.scale) * 2) << 0;
 
     if (entity.animation === true) {
-      frame = this.getAnimationFrame(entity) / (entity.size.x * 2);
+      entity.sFrame = this.getAnimationFrame(entity) / (entity.size.x * 2);
     } else {
-      frame = (((entity.frames[entity.frame] + entity.getFrameIndex()) * eWidth) / (entity.size.x * 2)) + entity.facing * (entity.texture.yMul);
+      entity.sFrame = (((entity.frames[entity.frame] + entity.getFrameIndex()) * eWidth) / (entity.size.x * 2)) + entity.facing * (entity.texture.yMul);
     }
 
     /** Rendering */
-    this.renderEntity(entity, frame, x, y, width, height, eWidth, eHeight);
+    this.renderEntity(entity, x, y, width, height, eWidth, eHeight);
 
   };
 
@@ -219,7 +219,6 @@ export function renderEntities() {
 /**
  * Render a single entity
  * @param {Object} entity
- * @param {Number} frame
  * @param {Number} x
  * @param {Number} y
  * @param {Number} width
@@ -227,7 +226,7 @@ export function renderEntities() {
  * @param {Number} eWidth
  * @param {Number} eHeight
  */
-export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight) {
+export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
 
   let cOpacity = entity.customOpacity();
 
@@ -239,7 +238,6 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
   if (entity.hasShadow === true) {
     this.renderShadow(
       entity,
-      frame,
       x, y,
       width, height,
       eWidth, eHeight
@@ -255,7 +253,7 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
 
   /** Sprite */
   this.context.drawImage(
-    entity.texture.effect_sprites[frame].canvas,
+    entity.texture.effect_sprites[entity.sFrame].canvas,
     0, 0,
     /** Scale */
     eWidth, eHeight,
@@ -280,7 +278,6 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
 /**
  * Render shadow
  * @param {Object} entity
- * @param {Number} frame
  * @param {Number} x
  * @param {Number} y
  * @param {Number} width
@@ -288,13 +285,13 @@ export function renderEntity(entity, frame, x, y, width, height, eWidth, eHeight
  * @param {Number} eWidth
  * @param {Number} eHeight
  */
-export function renderShadow(entity, frame, x, y, width, height, eWidth, eHeight) {
+export function renderShadow(entity, x, y, width, height, eWidth, eHeight) {
 
   let resolution = this.camera.resolution;
 
   this.context.drawImage(
     /** Texture */
-    entity.shadow.texture.sprites[frame].canvas,
+    entity.shadow.texture.sprites[entity.sFrame].canvas,
     0, 0,
     /** Scale */
     eWidth,

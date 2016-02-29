@@ -156,6 +156,35 @@ export function imageToCanvas(img) {
 }
 
 /**
+ * Check if a tile contains any image data
+ * @param {Object} ctx
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @return {Boolean}
+ */
+export function tileContainsImageData(ctx, x, y, width, height) {
+
+  let ii = 0;
+  let length = 0;
+
+  let data = ctx.getImageData(x * 2, y * 2, width * 2, height * 2).data;
+
+  length = data.length;
+
+  for (; ii < length; ii += 4) {
+    if (data[ii] > 0)     return (true);
+    if (data[ii + 1] > 0) return (true);
+    if (data[ii + 2] > 0) return (true);
+    if (data[ii + 3] > 0) return (true);
+  };
+
+  return (false);
+
+}
+
+/**
  * Get current time
  * @return {Object}
  */

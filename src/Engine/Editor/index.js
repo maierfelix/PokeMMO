@@ -12,6 +12,8 @@ import Commander from "../Commander";
 
 import MapEntity from "../Map/MapEntity";
 
+import { tileContainsImageData } from "../utils";
+
 /**
  * Editor
  * @class Editor
@@ -174,14 +176,13 @@ export default class Editor {
     this.commander.newCommand({
       action: "cut",
       onUndo: function(entity) {
-        this.entityCopy = null;
         this.instance.addEntity(entity);
         this.entitySelection = entity;
       },
       onRedo: function(entity) {
         this.entityCopy = entity;
         this.instance.removeEntity(entity);
-        this.entitySelection = null;
+        this.entitySelection = entity;
       }
     });
 
@@ -203,8 +204,7 @@ export default class Editor {
       action: "paste",
       onUndo: function(entity) {
         this.instance.removeEntity(this.entityCopy);
-        this.entityCopy = null;
-        this.entitySelection = null;
+        this.instance.removeEntity(entity);
       },
       onRedo: function(entity) {
 
@@ -220,10 +220,11 @@ export default class Editor {
 
         let pushEntity = map.addEntity(tpl);
 
-        this.entityCopy = pushEntity;
         this.entitySelection = pushEntity;
 
         map.entities.push(pushEntity);
+
+        this.entityCopy = pushEntity;
 
       }
     });
@@ -301,7 +302,7 @@ export default class Editor {
         math.cubicCollision(
           xx1, yy1,
           width + eWidth - DIMENSION, height + eHeight - DIMENSION,
-          entity.x + eWidth - DIMENSION, (entity.y + Y_DEPTH_HACK) + eHeight - DIMENSION,
+          entity.x + entity.xMargin + eWidth - DIMENSION, (entity.y + entity.yMargin + entity.z + Y_DEPTH_HACK) + eHeight - DIMENSION,
           1
         )
       ) {
@@ -368,16 +369,22 @@ export default class Editor {
    */
   selectEntity(x, y) {
 
-    this.commander.push("select", this, [this.getEntityByMouse(x, y), this.entitySelection]);
+    let entity = this.getEntityByMouse(x, y);
 
     let offset = this.camera.getGameMouseOffset(x, y);
 
-    console.log(
-      this.entitySelection.tileContainsImageData(
-        (offset.x - this.entitySelection.x) << 0,
-        (offset.y - this.entitySelection.y) << 0
-      )
-    );
+    if (entity !== null) {
+      if (tileContainsImageData(
+        entity.texture.sprites[entity.sFrame],
+        (offset.x - entity.x) << 0,
+        (offset.y - entity.y) << 0,
+        DIMENSION, DIMENSION
+      ) === false) {
+        entity = null;
+      }
+    }
+
+    this.commander.push("select", this, [entity, this.entitySelection]);
 
     this.drag.x = offset.x;
     this.drag.y = offset.y;

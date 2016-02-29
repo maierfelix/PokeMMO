@@ -105,6 +105,12 @@ export default class Entity extends DisplayObject {
     this.frames = obj.frames === void 0 ? [0] : obj.frames;
 
     /**
+     * Sprite frame
+     * @type {Number}
+     */
+    this.sFrame = 0;
+
+    /**
      * Current frame
      * @type {Number}
      */
@@ -467,31 +473,6 @@ export default class Entity extends DisplayObject {
       key === 39 ? RIGHT :
       key === 40 ? DOWN  : UP
     );
-  }
-
-  /**
-   * Check if tile contains any image data
-   * @param {Number} x
-   * @param {Number} y
-   * @return {Boolean}
-   */
-  tileContainsImageData(x, y) {
-
-    let ii = 0;
-    let length = 0;
-
-    let dim = DIMENSION * 2;
-
-    let data = this.texture.texture.getImageData(0, 0, dim, dim).data;
-
-    length = data.length;
-
-    for (; ii < length; ii += 4) {
-      if (data[ii] > 0) return (true);
-    };
-
-    return (false);
-
   }
 
 }
