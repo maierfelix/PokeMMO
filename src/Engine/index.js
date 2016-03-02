@@ -57,6 +57,10 @@ export default class Engine extends DisplayObject {
      */
     this.maps = {};
 
+    /**
+     * Engine size
+     * @type {Number}
+     */
     this.width = width || 0;
     this.height = height || 0;
 

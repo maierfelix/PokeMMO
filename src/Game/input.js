@@ -13,7 +13,6 @@ export const keys = [
   },
   {
     name: "CTRL+Z",
-    spam: false,
     simultaneous: false,
     fire: function() {
       if (cfg.EDIT_MODE) {
@@ -23,7 +22,6 @@ export const keys = [
   },
   {
     name: "CTRL+Y",
-    spam: false,
     simultaneous: false,
     fire: function() {
       if (cfg.EDIT_MODE) {
@@ -229,32 +227,34 @@ export const mouse = [
     }
   },
   {
-    name: "mousedown",
+    name: "mousedown|touchstart",
     fire: function(e) {
+      let x = e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
+      let y = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
       e.preventDefault();
       if (this.input.KeyBoard.isKeyPressed("G")) {
-        this.engine.ping(e.clientX, e.clientY, "notify");
+        this.engine.ping(x, y, "notify");
         return void 0;
       }
       if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.EDIT_MODE && e.which === 1 && this.input.KeyBoard.isKeyPressed("SHIFT")) {
         this.engine.editor.STATES.SELECTING = true;
-        this.engine.editor.select(e.clientX, e.clientY);
-        this.engine.editor.selectTo(e.clientX, e.clientY);
+        this.engine.editor.select(x, y);
+        this.engine.editor.selectTo(x, y);
         return void 0;
       }
-      if (cfg.FREE_CAMERA && e.which !== 1) {
+      if (cfg.FREE_CAMERA && e instanceof TouchEvent || e.which !== 1) {
         this.engine.camera.dragging = true;
-        this.engine.camera.click(e.clientX, e.clientY);
+        this.engine.camera.click(x, y);
       }
-      if (cfg.EDIT_MODE && e.which === 1) {
+      if (cfg.EDIT_MODE && e instanceof TouchEvent || e.which === 1) {
         this.engine.editor.dragging = true;
-        this.engine.editor.selectEntity(e.clientX, e.clientY);
+        this.engine.editor.selectEntity(x, y);
       }
     }
   },
   {
-    name: "mouseup",
+    name: "mouseup|touchend",
     fire: function(e) {
       e.preventDefault();
       if (!cfg.DEBUG_MODE) return void 0;
@@ -262,7 +262,7 @@ export const mouse = [
         this.engine.camera.dragging = false;
       }
       if (cfg.EDIT_MODE) {
-        if (e.which === 1) {
+        if (e instanceof TouchEvent || e.which === 1) {
           this.engine.editor.dragging = false;
           this.engine.editor.STATES.SELECTING = false;
           this.engine.editor.selectedEntities = [];
@@ -271,19 +271,21 @@ export const mouse = [
     }
   },
   {
-    name: "mousemove",
+    name: "mousemove|touchmove",
     fire: function(e) {
+      let x = e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
+      let y = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
       e.preventDefault();
       if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
-        this.engine.camera.move(e.clientX, e.clientY);
+        this.engine.camera.move(x, y);
       }
       if (this.input.KeyBoard.isKeyPressed("SHIFT") && this.engine.editor.STATES.SELECTING) {
-        this.engine.editor.selectTo(e.clientX, e.clientY);
+        this.engine.editor.selectTo(x, y);
         return void 0;
       }
       if (cfg.EDIT_MODE && this.engine.editor.dragging) {
-        this.engine.editor.dragEntity(e.clientX, e.clientY);
+        this.engine.editor.dragEntity(x, y);
       }
     }
   },

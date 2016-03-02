@@ -19,9 +19,9 @@ export function render() {
     this.clear();
   }
 
-  this.update();
-
   this.sort();
+
+  this.update();
 
   this.draw();
 
@@ -42,12 +42,15 @@ export function render() {
 export function clear() {
   this.node.width = this.node.width;
   this.context.setImageSmoothing(this.imageSmoothing);
+  return void 0;
 }
 
 /**
  * Draw
  */
 export function draw() {
+
+  this.clear();
 
   this.renderMap();
 
@@ -57,7 +60,7 @@ export function draw() {
     this.context.beginPath();
     drawGrid(
       this.context,
-      this.camera.x, this.camera.y,
+      this.camera.position.x, this.camera.position.y,
       this.width, this.height,
       this.dimension,
       this.camera.resolution,
@@ -65,13 +68,9 @@ export function draw() {
       "#FFF"
     );
     this.context.closePath();
-  }
-
-  if (EDIT_MODE === true) {
-    this.renderEditorMode();
-  }
-
-  if (DEBUG_MODE === true) {
+    if (EDIT_MODE === true) {
+      this.renderEditorMode();
+    }
     this.renderDebugScene();
   }
 
@@ -86,13 +85,17 @@ export function renderMap() {
 
   let map = this.instance.currentMap;
 
+  let dim = DIMENSION;
+
   /** Render background layer */
   this.context.drawImage(
     map.buffers[1].canvas,
-    this.camera.x << 0,
-    this.camera.y << 0,
-    (map.width * this.dimension) * this.camera.resolution << 0,
-    (map.height * this.dimension) * this.camera.resolution << 0
+    0, 0,
+    /** Scale */
+    map.size.x * dim, map.size.y * dim,
+    this.camera.position.x << 0, this.camera.position.y << 0,
+    ((map.size.x * dim) / 2 * this.camera.resolution) << 0,
+    ((map.size.y * dim) / 2 * this.camera.resolution) << 0,
   );
 
   return void 0;
@@ -137,6 +140,57 @@ export function entityInSelectionRange(id) {
 }
 
 /**
+ * Update entity
+ * @param  {Object} entity
+ * @return {Boolean} renderable
+ */
+export function updateEntity(entity) {
+
+  if (entity.lifeTime > 0) {
+    if (this.now >= entity.lifeTime) {
+      entity.lifeTime = 0;
+      entity.fadeOut(1, true);
+    }
+  }
+
+  entity.animate();
+
+  if (this.instance.camera.isInView(
+    entity.position.x, entity.position.y,
+    entity.size.x, (entity.size.y * 2) + entity.shadowY
+  ) === false) {
+    return (false);
+  }
+
+  if (entity.opacity === .0) {
+    return (false);
+  }
+
+  if (entity.texture === null || entity.shadow === null) {
+    return (false);
+  }
+
+  return (true);
+
+}
+
+/**
+ * Update a entitys sprite frame
+ * @param {Object} entity
+ */
+export function updateEntitySpriteFrame(entity) {
+
+  if (entity.animation === true) {
+    entity.sFrame = this.getAnimationFrame(entity) / (entity.size.x * 2);
+  } else {
+    entity.sFrame = (((entity.frames[entity.frame] + entity.getFrameIndex()) * ((entity.size.x / entity.scale) * 2)) / (entity.size.x * 2)) + entity.facing * (entity.texture.yMul);
+  }
+
+  return void 0;
+
+}
+
+/**
  * Render entities
  */
 export function renderEntities() {
@@ -150,40 +204,15 @@ export function renderEntities() {
   let ii = 0;
   let length = entities.length;
 
-  let x = .0;
-  let y = .0;
-
-  let width  = .0;
-  let height = .0;
-
-  let eWidth  = .0;
-  let eHeight = .0;
-
-  let frame = 0;
-
-  let dim = DIMENSION;
-
   for (; ii < length; ++ii) {
 
     entity = entities[ii];
 
     entity.idleTime++;
 
-    if (entity.lifeTime > 0) {
-      if (this.now >= entity.lifeTime) {
-        entity.lifeTime = 0;
-        entity.fadeOut(1, true);
-      }
+    if (this.updateEntity(entity) === false) {
+      continue;
     }
-
-    if (entity.static === false) entity.animate();
-
-    if (this.instance.camera.isInView(
-      entity.position.x, entity.position.y,
-      entity.size.x, (entity.size.y * 2) + entity.shadowY
-    ) === false) continue;
-    if (entity.opacity === .0) continue;
-    if (entity.texture === null || entity.shadow === null) continue;
 
     if (entity.opacity < 0) {
       this.instance.removeEntity(entity);
@@ -192,23 +221,15 @@ export function renderEntities() {
       continue;
     }
 
-    x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
-    y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
+    this.updateEntitySpriteFrame(entity);
 
-    width  = (entity.size.x * resolution) << 0;
-    height = (entity.size.y * resolution) << 0;
-
-    eWidth  = ((entity.size.x / entity.scale) * 2) << 0;
-    eHeight = ((entity.size.y / entity.scale) * 2) << 0;
-
-    if (entity.animation === true) {
-      entity.sFrame = this.getAnimationFrame(entity) / (entity.size.x * 2);
-    } else {
-      entity.sFrame = (((entity.frames[entity.frame] + entity.getFrameIndex()) * eWidth) / (entity.size.x * 2)) + entity.facing * (entity.texture.yMul);
-    }
-
-    /** Rendering */
-    this.renderEntity(entity, x, y, width, height, eWidth, eHeight);
+    this.renderEntity(
+      entity,
+      (this.camera.position.x + (entity.position.x + entity.xMargin) * resolution) << 0,
+      (this.camera.position.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
+      (entity.size.x * resolution) << 0, (entity.size.y * resolution) << 0,
+      ((entity.size.x / entity.scale) * 2) << 0, ((entity.size.y / entity.scale) * 2) << 0
+    );
 
   };
 
@@ -228,6 +249,8 @@ export function renderEntities() {
  */
 export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
 
+  let resolution = this.camera.resolution;
+
   let cOpacity = entity.customOpacity();
 
   if (cOpacity === true) {
@@ -235,7 +258,7 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
   }
 
   /** Shadow */
-  if (entity.hasShadow === true) {
+  if (entity.static === false && entity.hasShadow === true) {
     this.renderShadow(
       entity,
       x, y,
@@ -251,15 +274,25 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
     }
   }
 
-  /** Sprite */
-  this.context.drawImage(
-    entity.texture.effect_sprites[entity.sFrame].canvas,
-    0, 0,
-    /** Scale */
-    eWidth, eHeight,
-    x, y,
-    width, height
-  );
+  if (entity.static === true) {
+    this.context.drawImage(
+      entity.shadow.texture.static_sprites[entity.sFrame].canvas,
+      0, 0,
+      /** Scale */
+      eWidth, eHeight,
+      x, y,
+      width, height
+    );
+  } else {
+    this.context.drawImage(
+      entity.texture.effect_sprites[entity.sFrame].canvas,
+      0, 0,
+      /** Scale */
+      eWidth, eHeight,
+      x, y,
+      width, height
+    );
+  }
 
   /** Reset ctx opacity */
   if (cOpacity === true) {

@@ -49,7 +49,7 @@ export let EDIT_MODE = true;
  * Free camera
  * @type {Boolean}
  */
-export let FREE_CAMERA = true;
+export let FREE_CAMERA = false;
 
 /**
  * God mode

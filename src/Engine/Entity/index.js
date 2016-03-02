@@ -258,6 +258,9 @@ export default class Entity extends DisplayObject {
       if (obj.shadow === true) {
         this.shadow = new Shadow(this);
       }
+      if (this.static === true) {
+        this.shadow.buildStaticShadow();
+      }
       if (
         resolve !== void 0 &&
         resolve instanceof Function

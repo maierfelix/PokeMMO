@@ -1,6 +1,7 @@
 import {
   DIMENSION,
-  LEFT, RIGHT, UP, DOWN
+  LEFT, RIGHT, UP, DOWN,
+  SHADOW_X, SHADOW_Y
 } from "../../cfg";
 
 import math from "../../Math";
@@ -39,9 +40,15 @@ export default class Shadow extends DisplayObject {
 
     /**
      * Splitted sprites
-     * @type {Object}
+     * @type {Array}
      */
-    this.sprites = {};
+    this.sprites = [];
+
+    /**
+     * Splitted sprites
+     * @type {Array}
+     */
+    this.static_sprites = [];
 
     this.position.set(parent.shadowX, parent.shadowY);
 
@@ -57,9 +64,51 @@ export default class Shadow extends DisplayObject {
    */
   init() {
 
-    let texture = TextureCache[`Shadow:${this.parent.sprite}`];
+    this.texture = this.buildShadow();
 
-    this.texture = texture === void 0 ? this.buildShadow() : texture;
+  }
+
+  /**
+   * Generates a static
+   * sprite&shadow texture
+   */
+  buildStaticShadow() {
+
+    let yPadding = this.parent.height + this.parent.shadowY;
+
+    let ii = 0;
+    let length = 0;
+
+    let buffer = null;
+
+    let entity = this.parent;
+
+    let parent = entity.shadow;
+
+    let width  = 0;
+    let height = 0;
+
+    length = parent.sprites.length;
+
+    for (; ii < length; ++ii) {
+      width  = parent.sprites[ii].canvas.width;
+      height = parent.sprites[ii].canvas.height;
+      buffer = createCanvasBuffer(width, height + -entity.shadowY);
+      /** Shadow */
+      buffer.drawImage(
+        this.sprites[ii].canvas,
+        0, 0,
+        width, height
+      );
+      /** Sprite */
+      buffer.drawImage(
+        parent.parent.texture.effect_sprites[ii].canvas,
+        0, 0,
+        width, height
+      );
+      this.static_sprites[ii] = buffer;
+      buffer = null;
+    };
 
   }
 
@@ -97,9 +146,7 @@ export default class Shadow extends DisplayObject {
       buffer = null;
     };
 
-    TextureCache[`Shadow:${this.parent.sprite}`] = this;
-
-    return (this.texture = this);
+    return (this);
 
   }
 

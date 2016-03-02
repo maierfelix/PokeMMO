@@ -124,6 +124,20 @@ export default class Map extends DisplayObject {
   }
 
   /**
+   * Load map settings
+   * @param {Object} obj
+   */
+  loadMapSettings(obj) {
+
+    for (let key in obj) {
+      if (this[key] !== void 0) {
+        this[key] = obj[key];
+      }
+    };
+
+  }
+
+  /**
    * Load map file
    * @param {Function} resolve
    */
@@ -134,6 +148,9 @@ export default class Map extends DisplayObject {
     $GET(path).then(this::function(data) {
       let map = new Function(data)();
       this.entities = map.entities;
+      if (map.settings !== void 0) {
+        this.loadMapSettings(map.settings);
+      }
       this.loadMapObjectTypes();
       this.loadMapObjects(function() {
         if (resolve instanceof Function) {

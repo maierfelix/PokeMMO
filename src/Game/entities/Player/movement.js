@@ -58,14 +58,6 @@ export function jumping() {
     this.shadow.scale.set(0, 0);
   }
 
-  if (this.isLocalPlayer === true) {
-    for (let entity of game.engine.currentMap.entities) {
-      if (entity.id !== this.id) {
-        entity.jump();
-      }
-    };
-  }
-
 }
 
 /**
