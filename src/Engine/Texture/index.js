@@ -44,6 +44,18 @@ export default class Texture {
     this.effect_sprites = [];
 
     /**
+     * Splitted sprites
+     * @type {Array}
+     */
+    this.sprites = [];
+
+    /**
+     * Static sprites
+     * @type {Array}
+     */
+    this.static_sprites = [];
+
+    /**
      * Image url
      * @type {String}
      */
@@ -90,12 +102,6 @@ export default class Texture {
      * @type {Boolean}
      */
     this.hasLoaded = false;
-
-    /**
-     * Splitted sprites
-     * @type {Array}
-     */
-    this.sprites = [];
 
     this.fromImage(this.imgUrl, this::function() {
       resolve(this);

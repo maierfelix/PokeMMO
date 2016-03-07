@@ -1,6 +1,7 @@
 import "../../polyfill";
 import math from "../../Math";
-import { DIMENSION } from "../../cfg";
+
+import * as cfg from "../../cfg";
 
 import { inherit } from "../utils";
 
@@ -8,6 +9,8 @@ import * as entity from "../Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
 import * as edit from "./edit";
+
+import WGL_Renderer from "./webgl";
 
 /**
  * Renderer
@@ -29,6 +32,12 @@ export default class Renderer {
     this.instance = instance;
 
     /**
+     * WebGL renderer
+     * @type {Object}
+     */
+    this.glRenderer = null;
+
+    /**
      * Size
      * @type {Object}
      */
@@ -47,10 +56,22 @@ export default class Renderer {
     this.node = instance.node;
 
     /**
+     * WebGL node ref
+     * @type {Object}
+     */
+    this.glNode = instance.glNode;
+
+    /**
      * Context ref
      * @type {Object}
      */
     this.context = instance.context;
+
+    /**
+     * Gl context ref
+     * @type {Object}
+     */
+    this.gl = instance.glContext;
 
     /**
      * Image smoothing
@@ -62,7 +83,7 @@ export default class Renderer {
      * Dimension
      * @type {Number}
      */
-    this.dimension = DIMENSION;
+    this.dimension = cfg.DIMENSION;
 
     /**
      * Delta timer
@@ -106,7 +127,36 @@ export default class Renderer {
      */
     this.spriteQueue = [];
 
+    if (cfg.WGL_SUPPORT) {
+      this.glRenderer = new WGL_Renderer(this);
+    }
+
+    /**
+     * Auto switch to current game mode dependant rendering
+     */
+    this.switchRenderingMode(cfg.DEBUG_MODE ? 0 : 1);
+
     this.resize(false);
+
+  }
+
+  /**
+   * Switch rendering mode
+   * @param {Number} mode
+   */
+  switchRenderingMode(mode) {
+
+    if (mode === cfg.WGL) {
+      this.node.style.display = "none";
+      this.glNode.style.display = "block";
+      cfg.RENDER_MODE = mode;
+    }
+
+    if (mode === cfg.CANVAS) {
+      this.node.style.display = "block";
+      this.glNode.style.display = "none";
+      cfg.RENDER_MODE = mode;
+    }
 
   }
 
@@ -160,12 +210,18 @@ export default class Renderer {
   resize(redraw) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    this.node.width = this.width;
-    this.node.height = this.height;
     this.camera.width = this.width;
     this.camera.height = this.height;
     this.instance.width = this.width;
     this.instance.height = this.height;
+    if (cfg.RENDER_MODE === cfg.WGL) {
+      this.glNode.width = this.width;
+      this.glNode.height = this.height;
+      this.gl.viewport(0, 0, this.width, this.height);
+    } else {
+      this.node.width = this.width;
+      this.node.height = this.height;
+    }
     this.clear();
     if (redraw === true) {
       this.draw();
@@ -214,3 +270,4 @@ inherit(Renderer, debug);
 inherit(Renderer, render);
 inherit(Renderer, entity);
 inherit(Renderer, edit);
+inherit(Renderer, webgl);

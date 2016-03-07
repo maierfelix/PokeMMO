@@ -1,7 +1,6 @@
 import {
   DIMENSION,
-  LEFT, RIGHT, UP, DOWN,
-  SHADOW_X, SHADOW_Y
+  LEFT, RIGHT, UP, DOWN
 } from "../../cfg";
 
 import math from "../../Math";
@@ -44,12 +43,6 @@ export default class Shadow extends DisplayObject {
      */
     this.sprites = [];
 
-    /**
-     * Splitted sprites
-     * @type {Array}
-     */
-    this.static_sprites = [];
-
     this.position.set(parent.shadowX, parent.shadowY);
 
     this.scale.set(0, 0);
@@ -65,50 +58,6 @@ export default class Shadow extends DisplayObject {
   init() {
 
     this.texture = this.buildShadow();
-
-  }
-
-  /**
-   * Generates a static
-   * sprite&shadow texture
-   */
-  buildStaticShadow() {
-
-    let yPadding = this.parent.height + this.parent.shadowY;
-
-    let ii = 0;
-    let length = 0;
-
-    let buffer = null;
-
-    let entity = this.parent;
-
-    let parent = entity.shadow;
-
-    let width  = 0;
-    let height = 0;
-
-    length = parent.sprites.length;
-
-    for (; ii < length; ++ii) {
-      width  = parent.sprites[ii].canvas.width;
-      height = parent.sprites[ii].canvas.height;
-      buffer = createCanvasBuffer(width, height + -entity.shadowY);
-      /** Shadow */
-      buffer.drawImage(
-        this.sprites[ii].canvas,
-        0, 0,
-        width, height
-      );
-      /** Sprite */
-      buffer.drawImage(
-        parent.parent.texture.effect_sprites[ii].canvas,
-        0, 0,
-        width, height
-      );
-      this.static_sprites[ii] = buffer;
-      buffer = null;
-    };
 
   }
 

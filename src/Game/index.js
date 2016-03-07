@@ -23,7 +23,8 @@ export default class Game {
    */
   constructor() {
 
-    this.node = document.querySelector("#main");
+    this.canvasNode = document.querySelector("#canvas");
+    this.glNode = document.querySelector("#webgl");
 
     this.entities = entities;
 
@@ -69,6 +70,10 @@ export default class Game {
       return void 0;
       case 7:
         this.input = new Input(Events, this);
+        this.setup(stage);
+      return void 0;
+      case 8:
+        this.engine.renderer.glRenderer.init();
         this.setup(stage);
       return void 0;
     };

@@ -1,6 +1,8 @@
 import {
   DIMENSION, GRAVITY,
-  LEFT, RIGHT, UP, DOWN
+  LEFT, RIGHT, UP, DOWN,
+  SHADOW_X, SHADOW_Y,
+  WGL_SUPPORT
 } from "../../cfg";
 
 import math from "../../Math";
@@ -163,7 +165,7 @@ export default class Entity extends DisplayObject {
      * Used for faster rendering
      * @type {Boolean}
      */
-    this.static = obj.static === void 0 ? false : obj.static;
+    this.static = true;
 
     /**
      * Animations
@@ -242,6 +244,12 @@ export default class Entity extends DisplayObject {
     this.shadowY = obj.shadowY === void 0 ? -this.height / 2 : obj.shadowY;
 
     /**
+     * WebGL texture
+     * @type {Object}
+     */
+    this.glTexture = null;
+
+    /**
      * States
      * @type {Object}
      */
@@ -257,9 +265,10 @@ export default class Entity extends DisplayObject {
       this.texture = texture;
       if (obj.shadow === true) {
         this.shadow = new Shadow(this);
+        this.buildStatic();
       }
-      if (this.static === true) {
-        this.shadow.buildStaticShadow();
+      if (WGL_SUPPORT === true) {
+        this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
       }
       if (
         resolve !== void 0 &&
@@ -302,10 +311,54 @@ export default class Entity extends DisplayObject {
   }
 
   /**
+   * Generates a static texture
+   */
+  buildStatic() {
+
+    let yPadding = this.height + this.shadowY;
+
+    let ii = 0;
+    let length = 0;
+
+    let buffer = null;
+
+    let width  = 0;
+    let height = 0;
+
+    length = this.texture.sprites.length;
+
+    for (; ii < length; ++ii) {
+      width  = this.texture.sprites[ii].canvas.width;
+      height = this.texture.sprites[ii].canvas.height;
+      buffer = createCanvasBuffer(width, height + -this.shadowY);
+      /** Shadow */
+      /*buffer.drawImage(
+        this.shadow.sprites[ii].canvas,
+        this.shadow.position.x, this.shadow.position.y,
+        width, height
+      );*/
+      /** Sprite */
+      buffer.drawImage(
+        this.texture.effect_sprites[ii].canvas,
+        0, 0,
+        width, height
+      );
+      this.texture.static_sprites[ii] = buffer;
+      buffer = null;
+    };
+
+  }
+
+  /**
    * Refresh entity states
    */
   refreshState() {
     this.STATES.JUMPING = this.z !== 0;
+    if (this.STATES.JUMPING === true) {
+      this.static = false;
+    } else {
+      this.static = true;
+    }
   }
 
   /**
@@ -332,6 +385,8 @@ export default class Entity extends DisplayObject {
   jumping() {
 
     this.z += this.gravity;
+
+    this.refreshState();
 
     if (this.z < 0) {
       this.gravity += .1;

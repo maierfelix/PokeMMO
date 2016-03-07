@@ -4,7 +4,8 @@ import {
   DEV_VERSION,
   RECORD_MODE,
   DIMENSION,
-  LEFT, RIGHT, UP, DOWN
+  LEFT, RIGHT, UP, DOWN,
+  WGL_SUPPORT
 } from "../cfg";
 
 import * as map from "./Map/functions";
@@ -14,7 +15,7 @@ import Renderer from "./Renderer";
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
 
-import { inherit } from "./utils";
+import { inherit, getWGLContext } from "./utils";
 
 /**
  * Engine
@@ -43,13 +44,30 @@ export default class Engine extends DisplayObject {
      * Node
      * @type {Object}
      */
-    this.node = this.instance.node;
+    this.node = this.instance.canvasNode;
+
+    /**
+     * WebGL Node
+     * @type {Object}
+     */
+    this.glNode = this.instance.glNode;
 
     /**
      * Context
      * @type {Object}
      */
     this.context = this.node.getContext("2d");
+
+    /**
+     * WebGL context
+     * @type {Object}
+     */
+    this.glContext = null;
+
+    /** Attach webgl context */
+    if (WGL_SUPPORT && this.glNode) {
+      this.glContext = getWGLContext(this.glNode);
+    }
 
     /**
      * Parsed maps

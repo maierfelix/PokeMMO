@@ -3,7 +3,8 @@ import {
   DEBUG_MODE, DEBUG_FPS,
   GRID_WIDTH,
   DIMENSION,
-  SHADOW_X, SHADOW_Y
+  SHADOW_X, SHADOW_Y,
+  RENDER_MODE, CANVAS, WGL
 } from "../../cfg";
 
 import math from "../../Math";
@@ -15,9 +16,7 @@ import { drawGrid } from "./grid";
  */
 export function render() {
 
-  if (DEBUG_MODE === true) {
-    this.clear();
-  }
+  this.clear();
 
   this.sort();
 
@@ -26,7 +25,11 @@ export function render() {
   this.draw();
 
   if (DEBUG_MODE === true) {
-    setTimeout(() => this.render(), 1E3 / DEBUG_FPS);
+    if (DEBUG_FPS === 60) {
+      window.rAF(() => this.render());
+    } else {
+      setTimeout(() => this.render(), 1E3 / DEBUG_FPS);
+    }
     return void 0;
   }
 
@@ -40,8 +43,14 @@ export function render() {
  * Clear
  */
 export function clear() {
-  this.node.width = this.node.width;
-  this.context.setImageSmoothing(this.imageSmoothing);
+  if (RENDER_MODE === CANVAS) {
+    this.node.width = this.node.width;
+    this.context.setImageSmoothing(this.imageSmoothing);
+  }
+  if (RENDER_MODE === WGL) {
+    this.glRenderer.gl.clearColor(0, 0, 0, 0);
+    this.glRenderer.gl.clear(this.glRenderer.gl.COLOR_BUFFER_BIT);
+  }
   return void 0;
 }
 
@@ -50,9 +59,9 @@ export function clear() {
  */
 export function draw() {
 
-  this.clear();
-
-  this.renderMap();
+  if (RENDER_MODE === CANVAS) {
+    this.renderMap();
+  }
 
   this.renderEntities();
 
@@ -195,43 +204,47 @@ export function updateEntitySpriteFrame(entity) {
  */
 export function renderEntities() {
 
+  let gl = RENDER_MODE === WGL;
+
   let entities = this.instance.currentMap.entities;
 
   let entity = null;
 
   let resolution = this.camera.resolution;
 
+  let camX = this.camera.position.x;
+  let camY = this.camera.position.y;
+
   let ii = 0;
   let length = entities.length;
 
   for (; ii < length; ++ii) {
-
     entity = entities[ii];
-
     entity.idleTime++;
-
-    if (this.updateEntity(entity) === false) {
-      continue;
-    }
-
+    if (this.updateEntity(entity) === false) continue;
     if (entity.opacity < 0) {
       this.instance.removeEntity(entity);
       --length;
       --ii;
       continue;
     }
-
     this.updateEntitySpriteFrame(entity);
-
+    if (gl === true) continue;
     this.renderEntity(
       entity,
-      (this.camera.position.x + (entity.position.x + entity.xMargin) * resolution) << 0,
-      (this.camera.position.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
+      (camX + (entity.position.x + entity.xMargin) * resolution) << 0,
+      (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
       (entity.size.x * resolution) << 0, (entity.size.y * resolution) << 0,
       ((entity.size.x / entity.scale) * 2) << 0, ((entity.size.y / entity.scale) * 2) << 0
     );
-
   };
+
+  if (
+    gl === true &&
+    this.glRenderer.ready === true
+  ) {
+    this.glRenderer.draw();
+  }
 
   return void 0;
 
@@ -276,7 +289,7 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
 
   if (entity.static === true) {
     this.context.drawImage(
-      entity.shadow.texture.static_sprites[entity.sFrame].canvas,
+      entity.texture.static_sprites[entity.sFrame].canvas,
       0, 0,
       /** Scale */
       eWidth, eHeight,

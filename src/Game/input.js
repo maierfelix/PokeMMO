@@ -75,6 +75,8 @@ export const keys = [
       if (!cfg.DEBUG_MODE) {
         cfg.FREE_CAMERA = false;
       }
+      this.engine.renderer.switchRenderingMode(cfg.DEBUG_MODE ? 0 : 1);
+      this.engine.renderer.resize(true);
       this.engine.renderer.clear();
       this.engine.renderer.draw();
     }
@@ -94,6 +96,9 @@ export const keys = [
     fire: function() {
       if (cfg.DEBUG_MODE) {
         cfg.FREE_CAMERA = cfg.FREE_CAMERA ? false : true;
+        if (!cfg.FREE_CAMERA) {
+          this.engine.camera.dragging = false;
+        }
       }
     }
   },

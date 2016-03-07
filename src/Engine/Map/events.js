@@ -2,6 +2,23 @@ import { DIMENSION } from "../../cfg";
 import math from "../../Math";
 
 /**
+ * Obstacle check
+ * @param {Object} entity
+ * @param {Number} dir
+ * @return {Boolean}
+ */
+export function isObstacle(entity, dir) {
+
+  let position = math.getTilePosition(entity.x << 0, entity.y << 0, dir);
+
+  return (
+    this.collisionLayer.data[(position.y << 0) / DIMENSION][(position.x << 0) / DIMENSION] === 0 ||
+    this.isEntityCollidable(entity, position.x, position.y) === true
+  );
+
+}
+
+/**
  * Entity collidable check
  * @param  {Object} entity
  * @param  {Number} x
@@ -81,22 +98,5 @@ export function collidesWithCollisionBox(entity, x, y) {
   };
 
   return (false);
-
-}
-
-/**
- * Obstacle check
- * @param {Object} entity
- * @param {Number} dir
- * @return {Boolean}
- */
-export function isObstacle(entity, dir) {
-
-  let position = math.getTilePosition(entity.x << 0, entity.y << 0, dir);
-
-  return (
-    this.collisionLayer.data[(position.y << 0) / DIMENSION][(position.x << 0) / DIMENSION] === 0 ||
-    this.isEntityCollidable(entity, position.x, position.y) === true
-  );
 
 }

@@ -45,6 +45,8 @@ export function jumping() {
 
   this.z += this.gravity;
 
+  this.refreshState();
+
   if (this.z < 0) {
     this.gravity += .1;
     this.shadow.position.set(-(this.z / 2), this.shadowY - (this.z));
@@ -56,6 +58,15 @@ export function jumping() {
     this.refreshState();
     this.shadow.position.set(0, this.shadowY);
     this.shadow.scale.set(0, 0);
+
+    if (this.isLocalPlayer === true) {
+      for (let entity of game.engine.currentMap.entities) {
+        if (entity.id !== this.id) {
+          entity.jump();
+        }
+      };
+    }
+
   }
 
 }
@@ -163,6 +174,7 @@ export function bump(animation) {
     this.stepCount = 0;
     this.stopAnimation();
     this.STATES.BUMPING = false;
+    this.refreshState();
   }
 
 }
@@ -343,5 +355,7 @@ export function stopMoving(animation) {
   } else {
     this.soundSteps = DIMENSION;
   }
+
+  this.refreshState();
 
 }

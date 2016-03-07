@@ -1,6 +1,26 @@
 import { supportWGL } from "./Engine/utils";
 
 /**
+ * Canvas rendering mode
+ * @constant
+ * @type {Number}
+ */
+export const CANVAS = 0;
+
+/**
+ * WebGL rendering mode
+ * @constant
+ * @type {Number}
+ */
+export const WGL = 1;
+
+/**
+ * Game rendering mode
+ * @type {Number}
+ */
+export let RENDER_MODE = -1;
+
+/**
  * Grid width
  * @constant
  * @type {Number}

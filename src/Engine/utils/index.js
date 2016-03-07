@@ -45,9 +45,16 @@ export function supportWGL() {
  * @return {Object}
  */
 export function getWGLContext(canvas) {
+  let options = {
+    alpha: true,
+    antialias: false,
+    premultipliedAlpha: true,
+    stencil: true,
+    preserveDrawingBuffer: false
+  };
   return (
-    canvas.getContext("webgl") ||
-    canvas.getContext("experimental-webgl")
+    canvas.getContext("webgl", options) ||
+    canvas.getContext("experimental-webgl", options)
   );
 }
 
@@ -136,7 +143,7 @@ export function createCanvasBuffer(width, height) {
 }
 
 /**
- * @param {Object} img
+ * @param  {Object} img
  * @return {Object}
  */
 export function imageToCanvas(img) {
@@ -152,6 +159,20 @@ export function imageToCanvas(img) {
   );
 
   return (ctx);
+
+}
+
+/**
+ * @param  {Object} canvas
+ * @return {Object}
+ */
+export function canvasToImage(canvas) {
+
+  let image = new Image();
+
+  image.src = canvas.toDataURL("image/png");
+
+  return (image);
 
 }
 
