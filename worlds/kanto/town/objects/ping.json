@@ -4,7 +4,7 @@
   "width"  : 8,
   "height" : 8,
   "scale"  : 1,
-  "zIndex" : 3,
+  "zIndex" : 9999999,
   "shadow" : true,
   "shadowY": 0,
   "collidable": false

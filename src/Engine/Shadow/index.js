@@ -1,6 +1,7 @@
 import {
   DIMENSION,
-  LEFT, RIGHT, UP, DOWN
+  LEFT, RIGHT, UP, DOWN,
+  SHADOW_ALPHA
 } from "../../cfg";
 
 import math from "../../Math";
@@ -120,7 +121,7 @@ export default class Shadow extends DisplayObject {
       ctx,
       0, 0,
       width, height,
-      85
+      SHADOW_ALPHA * 1e2
     );
 
   }

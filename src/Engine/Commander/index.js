@@ -41,9 +41,9 @@ export default class Commander {
 
   /**
    * Push a command
-   * @param  {String} action
-   * @param  {Object} scope
-   * @param  {Array} data
+   * @param {String} action
+   * @param {Object} scope
+   * @param {Array} data
    */
   push(action, scope, data) {
 
@@ -61,15 +61,27 @@ export default class Commander {
 
   }
 
+  /**
+   * Fire command
+   * @param {Object} cmd
+   * @param {String} action
+   */
   fire(cmd, action) {
     let template = this.commands[cmd.action][action];
     template.bind(cmd.scope).apply(template, cmd.data);
   }
 
+  /**
+   * Get cmd from current stack index
+   * @return {Object}
+   */
   getCurrentCmd() {
     return (this.stack[this.position]);
   }
 
+  /**
+   * Undo
+   */
   undo() {
 
     if (this.position >= 0) {
@@ -79,6 +91,9 @@ export default class Commander {
 
   }
 
+  /**
+   * Redo
+   */
   redo() {
 
     if (this.position < this.stack.length - 1) {

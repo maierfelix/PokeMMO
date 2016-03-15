@@ -44,35 +44,38 @@ export default class Game {
 
     switch (++stage) {
       case 1:
-        this.addMap(() => this.setup(stage));
+        this.addWorld(() => this.setup(stage));
       return void 0;
       case 2:
-        this.addEntities(() => this.setup(stage));
+        this.addMap(() => this.setup(stage));
       return void 0;
       case 3:
+        this.addEntities(() => this.setup(stage));
+      return void 0;
+      case 4:
         this.animateNPC();
         this.setup(stage);
       return void 0;
-      case 4:
+      case 5:
         /** Instant focus local player */
         this.engine.camera.focus(this.engine.localEntity, true);
         this.setup(stage);
       return void 0;
-      case 5:
+      case 6:
         if (EDIT_MODE) {
           this.engine.editor = new Editor(this.engine);
         }
         this.setup(stage);
       return void 0;
-      case 6:
+      case 7:
         window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
-      case 7:
+      case 8:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
-      case 8:
+      case 9:
         this.engine.renderer.glRenderer.init();
         this.setup(stage);
       return void 0;
@@ -88,7 +91,15 @@ export default class Game {
       let move = [LEFT, RIGHT, UP, DOWN][(Math.random() * 3) << 0];
       entity.move(move);
       this.animateNPC();
-    }, 2e3);
+    }, 1e3);
+  }
+
+  /**
+   * Add world
+   * @param {Function} resolve
+   */
+  addWorld(resolve) {
+    this.engine.addWorld("worlds/kanto/index.js", resolve);
   }
 
   /**
@@ -96,7 +107,7 @@ export default class Game {
    * @param {Function} resolve
    */
   addMap(resolve) {
-    this.engine.addMap("shared/maps/town/town.json", resolve);
+    this.engine.addMap("worlds/kanto/town/town.json", resolve);
   }
 
   /**
@@ -107,9 +118,9 @@ export default class Game {
 
     let player = this.entities.Player;
 
-    this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 112, y: 112, zIndex: 4, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true, shadow: true }));
+    this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 152, y: 128, zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true, shadow: true }));
 
-    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, zIndex: 4, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, collidable: true }));
+    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, zIndex: 1, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, collidable: true }));
 
     return (resolve());
 

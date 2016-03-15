@@ -112,18 +112,18 @@ export function renderEntitySelection() {
 
   if (this.camera.isInView(
     entity.position.x, entity.position.y,
-    entity.size.x, entity.size.y
+    entity.size.x * entity.scale, entity.size.y * entity.scale
   ) === false) return void 0;
   if (entity.opacity === .0) return void 0;
-  if (entity.texture === null || entity.shadow === null) return void 0;
+  if (entity.texture === null) return void 0;
 
   let resolution = this.camera.resolution;
 
   let x = (this.camera.x + (entity.position.x + entity.xMargin) * resolution) << 0;
   let y = (this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
 
-  let width  = (entity.size.x * resolution) << 0;
-  let height = (entity.size.y * resolution) << 0;
+  let width  = ((entity.size.x * entity.scale) * resolution) << 0;
+  let height = ((entity.size.y * entity.scale) * resolution) << 0;
 
   this.context.beginPath();
 
@@ -179,10 +179,10 @@ export function renderEntityCollisionBox(entity, x, y) {
   let xx = 0;
   let yy = 0;
 
-  let dim = DIMENSION * resolution;
+  let dim = DIMENSION * entity.scale * resolution;
 
-  let width  = entity.width / DIMENSION;
-  let height = entity.height / DIMENSION;
+  let width  = (entity.width) / DIMENSION;
+  let height = (entity.height) / DIMENSION;
 
   let length = width * height;
 
@@ -231,14 +231,14 @@ export function renderSelectionText(entity, x, y) {
   let txtX = `X: ${entity.position.x.toFixed(decimals)}`;
   let txtY = `Y: ${entity.position.y.toFixed(decimals)}`;
 
-  this.drawPixelText(
+  this.instance.renderer.drawPixelText(
     txtX,
     xx, yy,
     size, ln,
     color
   );
 
-  this.drawPixelText(
+  this.instance.renderer.drawPixelText(
     txtY,
     xx, yy += size,
     size, ln,

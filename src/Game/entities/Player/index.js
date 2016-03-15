@@ -236,29 +236,11 @@ export class Player extends Entity {
   }
 
   /**
-   * Check if we can render
-   * the static model
-   */
-  refreshStatic() {
-    if (
-      this.STATES.JUMPING === true ||
-      this.STATES.WALKING === true ||
-      this.STATES.RUNNING === true ||
-      this.STATES.BUMPING === true
-    ) {
-      this.static = false;
-    } else {
-      this.static = true;
-    }
-  }
-
-  /**
    * Refresh entity states
    */
   refreshState() {
     this.STATES.RUNNING = this.velocity === .5 ? false : this.velocity === 1 && this.STATES.WALKING === true ? true : false;
     this.STATES.JUMPING = this.z !== 0;
-    this.refreshStatic();
   }
 
 }

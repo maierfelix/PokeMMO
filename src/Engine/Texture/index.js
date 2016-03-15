@@ -50,12 +50,6 @@ export default class Texture {
     this.sprites = [];
 
     /**
-     * Static sprites
-     * @type {Array}
-     */
-    this.static_sprites = [];
-
-    /**
      * Image url
      * @type {String}
      */

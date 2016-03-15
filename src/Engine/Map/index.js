@@ -218,8 +218,7 @@ export default class Map extends DisplayObject {
       name = this.entities[ii].type;
       this.objectTemplates[name] = this.objects[this.entities[ii].type];
       this.entities[ii] = this.addEntity(Object.assign(
-        this.objects[this.entities[ii].type],
-        this.entities[ii]
+        this.entities[ii], this.objects[this.entities[ii].type]
       ));
     };
 

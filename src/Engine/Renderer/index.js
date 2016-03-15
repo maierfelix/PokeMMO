@@ -8,7 +8,6 @@ import { inherit } from "../utils";
 import * as entity from "../Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
-import * as edit from "./edit";
 
 import WGL_Renderer from "./webgl";
 
@@ -228,46 +227,9 @@ export default class Renderer {
     }
   }
 
-  /**
-   * Sort layers and entities
-   */
-  sort() {
-
-    this.depthSort(this.instance.currentMap.entities);
-
-    return void 0;
-
-  }
-
-  /**
-   * @param {Array} array
-   */
-  depthSort(array) {
-
-    let ii = 0;
-    let jj = 0;
-
-    let key = null;
-
-    let length = array.length;
-
-    for (; ii < length; ++ii) {
-      jj = ii;
-      key = array[jj];
-      for (; jj > 0 && array[jj - 1].position.y + array[jj - 1].yMargin + array[jj - 1].size.y > key.position.y + key.yMargin + key.size.y; --jj) {
-        array[jj] = array[jj - 1];
-      };
-      array[jj] = key;
-    };
-
-    return void 0;
-
-  }
-
 }
 
 inherit(Renderer, debug);
 inherit(Renderer, render);
 inherit(Renderer, entity);
-inherit(Renderer, edit);
 inherit(Renderer, webgl);

@@ -11,11 +11,12 @@ import {
 import * as map from "./Map/functions";
 import * as entity from "./Entity/functions";
 
+import Environment from "./Environment";
 import Renderer from "./Renderer";
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
 
-import { inherit, getWGLContext } from "./utils";
+import { inherit, getWGLContext, ajax as $GET } from "./utils";
 
 /**
  * Engine
@@ -70,12 +71,6 @@ export default class Engine extends DisplayObject {
     }
 
     /**
-     * Parsed maps
-     * @type {Object}
-     */
-    this.maps = {};
-
-    /**
      * Engine size
      * @type {Number}
      */
@@ -86,7 +81,13 @@ export default class Engine extends DisplayObject {
      * Camera object
      * @type {Object}
      */
-    this.camera = new Camera(this.width, this.height);
+    this.camera = new Camera(this);
+
+    /**
+     * Parsed maps
+     * @type {Object}
+     */
+    this.maps = {};
 
     /**
      * Local entity ref
@@ -106,6 +107,27 @@ export default class Engine extends DisplayObject {
      */
     this.editor = null;
 
+    /**
+     * Environment instance
+     * @type {Object}
+     */
+    this.environment = new Environment(this);
+
+  }
+
+  /**
+   * Add a world
+   */
+  addWorld(path, resolve) {
+
+    $GET(path).then(this::function(data) {
+      let world = new Function(data)();
+      console.log(world);
+      if (resolve instanceof Function) {
+        return (resolve());
+      }
+    });
+
   }
 
   /**
@@ -124,6 +146,47 @@ export default class Engine extends DisplayObject {
   set height(height) {
     this.height = height || 0;
     this.camera.height = this.height;
+  }
+
+  /**
+   * Sort layers and entities
+   */
+  sort() {
+
+    this.depthSort(this.currentMap.entities);
+
+    return void 0;
+
+  }
+
+  /**
+   * @param {Array} array
+   */
+  depthSort(array) {
+
+    let ii = 0;
+    let jj = 0;
+
+    let key = null;
+
+    let length = array.length;
+
+    for (; ii < length; ++ii) {
+      jj = ii;
+      key = array[jj];
+      for (;
+        jj > 0 &&
+        (array[jj - 1].position.y + array[jj - 1].yMargin + (array[jj - 1].size.y * array[jj - 1].scale)) * array[jj - 1].zIndex >
+        (key.position.y + key.yMargin + (key.size.y * key.scale)) * key.zIndex;
+        --jj
+      ) {
+        array[jj] = array[jj - 1];
+      };
+      array[jj] = key;
+    };
+
+    return void 0;
+
   }
 
   /**

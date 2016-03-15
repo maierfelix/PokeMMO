@@ -3,7 +3,7 @@ import {
   DEBUG_MODE, DEBUG_FPS,
   GRID_WIDTH,
   DIMENSION,
-  SHADOW_X, SHADOW_Y,
+  DISPLAY_SHADOWS, SHADOW_X, SHADOW_Y,
   RENDER_MODE, CANVAS, WGL
 } from "../../cfg";
 
@@ -18,7 +18,7 @@ export function render() {
 
   this.clear();
 
-  this.sort();
+  this.instance.sort();
 
   this.update();
 
@@ -78,7 +78,7 @@ export function draw() {
     );
     this.context.closePath();
     if (EDIT_MODE === true) {
-      this.renderEditorMode();
+      this.instance.editor.renderEditorMode();
     }
     this.renderDebugScene();
   }
@@ -121,7 +121,7 @@ export function getAnimationFrame(entity) {
     Math.floor(
       (this.now - entity.animationStart) / entity.animationSpeed
     ) %
-    (entity.animationFrames + (entity.loop === true ? 1 : 0)) *
+    ((entity.animationFrames - 1) + (entity.loop === true ? 1 : 0)) *
     ((entity.size.x * 2) << 0 * entity.size.x / entity.frames)
   );
 }
@@ -166,7 +166,7 @@ export function updateEntity(entity) {
 
   if (this.instance.camera.isInView(
     entity.position.x, entity.position.y,
-    entity.size.x, (entity.size.y * 2) + entity.shadowY
+    entity.size.x * entity.scale, ((entity.size.y * 2) * entity.scale) + entity.shadowY
   ) === false) {
     return (false);
   }
@@ -175,7 +175,7 @@ export function updateEntity(entity) {
     return (false);
   }
 
-  if (entity.texture === null || entity.shadow === null) {
+  if (entity.texture === null) {
     return (false);
   }
 
@@ -232,10 +232,13 @@ export function renderEntities() {
     if (gl === true) continue;
     this.renderEntity(
       entity,
+      /** Position */
       (camX + (entity.position.x + entity.xMargin) * resolution) << 0,
       (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
-      (entity.size.x * resolution) << 0, (entity.size.y * resolution) << 0,
-      ((entity.size.x / entity.scale) * 2) << 0, ((entity.size.y / entity.scale) * 2) << 0
+      /** Size */
+      (entity.size.x * resolution) * entity.scale << 0, (entity.size.y * resolution) * entity.scale << 0,
+      /** Scale */
+      ((entity.size.x / entity.scale) * 2) * entity.scale << 0, ((entity.size.y / entity.scale) * 2) * entity.scale << 0
     );
   };
 
@@ -271,7 +274,10 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
   }
 
   /** Shadow */
-  if (entity.static === false && entity.hasShadow === true) {
+  if (
+    DISPLAY_SHADOWS === true &&
+    entity.hasShadow === true
+  ) {
     this.renderShadow(
       entity,
       x, y,
@@ -287,25 +293,14 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
     }
   }
 
-  if (entity.static === true) {
-    this.context.drawImage(
-      entity.texture.static_sprites[entity.sFrame].canvas,
-      0, 0,
-      /** Scale */
-      eWidth, eHeight,
-      x, y,
-      width, height
-    );
-  } else {
-    this.context.drawImage(
-      entity.texture.effect_sprites[entity.sFrame].canvas,
-      0, 0,
-      /** Scale */
-      eWidth, eHeight,
-      x, y,
-      width, height
-    );
-  }
+  this.context.drawImage(
+    entity.texture.effect_sprites[entity.sFrame].canvas,
+    0, 0,
+    /** Scale */
+    eWidth, eHeight,
+    x, y,
+    width, height
+  );
 
   /** Reset ctx opacity */
   if (cOpacity === true) {
@@ -316,6 +311,8 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
     this.context.globalAlpha = 1.0;
     this.context.globalCompositeOperation = "source-over";
   }
+
+  this.context.resetTransform();
 
   return void 0;
 
@@ -343,11 +340,11 @@ export function renderShadow(entity, x, y, width, height, eWidth, eHeight) {
     eWidth,
     eHeight,
     /** Position */
-    x + (entity.shadow.position.x * resolution) << 0,
-    y + (entity.shadow.position.y * resolution) + ((eHeight / 2 * entity.scale) * resolution) << 0,
+    x + ((entity.shadow.position.x * entity.scale) * resolution) << 0,
+    y + ((entity.shadow.position.y * entity.scale) * resolution) + ((eHeight / 2 * entity.scale) * resolution) << 0,
     /** Scretch */
-    ((width + (entity.shadow.scale.x * resolution)) / SHADOW_X) << 0,
-    ((height + (entity.shadow.scale.y * resolution)) / SHADOW_Y) << 0
+    ((width + ((entity.shadow.scale.x * entity.scale) * resolution)) / SHADOW_X) << 0,
+    ((height + ((entity.shadow.scale.y * entity.scale) * resolution)) / SHADOW_Y) << 0
   );
 
   return void 0;

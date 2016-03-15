@@ -130,13 +130,20 @@ export const PIXEL_SCALE = .125;
  * @constant
  * @type {Number}
  */
-export const MIN_SCALE = 1.0;
+export const MIN_SCALE = 2.0;
 
 /**
  * @constant
  * @type {Number}
  */
 export const MAX_SCALE = 12.5;
+
+/**
+ * Display shadows
+ * @constant
+ * @type {Boolean}
+ */
+export const DISPLAY_SHADOWS = true;
 
 /**
  * Shadow x scale
@@ -151,6 +158,12 @@ export const SHADOW_X = 1.0;
  * @type {Number}
  */
 export const SHADOW_Y = 1.45;
+
+/**
+ * Shadow alpha
+ * @type {Number}
+ */
+export let SHADOW_ALPHA = .85;
 
 /**
  * Direction

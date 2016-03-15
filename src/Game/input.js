@@ -248,11 +248,11 @@ export const mouse = [
         this.engine.editor.selectTo(x, y);
         return void 0;
       }
-      if (cfg.FREE_CAMERA && e instanceof TouchEvent || e.which !== 1) {
+      if (cfg.FREE_CAMERA && (e instanceof TouchEvent || e.which !== 1)) {
         this.engine.camera.dragging = true;
         this.engine.camera.click(x, y);
       }
-      if (cfg.EDIT_MODE && e instanceof TouchEvent || e.which === 1) {
+      if (cfg.EDIT_MODE && (e instanceof TouchEvent || e.which === 1)) {
         this.engine.editor.dragging = true;
         this.engine.editor.selectEntity(x, y);
       }

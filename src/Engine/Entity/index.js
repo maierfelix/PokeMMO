@@ -41,6 +41,16 @@ export default class Entity extends DisplayObject {
     this.last = new math.Point();
 
     /**
+     * States
+     * @type {Object}
+     */
+    this.STATES = {
+      JUMPING: false,
+      LOCK:    false,
+      EDITING: false
+    };
+
+    /**
      * Life time
      * @type {Number}
      */
@@ -50,7 +60,7 @@ export default class Entity extends DisplayObject {
      * Z priority
      * @type {Number}
      */
-    this.zIndex = obj.zIndex === void 0 ? 0 : obj.zIndex;
+    this.zIndex = obj.zIndex === void 0 ? 1 : obj.zIndex;
 
     /**
      * Collidable
@@ -161,13 +171,6 @@ export default class Entity extends DisplayObject {
     this.scale = obj.scale === void 0 ? 1 : obj.scale;
 
     /**
-     * Static state
-     * Used for faster rendering
-     * @type {Boolean}
-     */
-    this.static = true;
-
-    /**
      * Animations
      * @type {Array}
      */
@@ -250,14 +253,32 @@ export default class Entity extends DisplayObject {
     this.glTexture = null;
 
     /**
-     * States
-     * @type {Object}
+     * Enter trigger
+     * @type {Function}
      */
-    this.STATES = {
-      JUMPING: false,
-      LOCK:    false,
-      EDITING: false
-    };
+    this.onEnter = null;
+
+    /**
+     * Leave trigger
+     * @type {Function}
+     */
+    this.onLeave = null;
+
+    /**
+     * Collide trigger
+     * @type {Function}
+     */
+    this.onCollide = null;
+
+    if (obj.onEnter !== void 0) {
+      this.onEnter = obj.onEnter;
+    }
+    if (obj.onLeave !== void 0) {
+      this.onLeave = obj.onLeave;
+    }
+    if (obj.onCollide !== void 0) {
+      this.onCollide = obj.onCollide;
+    }
 
     /** Load texture */
     getSprite(
@@ -265,7 +286,6 @@ export default class Entity extends DisplayObject {
       this.texture = texture;
       if (obj.shadow === true) {
         this.shadow = new Shadow(this);
-        this.buildStatic();
       }
       if (WGL_SUPPORT === true) {
         this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
@@ -311,54 +331,10 @@ export default class Entity extends DisplayObject {
   }
 
   /**
-   * Generates a static texture
-   */
-  buildStatic() {
-
-    let yPadding = this.height + this.shadowY;
-
-    let ii = 0;
-    let length = 0;
-
-    let buffer = null;
-
-    let width  = 0;
-    let height = 0;
-
-    length = this.texture.sprites.length;
-
-    for (; ii < length; ++ii) {
-      width  = this.texture.sprites[ii].canvas.width;
-      height = this.texture.sprites[ii].canvas.height;
-      buffer = createCanvasBuffer(width, height + -this.shadowY);
-      /** Shadow */
-      /*buffer.drawImage(
-        this.shadow.sprites[ii].canvas,
-        this.shadow.position.x, this.shadow.position.y,
-        width, height
-      );*/
-      /** Sprite */
-      buffer.drawImage(
-        this.texture.effect_sprites[ii].canvas,
-        0, 0,
-        width, height
-      );
-      this.texture.static_sprites[ii] = buffer;
-      buffer = null;
-    };
-
-  }
-
-  /**
    * Refresh entity states
    */
   refreshState() {
     this.STATES.JUMPING = this.z !== 0;
-    if (this.STATES.JUMPING === true) {
-      this.static = false;
-    } else {
-      this.static = true;
-    }
   }
 
   /**

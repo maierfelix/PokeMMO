@@ -12,7 +12,9 @@ export function addEntity(entity) {
     this.localEntity = entity;
   }
 
-  entity.fadeIn(1);
+  if (entity.customOpacity() === false) {
+    entity.fadeIn(1);
+  }
 
   this.currentMap.entities.push(entity);
 

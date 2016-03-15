@@ -18,12 +18,24 @@ export default class Camera extends DisplayObject {
 
   /**
    * @constructor
-   * @param {Number} width
-   * @param {Number} height
+   * @param {Object} instance
    */
-  constructor(width, height) {
+  constructor(instance) {
 
     super(null);
+
+    /**
+     * Instance ref
+     * @type {Object}
+     */
+    this.instance = instance;
+
+    /**
+     * Camera size
+     * @type {Number}
+     */
+    this.width = instance.width;
+    this.height = instance.height;
 
     /**
      * Drag offset
@@ -51,8 +63,8 @@ export default class Camera extends DisplayObject {
 
     /** Camera size */
     this.size.set(
-      width  || 0,
-      height || 0
+      this.width  || 0,
+      this.height || 0
     );
 
     /**

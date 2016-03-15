@@ -1,9 +1,10 @@
-"use strict";
-
 return (function() {
 
+  "use strict";
+
   var MAP = {
-    entities: []
+    entities: [],
+    settings: {}
   };
 
   var x = 0;
@@ -16,8 +17,7 @@ return (function() {
       {
         x: x,
         y: y,
-        type: "tree",
-        static: false
+        type: "tree"
       }
     );
     x += 16;
@@ -37,8 +37,7 @@ return (function() {
       {
         x: x,
         y: y,
-        type: "tree",
-        static: false
+        type: "tree"
       }
     );
     x += 16;
@@ -53,9 +52,29 @@ return (function() {
     type: "ping"
   });
 
+  /*MAP.entities.push({
+    x: 144, y: 40,
+    type: "cloud",
+    opacity: .75,
+    scale: .1
+  });*/
+
   MAP.entities.push({
-    x: 160, y: 112,
-    type: "treestub"
+    x: 168, y: 136,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 160, y: 128,
+    type: "treestub",
+    onCollide: `
+      if (1 - (2 * 7) < 3) {
+        ME.LOCK.TEST = ON;
+        @ ME.JUMP;
+        @ MSG["Hello world!", "Yes", "No", MSG["Moinsen"], 1 * 2];
+        ME.LOCK = OFF;
+      }
+    `
   });
 
   MAP.entities.push({
@@ -64,8 +83,15 @@ return (function() {
   });
 
   MAP.entities.push({
-    x: 160, y: 120,
-    type: "windmill"
+    x: 192, y: 120,
+    type: "windmill",
+    scale: 1
+  });
+
+  MAP.entities.push({
+    x: 256, y: 120,
+    type: "windmill",
+    scale: 2
   });
 
   MAP.entities.push({

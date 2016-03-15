@@ -17,11 +17,15 @@ export default class MapEntity extends Entity {
 
     super(obj);
 
+    this.zIndex = obj.zIndex === void 0 ? 1 : obj.zIndex;
+
     this.frames = [0, 0];
 
     this.facing = 0;
 
-    this.opacity = 1.0;
+    this.opacity = obj.opacity === void 0 ? 1.0 : obj.opacity;
+
+    this.scale = obj.scale === void 0 ? 1.0 : obj.scale;
 
     this.frame = 1;
 

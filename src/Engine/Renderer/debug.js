@@ -55,12 +55,12 @@ export function renderDebugScene() {
     color
   );
 
-  var ii = 0;
-  var kk = 0;
+  let ii = 0;
+  let kk = 0;
 
-  var length = 0;
+  let length = 0;
 
-  var entities = this.instance.currentMap.entities;
+  let entities = this.instance.currentMap.entities;
 
   length = entities.length;
 
@@ -86,7 +86,7 @@ export function renderDebugScene() {
 
   if (this.instance.localEntity !== null) {
     this.drawPixelText(
-      `LOCAL X: ${this.instance.localEntity.x} Y: ${this.instance.localEntity.y}`,
+      `LOCAL X: ${this.instance.localEntity.x} Y: ${this.instance.localEntity.y.toFixed(2)}`,
       15, 270,
       20, 1.5,
     color
