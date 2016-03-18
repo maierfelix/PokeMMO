@@ -105,8 +105,8 @@ export default class NODE_LIST {
       class MemberExpression {
         constructor() {
           this.type = "MemberExpression";
-          this.left  = null;
-          this.right = null;
+          this.object   = null;
+          this.property = null;
         }
       }
     );

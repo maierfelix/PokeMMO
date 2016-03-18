@@ -61,6 +61,12 @@ export default class Renderer {
     this.glNode = instance.glNode;
 
     /**
+     * Interface node ref
+     * @type {Object}
+     */
+    this.uiNode = instance.uiNode;
+
+    /**
      * Context ref
      * @type {Object}
      */
@@ -120,12 +126,6 @@ export default class Renderer {
      */
     this.camera = instance.camera;
 
-    /**
-     * Sprite cache queue
-     * @type {Array}
-     */
-    this.spriteQueue = [];
-
     if (cfg.WGL_SUPPORT) {
       this.glRenderer = new WGL_Renderer(this);
     }
@@ -180,12 +180,8 @@ export default class Renderer {
 
     this.updateTimers();
 
-    if (this.camera.entityfocus !== null) {
-      this.camera.animate();
-    }
-
-    if (this.camera.queue.length <= 0) {
-      this.camera.focusEntity();
+    if (this.camera.entityFocus !== null) {
+      this.camera.animate(this.camera.entityFocus);
     }
 
     return void 0;
@@ -213,6 +209,9 @@ export default class Renderer {
     this.camera.height = this.height;
     this.instance.width = this.width;
     this.instance.height = this.height;
+    this.uiNode.width = this.width;
+    this.uiNode.height = this.height;
+    this.instance.resizeScenes();
     if (cfg.RENDER_MODE === cfg.WGL) {
       this.glNode.width = this.width;
       this.glNode.height = this.height;

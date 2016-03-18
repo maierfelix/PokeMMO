@@ -64,9 +64,9 @@ export function jumping() {
       for (let entity of game.engine.currentMap.entities) {
         ++ii;
         if (entity.id !== this.id) {
-          (function(entity) {
-            setTimeout(function() { entity.jump(); }, ii * 25);
-          })(entity);
+          setTimeout(function() {
+            entity.jump();
+          }, ii * 25);
         }
       };
     }
@@ -88,6 +88,20 @@ export function move(dir) {
 
   /** Wait until we finished */
   if (this.moving === true) return void 0;
+
+  if (this.facing !== dir) {
+    /** Skip bumping state */
+    if (this.STATES.BUMPING === true) {
+      this.stepCount = 0;
+      if (this.animations[this.animationIndex - 1].type === "bump") {
+        this.animations.splice(this.animationIndex - 1, 1);
+      }
+      this.moving = false;
+      this.STATES.BUMPING = false;
+    }
+  } else {
+    if (this.STATES.BUMPING === true) return void 0;
+  }
 
   if (this.STATES.BUMPING === true) return void 0;
 
@@ -126,18 +140,6 @@ export function changeFacing(dir) {
       this.resetFrame();
     }
   }, 30);
-
-  /**
-   * Player changed facing while in
-   * bumping state -> skip bumping
-   * and let him move immediately
-   */
-  if (this.STATES.BUMPING === true) {
-    this.stepCount = 0;
-    this.stopAnimation();
-    this.moving = false;
-    this.STATES.BUMPING = false;
-  }
 
 }
 
@@ -192,7 +194,7 @@ export function playStateSound() {
 
   let volume = this.isLocalPlayer === true ? VOLUME.NETWORK_PLAYER : VOLUME.LOCAL_PLAYER;
 
-  let dist = Maps[this.map].distance(this, game.engine.localEntity);
+  let dist = Maps[this.map].distance(this, game.engine.camera);
 
   if (this.STATES.JUMPING === true && this.z === 0) {
     Audio.playSound("jump", volume, dist.x, dist.y);

@@ -69,10 +69,7 @@ return (function() {
     type: "treestub",
     onCollide: `
       if (1 - (2 * 7) < 3) {
-        ME.LOCK.TEST = ON;
-        @ ME.JUMP;
-        @ MSG["Hello world!", "Yes", "No", MSG["Moinsen"], 1 * 2];
-        ME.LOCK = OFF;
+        window.a.b = c;
       }
     `
   });

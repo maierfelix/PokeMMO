@@ -222,6 +222,30 @@ export default class Entity extends DisplayObject {
     this.z = .0;
 
     /**
+     * Orbiting
+     * @type {Boolean}
+     */
+    this.orbit = false;
+
+    /**
+     * Orbit angle
+     * @type {Number}
+     */
+    this.orbitAngle = 0;
+
+    /**
+     * Target to orbit
+     * @type {Object}
+     */
+    this.orbitTarget = null;
+
+    /**
+     * Stop orbit
+     * @type {Boolean}
+     */
+    this.stopOrbit = false;
+
+    /**
      * Idle time
      * @type {Number}
      */
@@ -328,6 +352,19 @@ export default class Entity extends DisplayObject {
       }
     });
 
+  }
+
+  /**
+   * Orbit around a entity
+   * @param  {Object} target
+   */
+  orbitAround(target) {
+    if (target !== null) {
+      this.orbit = true;
+      this.orbitTarget = target;
+    } else {
+      this.orbit = false;
+    }
   }
 
   /**

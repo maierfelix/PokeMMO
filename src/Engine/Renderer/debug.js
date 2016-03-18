@@ -94,22 +94,29 @@ export function renderDebugScene() {
   }
 
   this.drawPixelText(
-    `GOD MODE: ${GOD_MODE === true ? "enabled" : "disabled"}`,
+    `COMMAND STACK: ${this.instance.editor.commander.position + 1} | ${this.instance.editor.commander.stack.length}`,
     15, 300,
     20, 1.5,
     color
   );
 
   this.drawPixelText(
-    `FREE CAMERA: ${FREE_CAMERA === true ? "enabled" : "disabled"}`,
+    `GOD MODE: ${GOD_MODE === true ? "enabled" : "disabled"}`,
     15, 330,
     20, 1.5,
     color
   );
 
   this.drawPixelText(
-    `EDIT MODE: ${EDIT_MODE === true ? "enabled" : "disabled"}`,
+    `FREE CAMERA: ${FREE_CAMERA === true ? "enabled" : "disabled"}`,
     15, 360,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `EDIT MODE: ${EDIT_MODE === true ? "enabled" : "disabled"}`,
+    15, 390,
     20, 1.5,
     color
   );

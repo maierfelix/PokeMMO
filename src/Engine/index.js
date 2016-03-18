@@ -16,6 +16,8 @@ import Renderer from "./Renderer";
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
 
+import { Language } from "./Language";
+
 import { inherit, getWGLContext, ajax as $GET } from "./utils";
 
 /**
@@ -34,12 +36,24 @@ export default class Engine extends DisplayObject {
   constructor(instance, width, height) {
 
     super(null);
-
+console.log(Language);
     /**
      * Instance
      * @type {Object}
      */
     this.instance = instance;
+
+    /**
+     * Active scene state
+     * @type {Boolean}
+     */
+    this.activeScene = false;
+
+    /**
+     * Scenes
+     * @type {Object}
+     */
+    this.scenes = {};
 
     /**
      * Node
@@ -52,6 +66,12 @@ export default class Engine extends DisplayObject {
      * @type {Object}
      */
     this.glNode = this.instance.glNode;
+
+    /**
+     * Interface node
+     * @type {Object}
+     */
+    this.uiNode = this.instance.uiNode;
 
     /**
      * Context
@@ -112,6 +132,34 @@ export default class Engine extends DisplayObject {
      * @type {Object}
      */
     this.environment = new Environment(this);
+
+    this.initScenes();
+
+  }
+
+  /**
+   * Initialise scenes
+   */
+  initScenes() {
+
+    for (let scene in this.instance.scenes) {
+      this.scenes[scene] = new this.instance.scenes[scene](this);
+    };
+
+  }
+
+  /**
+   * Resize scenes
+   */
+  resizeScenes() {
+
+    for (let scene in this.scenes) {
+      if (this.scenes[scene].active === true) {
+        this.scenes[scene].updatePositions();
+        this.scenes[scene].render();
+        this.scenes[scene].draw();
+      }
+    };
 
   }
 

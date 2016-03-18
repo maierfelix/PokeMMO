@@ -2,7 +2,12 @@ import {
   ajax as $GET,
   getPath as getPath
 } from "../utils";
+
 import math from "../../Math";
+
+import {
+  DIMENSION
+} from "../../cfg";
 
 import Map from "../Map";
 
@@ -28,14 +33,22 @@ export function addMap(path, resolve) {
 }
 
 /**
- * Measure distane between 2 entities
- * @param {Object} entityA
- * @param {Object} entityB
+ * Measure distance between entity and camera
+ * @param {Object} entity
+ * @param {Object} camera
  * @return {Object}
  */
-export function distance(entityA, entityB) {
+export function distance(entity, camera) {
 
-  let distance = math.distance(entityA.x, entityA.y, entityB.x, entityB.y);
+  let distance = math.distance(
+    entity.x,
+    entity.y,
+    (((camera.size.x / 2) - camera.position.x) / camera.resolution) - DIMENSION / 2,
+    (((camera.size.y / 2) - camera.position.y) / camera.resolution)
+  );
+
+  distance.x /= 10;
+  distance.y /= 10;
 
   return (distance);
 

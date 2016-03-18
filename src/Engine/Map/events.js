@@ -22,6 +22,37 @@ export function triggerEvent(entity, parent, event) {
 }
 
 /**
+ * Action trigger
+ * @param {Object} position
+ * @param {Object} entity
+ */
+export function actionTrigger(position, entity) {
+
+  let entities = this.entities;
+
+  let ii = 0;
+  let length = entities.length;
+
+  let event = null;
+
+  let id = entity.id;
+
+  let x = position.x << 0;
+  let y = position.y << 0;
+
+  for (; ii < length; ++ii) {
+    event = entities[ii];
+    if (event.id === id) continue;
+    if (event.x << 0 === x && event.y << 0 === y) {
+      event.orbitAround(entity);
+    }
+  };
+
+  return void 0;
+
+}
+
+/**
  * Obstacle check
  * @param {Object} entity
  * @param {Number} dir
@@ -56,44 +87,49 @@ export function isEntityCollidable(entity, x, y) {
 
   let collide = false;
 
+  let id = entity.id;
+
+  let event = null;
+
   for (; ii < length; ++ii) {
-    if (entities[ii].id === entity.id) continue;
+    event = entities[ii];
+    if (event.id === id) continue;
     cubicCollision = math.cubicCollision(
-      entities[ii].position.x << 0, entities[ii].position.y << 0,
-      ((entities[ii].size.x * entities[ii].scale) + entities[ii].xMargin) - DIMENSION,
-      ((entities[ii].size.y * entities[ii].scale) + entities[ii].yMargin) - DIMENSION,
+      event.position.x << 0, event.position.y << 0,
+      ((event.size.x * event.scale) + event.xMargin) - DIMENSION,
+      ((event.size.y * event.scale) + event.yMargin) - DIMENSION,
       x, y,
       1
     );
     /** Entity is a collidable */
-    if (entities[ii].collidable === true) {
+    if (event.collidable === true) {
       /** Collision box */
-      if (entities[ii].collisionBox.length > 0) {
-        if (this.collidesWithCollisionBox(entities[ii], x, y) === true) {
-          this.triggerEvent(entities[ii], entity, "onCollide");
+      if (event.collisionBox.length > 0) {
+        if (this.collidesWithCollisionBox(event, x, y) === true) {
+          this.triggerEvent(event, entity, "onCollide");
           collide = true;
         }
       /** Cubic based collision */
       } else {
         if (cubicCollision === true) {
-          this.triggerEvent(entities[ii], entity, "onCollide");
+          this.triggerEvent(event, entity, "onCollide");
           collide = true;
         }
       }
     } else {
       if (
         math.cubicCollision(
-          entities[ii].position.x << 0, entities[ii].position.y << 0,
-          ((entities[ii].size.x * entities[ii].scale) + entities[ii].xMargin) - DIMENSION,
-          ((entities[ii].size.y * entities[ii].scale) + entities[ii].yMargin) - DIMENSION,
+          event.position.x << 0, event.position.y << 0,
+          ((event.size.x * event.scale) + event.xMargin) - DIMENSION,
+          ((event.size.y * event.scale) + event.yMargin) - DIMENSION,
           entity.position.x << 0, entity.position.y << 0,
           1
         ) === true
       ) {
-        this.triggerEvent(entities[ii], entity, "onLeave");
+        this.triggerEvent(event, entity, "onLeave");
       }
       if (cubicCollision === true) {
-        this.triggerEvent(entities[ii], entity, "onEnter");
+        this.triggerEvent(event, entity, "onEnter");
       }
     }
   };

@@ -36,22 +36,17 @@ export function parseBlock() {
   }
 
   if (this.accept("IDENTIFIER") === true) {
-    if (this.tokens[this.index + 1].name === "PERIOD") {
-      ast = this.parseMemberExpression();
-      /** Assignment expression */
-      if (this.accept("ASSIGN") === true) {
-        tmp = ast;
-        ast = new NODE_LIST.AssignmentExpression();
-        ast.operator = this.node.value;
-        ast.left = tmp;
-        this.next();
-        ast.right = this.parseExpression(0);
-      }
-      this.next();
-      return (ast);
-    }
+    /** Function call */
     if (this.tokens[this.index + 1].name === "LBRACK") {
       ast = this.parseCallExpression();
+      this.next();
+      return (ast);
+    } else {
+      ast = new NODE_LIST.AssignmentExpression();
+      ast.left = this.parseMemberExpression();
+      ast.operator = this.node.value;
+      this.expect("ASSIGN");
+      ast.right = this.parseMemberExpression();
       this.next();
       return (ast);
     }

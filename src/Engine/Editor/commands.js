@@ -84,17 +84,52 @@ export let commands = [
     },
     onRedo: function(entity) {
 
+      let entities = this.instance.instance.entities;
+
       let map = this.map;
 
-      if ((entity instanceof MapEntity) === false) return void 0;
+      let tmp = null;
 
-      let tpl = map.objectTemplates[entity.name.toLowerCase()];
+      let pushEntity = null;
 
-      tpl.x = entity.x;
-      tpl.y = entity.y;
-      tpl.z = entity.z;
+      if (entity instanceof entities.Player) {
+        tmp = new entities.Player({
+          name: "undefined",
+          map: entity.map,
+          x: entity.x, y: entity.y,
+          zIndex: entity.zIndex,
+          sprite: entity.sprite,
+          width: entity.width, height: entity.height,
+          isLocalPlayer: false,
+          collidable: entity.collidable,
+          shadow: entity.hasShadow
+        });
+        if (entity.instance) {
+          tmp.instance = entity.instance;
+          console.log(tmp, tmp.instance);
+        }
+        if (tmp.hasShadow) {
+          tmp.shadow.x = entity.shadow.x;
+          tmp.shadow.y = entity.shadow.y;
+        }
+        tmp.fadeIn(.75);
+      }
+      else if (entity instanceof MapEntity) {
+        tmp = map.objectTemplates[entity.name.toLowerCase()];
+      }
+      else {
+        return void 0;
+      }
 
-      let pushEntity = map.addEntity(tpl);
+      tmp.x = entity.x;
+      tmp.y = entity.y;
+      tmp.z = entity.z;
+
+      if (entity instanceof MapEntity) {
+        pushEntity = map.addEntity(tmp);
+      } else {
+        pushEntity = tmp;
+      }
 
       this.entitySelection = pushEntity;
 

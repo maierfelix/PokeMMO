@@ -2,25 +2,25 @@ import NODE_LIST from "./NodeList";
 
 /**
  * Recursive object member parsing
+ * Identifier *. *Identifier
  * @return {Object}
  */
 export function parseMemberExpression() {
 
   let ast = null;
-  let parent = null;
   let tmp = null;
+  let parent = null;
 
-  ast = this.parseBase();
+  ast = this.parseUnary();
 
-  if (this.accept("PERIOD") === true) {
+  for (;this.accept("PERIOD") === true;) {
     parent = new NODE_LIST.MemberExpression();
-    parent.left = ast;
+    parent.property = ast;
     this.next();
-    if (!(tmp = this.parseMemberExpression())) return (null);
-    parent.right = tmp;
+    tmp = this.parseMemberExpression();
+    parent.object = tmp;
     ast = parent;
-    return (ast);
-  }
+  };
 
   return (ast);
 

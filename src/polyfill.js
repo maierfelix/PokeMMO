@@ -1,6 +1,4 @@
-import { AudioPlayer, Sound } from "./libs/audio";
-
-window.Sound = AudioPlayer;
+import { Howler } from "./libs/Howler";
 
 window.rAF = (function() {
   return (

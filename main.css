@@ -64,7 +64,23 @@ button, a {
   text-decoration: none;
 }
 
+#ui {
+  z-index: 2;
+}
+
+#canvas {
+  z-index: 1;
+}
+
+#webgl {
+  z-index: 1;
+}
+
 canvas, img {
+  position: absolute;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
   image-rendering: optimizeSpeed;
   image-rendering: -o-crisp-edges;
   image-rendering: -moz-crisp-edges;

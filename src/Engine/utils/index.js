@@ -38,7 +38,7 @@ export function supportWGL() {
 
   return (false);
 
-};
+}
 
 /**
  * Get wgl context of a canvas

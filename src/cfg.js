@@ -104,7 +104,7 @@ export const BGM = false;
  * @constant
  * @type {Number}
  */
-export const BGS = false;
+export const BGS = true;
 
 /**
  * Vertical depth sorting hack

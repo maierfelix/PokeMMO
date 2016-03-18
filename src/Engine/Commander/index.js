@@ -53,7 +53,7 @@ export default class Commander {
       scope: scope
     };
 
-    this.stack.splice(this.position + 1, this.stack.length - 1);
+    this.stack.splice(this.position + 1, this.stack.length);
 
     this.stack.push(cmd);
 

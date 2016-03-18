@@ -3,6 +3,10 @@ import {
   DIMENSION, GRAVITY
 } from "../../../cfg";
 
+import {
+  Maps
+} from "../../../Engine/utils";
+
 import { inherit } from "../../../Engine/utils";
 
 import Entity from "../../../Engine/Entity";
@@ -241,6 +245,14 @@ export class Player extends Entity {
   refreshState() {
     this.STATES.RUNNING = this.velocity === .5 ? false : this.velocity === 1 && this.STATES.WALKING === true ? true : false;
     this.STATES.JUMPING = this.z !== 0;
+  }
+
+  /**
+   * Trigger faced tile
+   */
+  action() {
+    let position = math.getTilePosition(this.x << 0, this.y << 0, this.facing);
+    Maps[this.map].actionTrigger(position, this);
   }
 
 }

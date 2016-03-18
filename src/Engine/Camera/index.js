@@ -168,7 +168,7 @@ export default class Camera extends DisplayObject {
 
     let amount = (delta ? -delta : delta);
 
-    amount = amount / 2 / (math.hypot(this.width, this.height) / Math.PI) * math.zoomScale(this.scale);
+    amount = amount / 2 / (math.hypot(this.size.x, this.size.y) / Math.PI) * math.zoomScale(this.scale);
 
     this.drag.pz = this.resolution;
 
@@ -177,8 +177,8 @@ export default class Camera extends DisplayObject {
     if (this.scale < MIN_SCALE) this.scale = MIN_SCALE;
     if (this.scale > MAX_SCALE) this.scale = MAX_SCALE;
 
-    this.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
-    this.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+    this.position.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+    this.position.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
 
   }
 
@@ -204,42 +204,53 @@ export default class Camera extends DisplayObject {
     );
   }
 
+  easing(x) {
+    return 0.5 + 0.5 * Math.sin((x - 0.5) * Math.PI);
+  }
+
+  updateFocus(entity) {
+
+    this.initial = {
+      x: this.position.x,
+      y: this.position.y
+    };
+
+    this.target = {
+      x: this.getX(entity.x),
+      y: this.getY(entity.y)
+    };
+
+    this.deltaX = this.target.x - this.initial.x;
+    this.deltaY = this.target.y - this.initial.y;
+
+  }
+
   /**
    * Play camera animations
    */
-  animate() {
+  animate(entity) {
 
-    if (this.queue.length <= 0) return void 0;
+    if (FREE_CAMERA === true) return void 0;
 
-    let velocity = this.queue[0];
+    this.updateFocus(entity);
 
-    let x = this.getX(this.queue[0].entity.x);
-    let y = this.getY(this.queue[0].entity.y);
+    let velocity = this.easing(Math.atan(1.05));
 
-    /**
-     * TODO: Get camera movement working
-     * while change resolution
-     * TODO: Make more stable
-     */
- 
-    /**
-     * Immediate camera value injection
-     * ?: so we do grid based movement
-     */
-    if (this.position.x !== x) {
-      this.position.x += this.position.x < x ? this.resolution : -this.resolution;
+    let x = this.target.x - (this.initial.x + (velocity * this.deltaX));
+    let y = this.target.y - (this.initial.y + (velocity * this.deltaY));
+
+    if (Math.abs(this.x + x - this.target.x) > Math.abs(this.x - this.target.x)) {
+      this.x = this.target.x;
+      this.initial.x = this.target.x;
     } else {
-      if (this.position.y !== y) {
-        this.position.y += this.position.y < y ? this.resolution : -this.resolution;
-      }
+      this.x += x;                
     }
 
-    if (
-      this.position.x === x &&
-      this.position.y === y
-    ) {
-      this.entityFocus = this.queue[0].entity;
-      this.queue.shift();
+    if (Math.abs(this.y + y - this.target.y) > Math.abs(this.y - this.target.y)) {
+      this.y = this.target.y;
+      this.initial.y = this.target.y;
+    } else {
+      this.y += y;                
     }
 
     return void 0;
@@ -251,9 +262,11 @@ export default class Camera extends DisplayObject {
    * @param {Object} entity
    */
   animateFocus(entity) {
-    this.queue.push({
-      entity: entity
-    });
+
+    this.updateFocus(entity);
+
+    this.entityFocus = entity;
+
   }
 
   /**
@@ -285,6 +298,8 @@ export default class Camera extends DisplayObject {
   focus(entity, instant) {
     if (instant === true) {
       this.entityFocus = entity;
+      this.x = this.getX(entity.x);
+      this.y = this.getY(entity.y);
       return void 0;
     }
     this.animateFocus(entity);

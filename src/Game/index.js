@@ -10,6 +10,7 @@ import Editor from "../Engine/Editor";
 
 import * as Events from "./input.js";
 import * as entities from "./entities";
+import * as scenes from "./scenes";
 
 /**
  * Game
@@ -25,8 +26,11 @@ export default class Game {
 
     this.canvasNode = document.querySelector("#canvas");
     this.glNode = document.querySelector("#webgl");
+    this.uiNode = document.querySelector("#ui");
 
     this.entities = entities;
+
+    this.scenes = scenes;
 
     this.engine = new Engine(this);
 
@@ -58,7 +62,7 @@ export default class Game {
       return void 0;
       case 5:
         /** Instant focus local player */
-        this.engine.camera.focus(this.engine.localEntity, true);
+        this.engine.camera.focus(this.engine.getEntityByProperty("Joy", "name"), true);
         this.setup(stage);
       return void 0;
       case 6:
@@ -91,7 +95,7 @@ export default class Game {
       let move = [LEFT, RIGHT, UP, DOWN][(Math.random() * 3) << 0];
       entity.move(move);
       this.animateNPC();
-    }, 1e3);
+    }, 2e3);
   }
 
   /**

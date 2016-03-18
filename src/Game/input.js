@@ -118,7 +118,10 @@ export const keys = [
   },
   {
     name: "Z",
-    fire: function() {}
+    fire: function() {
+      let local = this.engine.localEntity;
+      local.action();
+    }
   },
   /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
   {
@@ -137,8 +140,13 @@ export const keys = [
   },
   {
     name: "ESCAPE",
+    spam: false,
     fire: function() {
-      console.log("Escape", this);
+      if (this.engine.scenes.Pause.active) {
+        this.engine.scenes.Pause.hide();
+      } else {
+        this.engine.scenes.Pause.show();
+      }
     }
   },
   {
@@ -157,63 +165,81 @@ export const keys = [
     spam: false,
     fire: function() {
       let local = this.engine.localEntity;
-      local.jump();
+      if (!this.engine.activeScene) {
+        local.jump();
+      }
     }
   },
   {
     name: "←",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.LEFT);
+      if (!this.engine.activeScene) {
+        local.move(cfg.LEFT);
+      }
     }
   },
   {
     name: "→",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.RIGHT);
+      if (!this.engine.activeScene) {
+        local.move(cfg.RIGHT);
+      }
     }
   },
   {
     name: "↑",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.UP);
+      if (!this.engine.activeScene) {
+        local.move(cfg.UP);
+      }
     }
   },
   {
     name: "↓",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.DOWN);
+      if (!this.engine.activeScene) {
+        local.move(cfg.DOWN);
+      }
     }
   },
     {
     name: "W",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.UP);
+      if (!this.engine.activeScene) {
+        local.move(cfg.UP);
+      }
     }
   },
   {
     name: "A",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.LEFT);
+      if (!this.engine.activeScene) {
+        local.move(cfg.LEFT);
+      }
     }
   },
   {
     name: "S",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.DOWN);
+      if (!this.engine.activeScene) {
+        local.move(cfg.DOWN);
+      }
     }
   },
   {
     name: "D",
     fire: function() {
       let local = this.engine.localEntity;
-      local.move(cfg.RIGHT);
+      if (!this.engine.activeScene) {
+        local.move(cfg.RIGHT);
+      }
     }
   }
 ];
@@ -226,6 +252,10 @@ export const mouse = [
       if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.EDIT_MODE) {
         if (!this.engine.editor.dragging) {
+          let entity = this.engine.editor.getEntityByMouse(e.clientX, e.clientY);
+          if (entity !== null) {
+            this.engine.camera.focus(entity, false);
+          }
           this.engine.editor.editEntity(e.clientX, e.clientY);
         }
       }

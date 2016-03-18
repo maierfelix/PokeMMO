@@ -149,6 +149,34 @@ export function entityInSelectionRange(id) {
 }
 
 /**
+ * Orbit animation
+ * @param  {Object} entity
+ */
+export function orbit(entity) {
+
+  entity.orbitAngle += 3 * Math.PI / 180;
+
+  entity.x = entity.orbitTarget.position.x + DIMENSION * Math.cos(entity.orbitAngle);
+  entity.y = entity.orbitTarget.position.y + DIMENSION * Math.sin(entity.orbitAngle);
+
+  if (entity.stopOrbit === false) return void 0;
+
+  /** Stop the orbit on a dimension friendly position */
+  if (
+    (entity.x << 0) % 8 === 0 &&
+    (entity.y << 0) % 8 === 0
+  ) {
+    entity.x = math.roundTo(entity.x, DIMENSION);
+    entity.y = math.roundTo(entity.y, DIMENSION);
+    entity.orbitAround(null);
+    entity.stopOrbit = false;
+  }
+
+  return void 0;
+
+}
+
+/**
  * Update entity
  * @param  {Object} entity
  * @return {Boolean} renderable
@@ -163,6 +191,10 @@ export function updateEntity(entity) {
   }
 
   entity.animate();
+
+  if (entity.orbit === true) {
+    this.orbit(entity);
+  }
 
   if (this.instance.camera.isInView(
     entity.position.x, entity.position.y,
@@ -366,7 +398,7 @@ export function drawPixelText(str, x, y, fontSize, lineWidth, color) {
   this.context.strokeStyle = color;
   this.context.lineWidth = lineWidth;
   this.context.strokeText(str, x, y);
-  this.context.fillStyle = 'white';
+  this.context.fillStyle = "white";
   this.context.fillText(str, x, y);
 
   return void 0;

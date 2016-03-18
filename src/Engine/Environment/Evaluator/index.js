@@ -88,7 +88,7 @@ export default class Evaluator {
   /**
    * Eval binary expression
    * @param {Object} ast
-   * @return {*}
+   * @return {Number}
    */
   evalBinaryExpression(ast) {
 
@@ -117,7 +117,7 @@ export default class Evaluator {
       );
     }
 
-    return void 0;
+    return (0);
 
   }
 
