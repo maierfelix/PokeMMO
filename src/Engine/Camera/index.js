@@ -177,8 +177,13 @@ export default class Camera extends DisplayObject {
     if (this.scale < MIN_SCALE) this.scale = MIN_SCALE;
     if (this.scale > MAX_SCALE) this.scale = MAX_SCALE;
 
-    this.position.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
-    this.position.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+    if (FREE_CAMERA === true) {
+      this.position.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+      this.position.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+    } else {
+      this.position.x -= (this.entityFocus.x) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+      this.position.y -= (this.entityFocus.y) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+    }
 
   }
 
@@ -204,10 +209,19 @@ export default class Camera extends DisplayObject {
     );
   }
 
+  /**
+   * Sinus easing
+   * @param  {Number} x
+   * @return {Number}
+   */
   easing(x) {
     return 0.5 + 0.5 * Math.sin((x - 0.5) * Math.PI);
   }
 
+  /**
+   * Update entity focus
+   * @param  {Number} entity
+   */
   updateFocus(entity) {
 
     this.initial = {
@@ -216,12 +230,14 @@ export default class Camera extends DisplayObject {
     };
 
     this.target = {
-      x: this.getX(entity.x),
-      y: this.getY(entity.y)
+      x: this.getX(entity.x - (DIMENSION / 2)),
+      y: this.getY(entity.y + entity.z)
     };
 
     this.deltaX = this.target.x - this.initial.x;
     this.deltaY = this.target.y - this.initial.y;
+
+    return void 0;
 
   }
 
@@ -262,32 +278,8 @@ export default class Camera extends DisplayObject {
    * @param {Object} entity
    */
   animateFocus(entity) {
-
     this.updateFocus(entity);
-
     this.entityFocus = entity;
-
-  }
-
-  /**
-   * Focus focusEntity
-   */
-  focusEntity() {
-
-    if (FREE_CAMERA === true) {
-      return void 0;
-    }
-
-    if (
-      this.entityFocus === null ||
-      this.entityFocus === void 0
-    ) return void 0;
-
-    this.position.x = this.getX(this.entityFocus.x);
-    this.position.y = this.getY(this.entityFocus.y);
-
-    return void 0;
-
   }
 
   /**
@@ -298,8 +290,8 @@ export default class Camera extends DisplayObject {
   focus(entity, instant) {
     if (instant === true) {
       this.entityFocus = entity;
-      this.x = this.getX(entity.x);
-      this.y = this.getY(entity.y);
+      this.position.x = this.getX(entity.x);
+      this.position.y = this.getY(entity.y);
       return void 0;
     }
     this.animateFocus(entity);

@@ -56,7 +56,8 @@ export default class Evaluator {
     }
 
     if (ast.type === "AssignmentExpression") {
-      let value = this.evalMemberExpression(ast);
+      let value = this.evalMemberExpression(ast.left);
+      console.log(value);
     }
 
     return void 0;
@@ -69,9 +70,17 @@ export default class Evaluator {
    * @return {*}
    */
   evalMemberExpression(ast) {
-
-    console.log(ast);
-
+    if (ast.property.type === "MemberExpression") {
+      return (
+        [ast.object.name][this.evalMemberExpression(ast.property)]
+      );
+    }
+    if (
+      ast.object.type   === "Literal" &&
+      ast.property.type === "Literal"
+    ) {
+      return (ast);
+    }
   }
 
   /**

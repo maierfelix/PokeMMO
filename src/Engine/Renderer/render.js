@@ -154,15 +154,24 @@ export function entityInSelectionRange(id) {
  */
 export function orbit(entity) {
 
-  entity.orbitAngle += 3 * Math.PI / 180;
+  entity.orbitAngle += (entity.velocity * 2) * Math.PI / 180;
 
-  entity.x = entity.orbitTarget.position.x + DIMENSION * Math.cos(entity.orbitAngle);
-  entity.y = entity.orbitTarget.position.y + DIMENSION * Math.sin(entity.orbitAngle);
+  let target = entity.orbitTarget;
 
-  if (entity.stopOrbit === false) return void 0;
+  let radius = ((target.size.x * target.scale + target.size.y * target.scale) / DIMENSION) * 2;
+
+  let xPadding = radius - (DIMENSION / 2);
+  let yPadding = radius - (DIMENSION / 2);
+
+  xPadding += target.xMargin;
+  yPadding += target.yMargin / 2;
+
+  entity.x = (target.position.x + xPadding) + radius * Math.cos(entity.orbitAngle);
+  entity.y = (target.position.y + yPadding) + radius * Math.sin(entity.orbitAngle);
 
   /** Stop the orbit on a dimension friendly position */
   if (
+    entity.stopOrbit === true &&
     (entity.x << 0) % 8 === 0 &&
     (entity.y << 0) % 8 === 0
   ) {
@@ -171,6 +180,10 @@ export function orbit(entity) {
     entity.orbitAround(null);
     entity.stopOrbit = false;
   }
+
+  /*if (entity.orbitAngle > 360) {
+    entity.orbitAngle = 0;
+  }*/
 
   return void 0;
 
@@ -250,6 +263,8 @@ export function renderEntities() {
   let ii = 0;
   let length = entities.length;
 
+  let scaling = .0;
+
   for (; ii < length; ++ii) {
     entity = entities[ii];
     entity.idleTime++;
@@ -262,15 +277,16 @@ export function renderEntities() {
     }
     this.updateEntitySpriteFrame(entity);
     if (gl === true) continue;
+    scaling = entity.scale + (-entity.z / this.camera.resolution) / ((entity.size.x + entity.size.y) / 2);
     this.renderEntity(
       entity,
       /** Position */
       (camX + (entity.position.x + entity.xMargin) * resolution) << 0,
       (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
       /** Size */
-      (entity.size.x * resolution) * entity.scale << 0, (entity.size.y * resolution) * entity.scale << 0,
+      (entity.size.x * resolution) * scaling << 0, (entity.size.y * resolution) * scaling << 0,
       /** Scale */
-      ((entity.size.x / entity.scale) * 2) * entity.scale << 0, ((entity.size.y / entity.scale) * 2) * entity.scale << 0
+      ((entity.size.x /scaling) * 2) * scaling << 0, ((entity.size.y / scaling) * 2) * scaling << 0
     );
   };
 

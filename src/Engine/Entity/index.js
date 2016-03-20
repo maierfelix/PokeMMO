@@ -222,6 +222,12 @@ export default class Entity extends DisplayObject {
     this.z = .0;
 
     /**
+     * Velocity
+     * @type {Number}
+     */
+    this.velocity = 1.0;
+
+    /**
      * Orbiting
      * @type {Boolean}
      */

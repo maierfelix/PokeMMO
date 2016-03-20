@@ -53,6 +53,10 @@ export default class Environment {
      */
     this.MAP_FLAGS = {};
 
+    this.run(null, null, `
+      window.a.b = c;
+    `);
+
   }
 
   /**

@@ -15,10 +15,10 @@ export function parseMemberExpression() {
 
   for (;this.accept("PERIOD") === true;) {
     parent = new NODE_LIST.MemberExpression();
-    parent.property = ast;
+    parent.object = ast;
     this.next();
     tmp = this.parseMemberExpression();
-    parent.object = tmp;
+    parent.property = tmp;
     ast = parent;
   };
 

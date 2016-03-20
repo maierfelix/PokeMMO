@@ -224,8 +224,8 @@ console.log(Language);
       key = array[jj];
       for (;
         jj > 0 &&
-        (array[jj - 1].position.y + array[jj - 1].yMargin + (array[jj - 1].size.y * array[jj - 1].scale)) * array[jj - 1].zIndex >
-        (key.position.y + key.yMargin + (key.size.y * key.scale)) * key.zIndex;
+        (array[jj - 1].position.y + -(array[jj - 1].z * 2) + array[jj - 1].yMargin + (array[jj - 1].size.y * array[jj - 1].scale)) * array[jj - 1].zIndex >
+        (key.position.y + -(key.z * 2) + key.yMargin + (key.size.y * key.scale)) * key.zIndex;
         --jj
       ) {
         array[jj] = array[jj - 1];

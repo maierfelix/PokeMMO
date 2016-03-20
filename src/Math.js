@@ -192,12 +192,13 @@ export default class Math {
 
   /**
    * Zoom scale
-   * @param {Number} factor
+   * @param  {Number} factor
+   * @return {Number}
    */
   static zoomScale(factor) {
     return (
-      factor >= 0 ? factor + 1    :
-      factor < 0  ? -(factor) + 1 :
+      factor >= 0 ? factor + 1 :
+      factor < 0 ? -(factor) + 1 :
       factor + 1
     );
   }
