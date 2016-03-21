@@ -87,6 +87,12 @@ export default class Editor {
     this.entityCopy = null;
 
     /**
+     * Pasted entity
+     * @type {Object}
+     */
+    this.pastedEntity = null;
+
+    /**
      * Editing states
      * @type {Object}
      */
@@ -148,10 +154,10 @@ export default class Editor {
 
   /**
    * Do a selection
-   * @param  {Number} x
-   * @param  {Number} y
+   * @param {Number} x
+   * @param {Number} y
    */
-  select(x, y) {
+  selectFrom(x, y) {
 
     let offset = this.camera.getGameMouseOffset(x, y);
 
@@ -165,8 +171,8 @@ export default class Editor {
 
   /**
    * Do a selection
-   * @param  {Number} x
-   * @param  {Number} y
+   * @param {Number} x
+   * @param {Number} y
    */
   selectTo(x, y) {
 
@@ -256,9 +262,9 @@ export default class Editor {
       entity = this.map.entities[ii];
       if (
         math.cubicCollision(
-          entity.x << 0, entity.y << 0,
-          ((entity.width  * entity.scale) + entity.xMargin) - DIMENSION,
-          ((entity.height * entity.scale) + entity.yMargin) - DIMENSION,
+          math.roundTo(entity.position.x, DIMENSION), math.roundTo(entity.position.y, DIMENSION) << 0,
+          ((entity.size.x * entity.scale) + entity.xMargin) - DIMENSION,
+          ((entity.size.y * entity.scale) + entity.yMargin) - DIMENSION,
           xx, yy,
           1
         ) === true
@@ -399,7 +405,9 @@ export default class Editor {
    */
   pasteEntity() {
 
-    this.commander.push("paste", this, [this.entityCopy]);
+    this.entityPaste = this.entityCopy;
+
+    this.commander.push("paste", this, [this.entityCopy, this.entityPaste]);
 
   }
 

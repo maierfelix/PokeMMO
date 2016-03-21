@@ -28,6 +28,8 @@ export function jump() {
 
   this.STATES.JUMPING = true;
 
+  this.jumping();
+
   this.idleTime = 0;
 
 }
@@ -59,7 +61,7 @@ export function jumping() {
     this.shadow.position.set(0, this.shadowY);
     this.shadow.scale.set(0, 0);
 
-    if (this.isLocalPlayer === true) {
+    /*if (this.isLocalPlayer === true) {
       let ii = 0;
       for (let entity of game.engine.currentMap.entities) {
         ++ii;
@@ -69,7 +71,7 @@ export function jumping() {
           }, ii * 25);
         }
       };
-    }
+    }*/
 
   }
 

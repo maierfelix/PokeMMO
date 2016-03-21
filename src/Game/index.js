@@ -62,7 +62,7 @@ export default class Game {
       return void 0;
       case 5:
         /** Instant focus local player */
-        this.engine.camera.focus(this.engine.getEntityByProperty("Joy", "name"), true);
+        this.engine.camera.focus(this.engine.getEntityByProperty("Felix", "name"), true);
         this.setup(stage);
       return void 0;
       case 6:

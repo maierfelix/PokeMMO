@@ -72,6 +72,12 @@ export let EDIT_MODE = true;
 export let FREE_CAMERA = false;
 
 /**
+ * Fix camera
+ * @type {Boolean}
+ */
+export let FIX_CAMERA = false;
+
+/**
  * God mode
  * @constant
  * @type {Boolean}
@@ -198,7 +204,7 @@ export const DOWN = 0;
  * @constant
  * @type {Number}
  */
-export const GRAVITY = -.9375;
+export const GRAVITY = -1;
 
 /**
  * @constant

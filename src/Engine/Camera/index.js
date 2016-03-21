@@ -1,5 +1,6 @@
 import {
   FREE_CAMERA,
+  FIX_CAMERA,
   DIMENSION,
   MIN_SCALE, MAX_SCALE,
   PIXEL_SCALE
@@ -55,12 +56,6 @@ export default class Camera extends DisplayObject {
      */
     this.dragging = false;
 
-    /**
-     * Animation queue
-     * @type {Array}
-     */
-    this.queue = [];
-
     /** Camera size */
     this.size.set(
       this.width  || 0,
@@ -78,6 +73,18 @@ export default class Camera extends DisplayObject {
      * @type {Number}
      */
     this.resolution = .0;
+
+    /**
+     * Base offset
+     * @type {Object}
+     */
+    this.base = new math.Point(.0, .0);
+
+    /**
+     * Target offset
+     * @type {Object}
+     */
+    this.target = new math.Point(.0, .0);
 
     /**
      * Entity to focus
@@ -193,6 +200,7 @@ export default class Camera extends DisplayObject {
    * @return {Number}
    */
   getX(x) {
+    x -= (DIMENSION / 2);
     return (
       this.size.x / 2 - (x * this.resolution) - ((DIMENSION / 2) * this.resolution)
     );
@@ -210,32 +218,23 @@ export default class Camera extends DisplayObject {
   }
 
   /**
-   * Sinus easing
-   * @param  {Number} x
-   * @return {Number}
-   */
-  easing(x) {
-    return 0.5 + 0.5 * Math.sin((x - 0.5) * Math.PI);
-  }
-
-  /**
    * Update entity focus
    * @param  {Number} entity
    */
   updateFocus(entity) {
 
-    this.initial = {
+    this.base = {
       x: this.position.x,
       y: this.position.y
     };
 
     this.target = {
-      x: this.getX(entity.x - (DIMENSION / 2)),
+      x: this.getX(entity.x),
       y: this.getY(entity.y + entity.z)
     };
 
-    this.deltaX = this.target.x - this.initial.x;
-    this.deltaY = this.target.y - this.initial.y;
+    this.deltaX = this.target.x - this.base.x;
+    this.deltaY = this.target.y - this.base.y;
 
     return void 0;
 
@@ -250,21 +249,21 @@ export default class Camera extends DisplayObject {
 
     this.updateFocus(entity);
 
-    let velocity = this.easing(Math.atan(1.05));
+    let velocity = FIX_CAMERA === true ? 0 : math.ease(Math.atan(1.05));
 
-    let x = this.target.x - (this.initial.x + (velocity * this.deltaX));
-    let y = this.target.y - (this.initial.y + (velocity * this.deltaY));
+    let x = this.target.x - (this.base.x + (velocity * this.deltaX));
+    let y = this.target.y - (this.base.y + (velocity * this.deltaY));
 
     if (Math.abs(this.x + x - this.target.x) > Math.abs(this.x - this.target.x)) {
       this.x = this.target.x;
-      this.initial.x = this.target.x;
+      this.base.x = this.target.x;
     } else {
       this.x += x;                
     }
 
     if (Math.abs(this.y + y - this.target.y) > Math.abs(this.y - this.target.y)) {
       this.y = this.target.y;
-      this.initial.y = this.target.y;
+      this.base.y = this.target.y;
     } else {
       this.y += y;                
     }

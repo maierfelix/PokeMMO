@@ -274,7 +274,7 @@ export const mouse = [
       if (!cfg.DEBUG_MODE) return void 0;
       if (cfg.EDIT_MODE && e.which === 1 && this.input.KeyBoard.isKeyPressed("SHIFT")) {
         this.engine.editor.STATES.SELECTING = true;
-        this.engine.editor.select(x, y);
+        this.engine.editor.selectFrom(x, y);
         this.engine.editor.selectTo(x, y);
         return void 0;
       }

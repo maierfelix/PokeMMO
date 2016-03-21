@@ -60,7 +60,6 @@ export let commands = [
     onRedo: function(entity) {
       this.entityCopy = entity;
       this.instance.removeEntity(entity);
-      this.entitySelection = entity;
     }
   },
   /** Copy command */
@@ -78,11 +77,11 @@ export let commands = [
   /** Paste command */
   {
     action: "paste",
-    onUndo: function(entity) {
-      this.instance.removeEntity(this.entityCopy);
-      this.instance.removeEntity(entity);
+    onUndo: function (entity, paste) {
+      console.log(paste);
+      this.instance.removeEntity(paste);
     },
-    onRedo: function(entity) {
+    onRedo: function(entity, paste) {
 
       let entities = this.instance.instance.entities;
 
@@ -106,7 +105,6 @@ export let commands = [
         });
         if (entity.instance) {
           tmp.instance = entity.instance;
-          console.log(tmp, tmp.instance);
         }
         if (tmp.hasShadow) {
           tmp.shadow.x = entity.shadow.x;
@@ -116,8 +114,7 @@ export let commands = [
       }
       else if (entity instanceof MapEntity) {
         tmp = map.objectTemplates[entity.name.toLowerCase()];
-      }
-      else {
+      } else {
         return void 0;
       }
 
@@ -131,11 +128,11 @@ export let commands = [
         pushEntity = tmp;
       }
 
-      this.entitySelection = pushEntity;
-
       map.entities.push(pushEntity);
 
       this.entityCopy = pushEntity;
+
+      this.entityPaste = pushEntity;
 
     }
   }

@@ -12,6 +12,9 @@ import * as randSeed from "./libs/seed";
  */
 export default class Math {
 
+  /**
+   * @constructor
+   */
   constructor() {}
 
   static get Seed() {
@@ -231,6 +234,17 @@ export default class Math {
       y: y1 - y2 < 0 ? -y : y,
     });
 
+  }
+
+  /**
+   * Sinus ease
+   * @param  {Number} n
+   * @return {Number}
+   */
+  static ease(n) {
+    return (
+      .5 + (window.Math.sin((n - .5) * window.Math.PI) / 2)
+    );
   }
 
   /**

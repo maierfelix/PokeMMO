@@ -410,16 +410,20 @@ export default class Entity extends DisplayObject {
     if (this.z < 0) {
       this.gravity += .1;
       if (this.hasShadow === true) {
-        this.shadow.position.set(-(this.z / 2), this.shadowY - (this.z));
-        this.shadow.scale.set(this.z, this.z);
+        this.shadow.position.x = -(this.z / 2);
+        this.shadow.position.y = this.shadowY - (this.z);
+        this.shadow.scale.x = this.z;
+        this.shadow.scale.y = this.z;
       }
     } else {
       this.gravity = GRAVITY;
       this.z = 0;
       this.refreshState();
       if (this.hasShadow === true) {
-        this.shadow.position.set(this.shadowX, this.shadowY);
-        this.shadow.scale.set(0, 0);
+        this.shadow.position.x = this.shadowX;
+        this.shadow.position.y = this.shadowY;
+        this.shadow.scale.x = 0;
+        this.shadow.scale.y = 0;
       }
     }
 

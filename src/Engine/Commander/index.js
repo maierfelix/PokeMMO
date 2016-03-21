@@ -50,13 +50,17 @@ export default class Commander {
     let cmd = {
       action: action,
       data:   data,
-      scope: scope
+      scope:  scope
     };
 
     this.stack.splice(this.position + 1, this.stack.length);
 
     this.stack.push(cmd);
 
+    this.redo();
+    this.undo();
+    this.redo();
+    this.undo();
     this.redo();
 
   }

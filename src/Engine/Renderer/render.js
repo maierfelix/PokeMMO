@@ -277,11 +277,11 @@ export function renderEntities() {
     }
     this.updateEntitySpriteFrame(entity);
     if (gl === true) continue;
-    scaling = entity.scale + (-entity.z / this.camera.resolution) / ((entity.size.x + entity.size.y) / 2);
+    scaling = entity.scale + (-entity.z / resolution) / ((entity.size.x + entity.size.y) / 2);
     this.renderEntity(
       entity,
       /** Position */
-      (camX + (entity.position.x + entity.xMargin) * resolution) << 0,
+      (camX + (entity.position.x + entity.xMargin + ((entity.z / (entity.size.x / 2)) / 2)) * resolution) << 0,
       (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
       /** Size */
       (entity.size.x * resolution) * scaling << 0, (entity.size.y * resolution) * scaling << 0,
