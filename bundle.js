@@ -180,7 +180,9 @@
 	          this.setup(stage);
 	          return void 0;
 	        case 10:
-	          this.engine.connection = new _Connection2.default(this, _cfg.CONNECTION_URL + ":" + _cfg.CONNECTION_PORT, null);
+	          if (!_cfg.OFFLINE_MODE) {
+	            this.engine.connection = new _Connection2.default(this, _cfg.CONNECTION_URL + ":" + _cfg.CONNECTION_PORT, null);
+	          }
 	          return void 0;
 	      };
 
@@ -237,6 +239,10 @@
 	          }
 	        }
 	      }));
+
+	      if (_cfg.OFFLINE_MODE) {
+	        this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 152, y: 128, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true }));
+	      }
 
 	      return resolve();
 	    }
@@ -336,7 +342,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.ColorPalette = exports.VOLUME = exports.GRAVITY = exports.DOWN = exports.RIGHT = exports.UP = exports.LEFT = exports.SHADOW_ALPHA = exports.SHADOW_Y = exports.SHADOW_X = exports.DISPLAY_SHADOWS = exports.MAX_SCALE = exports.MIN_SCALE = exports.PIXEL_SCALE = exports.DIMENSION = exports.Y_DEPTH_HACK = exports.BGS = exports.BGM = exports.DEBUG_FPS = exports.DEBUG_MODE = exports.GOD_MODE = exports.FIX_CAMERA = exports.FREE_CAMERA = exports.EDIT_MODE = exports.RECORD_MODE = exports.WALK_BY_KEYBOARD = exports.WGL_SUPPORT = exports.VERSION = exports.__dirname = exports.CONNECTION_PORT = exports.CONNECTION_URL = exports.GRID_WIDTH = exports.RENDER_MODE = exports.WGL = exports.CANVAS = exports.IS_CLIENT = undefined;
+	exports.ColorPalette = exports.VOLUME = exports.GRAVITY = exports.DOWN = exports.RIGHT = exports.UP = exports.LEFT = exports.SHADOW_ALPHA = exports.SHADOW_Y = exports.SHADOW_X = exports.DISPLAY_SHADOWS = exports.MAX_SCALE = exports.MIN_SCALE = exports.PIXEL_SCALE = exports.DIMENSION = exports.Y_DEPTH_HACK = exports.BGS = exports.BGM = exports.DEBUG_FPS = exports.DEBUG_MODE = exports.GOD_MODE = exports.FIX_CAMERA = exports.FREE_CAMERA = exports.EDIT_MODE = exports.RECORD_MODE = exports.WALK_BY_KEYBOARD = exports.WGL_SUPPORT = exports.VERSION = exports.__dirname = exports.CONNECTION_PORT = exports.CONNECTION_URL = exports.GRID_WIDTH = exports.RENDER_MODE = exports.WGL = exports.CANVAS = exports.OFFLINE_MODE = exports.IS_CLIENT = undefined;
 
 	var _utils = __webpack_require__(7);
 
@@ -345,6 +351,12 @@
 	 * @type {Boolean}
 	 */
 	var IS_CLIENT = exports.IS_CLIENT = true;
+
+	/**
+	 * Offline mode
+	 * @type {Boolean}
+	 */
+	var OFFLINE_MODE = exports.OFFLINE_MODE = true;
 
 	/**
 	 * Canvas rendering mode
@@ -15286,7 +15298,7 @@
 	    ,
 	    set: function set(value) {
 	      this.latency = value / 2;
-	      if (this.isLocalPlayer === true) {
+	      if (this.isLocalPlayer === true && _cfg.OFFLINE_MODE === false) {
 	        this.instance.engine.connection.sendData("Velocity", [this.id, value]);
 	      }
 	      this.refreshState();
@@ -15371,7 +15383,7 @@
 
 	  this.jumping();
 
-	  if (this.isLocalPlayer === true) {
+	  if (this.isLocalPlayer === true && _cfg.OFFLINE_MODE === false) {
 	    this.instance.engine.connection.sendData("Jumping", [this.id]);
 	  }
 
@@ -15493,7 +15505,7 @@
 	  if (this.moving === false && this.STATES.BUMPING === false) {
 	    this.lastFacing = this.facing;
 	    this.facing = dir;
-	    if (this.isLocalPlayer === true) {
+	    if (this.isLocalPlayer === true && _cfg.OFFLINE_MODE === false) {
 	      this.instance.engine.connection.sendData("Facing", [this.id, this.facing]);
 	    }
 	    this.frame = (this.frame + 3 + this.getFrameIndex()) % 4;
@@ -15645,7 +15657,7 @@
 	    obstacle = false;
 	  }
 
-	  if (this.isLocalPlayer === true) {
+	  if (this.isLocalPlayer === true && _cfg.OFFLINE_MODE === false) {
 	    this.instance.engine.connection.sendData("Position", [this.id, dir, x, y]);
 	  }
 
