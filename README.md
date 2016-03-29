@@ -1,3 +1,11 @@
+- Z: Action
+- X: Run
+- C: Jump
+- F1: Switch renderer (webgl/canvas)
+- F2: Edit mode
+- F3: Free camera mode (Press right mouse key to drag around)
+- F4: God mode
+
  - [ ] Engine
    - [x] Collisions
    - [x] Camera
