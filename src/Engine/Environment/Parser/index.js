@@ -120,6 +120,7 @@ export default class Parser {
   acceptPrecedenceState(state) {
     return (
       state !== void 0 &&
+      this.node !== void 0 &&
       state.indexOf(this.node.name) > -1
     );
   }

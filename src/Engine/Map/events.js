@@ -11,9 +11,11 @@ export function triggerEvent(entity, parent, event) {
 
   /** Collide event */
   if (entity[event] !== null) {
+    /** JavaScript API */
     if (entity[event].JavaScript !== void 0) {
-      entity[event].JavaScript.bind(this)(parent);
+      entity[event].JavaScript.bind(entity)(parent, this);
     }
+    /** EngelScript API */
     if (entity[event].EngelScript !== void 0) {
       this.instance.environment.run(
         parent, entity,

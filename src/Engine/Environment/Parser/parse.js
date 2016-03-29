@@ -43,10 +43,10 @@ export function parseBlock() {
       return (ast);
     } else {
       ast = new NODE_LIST.AssignmentExpression();
-      ast.left = this.parseMemberExpression();
+      ast.left = this.parseExpression(0);
       ast.operator = this.node.value;
       this.expect("ASSIGN");
-      ast.right = this.parseMemberExpression();
+      ast.right = this.parseExpression(0);
       this.next();
       return (ast);
     }

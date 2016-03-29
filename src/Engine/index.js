@@ -36,7 +36,7 @@ export default class Engine extends DisplayObject {
   constructor(instance, width, height) {
 
     super(null);
-console.log(Language);
+
     /**
      * Instance
      * @type {Object}
@@ -132,6 +132,12 @@ console.log(Language);
      * @type {Object}
      */
     this.environment = new Environment(this);
+
+    /**
+     * Connection instance
+     * @type {Object}
+     */
+    this.connection = null;
 
     this.initScenes();
 

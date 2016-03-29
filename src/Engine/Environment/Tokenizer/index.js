@@ -85,6 +85,17 @@ export default class Tokenizer {
   }
 
   /**
+   * Token name validation
+   * @param  {String}  name
+   * @return {Boolean}
+   */
+  isIgnoredName(name) {
+    return (
+      this.IGNORE_LIST.indexOf(name) <= -1
+    );
+  }
+
+  /**
    * Creates number token
    */
   readNumber() {
@@ -163,6 +174,34 @@ export default class Tokenizer {
   }
 
   /**
+   * Read sign
+   * @return {Object}
+   */
+  readSign() {
+
+    let c = null;
+
+    let name = null;
+
+    let value = "";
+
+    for (;;) {
+      c = this.buffer.charAt(this.index);
+      value += c;
+      if (this.TOKEN_LIST[value] === void 0) break;
+      name = this.TOKEN_LIST[value];
+      if (this.index > this.length) break;
+      this.index++;
+    };
+
+    return ({
+      name: name,
+      value: value
+    });
+
+  }
+
+  /**
    * Lexical analysis
    * @param {String} stream
    */
@@ -187,12 +226,10 @@ export default class Tokenizer {
       cCode = c.charCodeAt(0);
 
       if ((op = this.TOKEN_LIST[c]) !== void 0) {
-        token = {
-          name: op,
-          value: c
-        };
-        if (this.isValidToken(token)) tokens.push(token);
-        this.index += c.length;
+        token = this.readSign();
+        if (this.isValidToken(token)) {
+          tokens.push(token);
+        }
       }
       if (this.isAlpha(cCode) === true) {
         token = this.readIdentifier();

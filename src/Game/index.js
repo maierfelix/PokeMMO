@@ -1,12 +1,14 @@
 import {
   EDIT_MODE,
   MIN_SCALE,
-  LEFT, RIGHT, UP, DOWN
+  LEFT, RIGHT, UP, DOWN,
+  CONNECTION_URL, CONNECTION_PORT
 } from "../cfg";
 
 import Engine from "../Engine";
 import Input  from "../Engine/Input";
 import Editor from "../Engine/Editor";
+import Connection from "../Engine/Connection";
 
 import * as Events from "./input.js";
 import * as entities from "./entities";
@@ -57,7 +59,7 @@ export default class Game {
         this.addEntities(() => this.setup(stage));
       return void 0;
       case 4:
-        this.animateNPC();
+        //this.animateNPC();
         this.setup(stage);
       return void 0;
       case 5:
@@ -82,6 +84,13 @@ export default class Game {
       case 9:
         this.engine.renderer.glRenderer.init();
         this.setup(stage);
+      return void 0;
+      case 10:
+        this.engine.connection = new Connection(
+          this,
+          `${CONNECTION_URL}:${CONNECTION_PORT}`,
+          null
+        );
       return void 0;
     };
 
@@ -122,9 +131,13 @@ export default class Game {
 
     let player = this.entities.Player;
 
-    this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 152, y: 128, zIndex: 1, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true, shadow: true }));
-
-    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, zIndex: 1, sprite: "assets/img/200.png", width: 16, height: 16, shadow: true, collidable: true }));
+    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
+      onCollide: {
+        JavaScript: function(entity) {
+          this.facing = this.oppositFacing(entity.facing);
+        }
+      }
+    }));
 
     return (resolve());
 

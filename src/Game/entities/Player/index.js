@@ -158,6 +158,12 @@ export class Player extends Entity {
    */
   set velocity(value) {
     this.latency = value / 2;
+    if (this.isLocalPlayer === true) {
+      this.instance.engine.connection.sendData(
+        "Velocity",
+        [this.id, value]
+      );
+    }
     this.refreshState();
   }
 

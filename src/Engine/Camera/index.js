@@ -188,8 +188,10 @@ export default class Camera extends DisplayObject {
       this.position.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
       this.position.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
     } else {
-      this.position.x -= (this.entityFocus.x) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
-      this.position.y -= (this.entityFocus.y) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+      if (this.entityFocus !== null) {
+        this.position.x -= (this.entityFocus.x) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+        this.position.y -= (this.entityFocus.y) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+      }
     }
 
   }
@@ -288,6 +290,10 @@ export default class Camera extends DisplayObject {
    */
   focus(entity, instant) {
     if (instant === true) {
+      if (
+        entity === null ||
+        entity === void 0
+      ) return void 0;
       this.entityFocus = entity;
       this.position.x = this.getX(entity.x);
       this.position.y = this.getY(entity.y);

@@ -28,7 +28,7 @@ export function renderDebugScene() {
   );
 
   this.drawPixelText(
-    `X: ${this.camera.x} Y: ${this.camera.y}`,
+    `X: ${this.camera.x.toFixed(2)} Y: ${this.camera.y.toFixed(2)}`,
     15, 90,
     20, 1.5,
     color

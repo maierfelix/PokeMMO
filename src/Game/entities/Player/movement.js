@@ -30,6 +30,13 @@ export function jump() {
 
   this.jumping();
 
+  if (this.isLocalPlayer === true) {
+    this.instance.engine.connection.sendData(
+      "Jumping",
+      [this.id]
+    );
+  }
+
   this.idleTime = 0;
 
 }
@@ -58,20 +65,19 @@ export function jumping() {
     this.z = 0;
     this.resetFrame();
     this.refreshState();
-    this.shadow.position.set(0, this.shadowY);
+    this.shadow.position.set(this.shadowX, this.shadowY);
     this.shadow.scale.set(0, 0);
 
-    /*if (this.isLocalPlayer === true) {
+    if (this.isLocalPlayer === true) {
       let ii = 0;
       for (let entity of game.engine.currentMap.entities) {
         ++ii;
-        if (entity.id !== this.id) {
-          setTimeout(function() {
-            entity.jump();
-          }, ii * 25);
-        }
+        if (entity.id === this.id) continue;
+        setTimeout(function() {
+          entity.jump();
+        }, ii * 25);
       };
-    }*/
+    }
 
   }
 
@@ -129,6 +135,12 @@ export function changeFacing(dir) {
   ) {
     this.lastFacing = this.facing;
     this.facing = dir;
+    if (this.isLocalPlayer === true) {
+      this.instance.engine.connection.sendData(
+        "Facing",
+        [this.id, this.facing]
+      );
+    }
     this.frame = (this.frame + 3 + this.getFrameIndex()) % 4;
   }
 
@@ -288,6 +300,13 @@ export function startMoving(x, y, dir) {
 
   if (this.isLocalPlayer === true && GOD_MODE === true) {
     obstacle = false;
+  }
+
+  if (this.isLocalPlayer === true) {
+    this.instance.engine.connection.sendData(
+      "Position",
+      [this.id, dir, x, y]
+    );
   }
 
   /** Blocked, bump so */

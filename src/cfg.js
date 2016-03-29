@@ -1,4 +1,10 @@
-import { supportWGL } from "./Engine/utils";
+import { supportWGL, getLocalHost } from "./Engine/utils";
+
+/**
+ * Is client
+ * @type {Boolean}
+ */
+export let IS_CLIENT = true;
 
 /**
  * Canvas rendering mode
@@ -28,6 +34,18 @@ export let RENDER_MODE = -1;
 export const GRID_WIDTH = 1;
 
 /**
+ * Connection url
+ * @type {String}
+ */
+export const CONNECTION_URL = getLocalHost();
+
+/**
+ * Connection port
+ * @type {String}
+ */
+export const CONNECTION_PORT = 449;
+
+/**
  * @constant
  * @type {String}
  */
@@ -38,7 +56,7 @@ export const __dirname = "./src/";
  * @constant
  * @type {String}
  */
-export const VERSION = "0.0.1";
+export const VERSION = "0.1.0";
 
 /**
  * WebGL support
@@ -110,7 +128,7 @@ export const BGM = false;
  * @constant
  * @type {Number}
  */
-export const BGS = false;
+export const BGS = true;
 
 /**
  * Vertical depth sorting hack
@@ -136,7 +154,7 @@ export const PIXEL_SCALE = .125;
  * @constant
  * @type {Number}
  */
-export const MIN_SCALE = 2.0;
+export const MIN_SCALE = 5.0;
 
 /**
  * @constant
@@ -220,32 +238,32 @@ export const VOLUME = {
  * @type {Array}
  */
 export const ColorPalette = [
-  [200, 60,  100],
-  [200, 70,  100],
-  [200, 80,  100],
-  [200, 85,  100],
-  [200, 90,  100],
-  [200, 105, 100],
-  [200, 120, 100],
-  [200, 145, 100],
-  [200, 175, 100],
+  [135, 100, 100],
+  [135, 105, 100],
+  [140, 110, 100],
+  [150, 115, 100],
+  [155, 125, 100],
+  [150, 135, 100],
+  [135, 135, 100],
+  [135, 125, 100],
+  [130, 125, 100],
   /** Morning */
-  [175, 155, 100],
-  [155, 155, 100],
-  [145, 145, 100],
-  [130, 130, 100],
+  [130, 120, 100],
+  [135, 120, 100],
+  [145, 130, 100],
+  [150, 145, 100],
   /** Day */
-  [125, 125, 100],
-  [120, 120, 100],
-  [120, 120, 100],
-  [120, 120, 100],
-  [125, 125, 100],
+  [135, 145, 100],
+  [145, 150, 100],
+  [150, 125, 100],
+  [145, 130, 100],
+  [135, 130, 100],
   /** Early night */
-  [130, 130, 100],
-  [145, 145, 100],
-  [175, 145, 100],
-  [200, 125, 100],
-  [200, 105, 100],
-  [200, 85,  100],
-  [200, 75,  100]
+  [125, 135, 100],
+  [135, 130, 100],
+  [135, 135, 100],
+  [135, 100, 100],
+  [135, 105, 100],
+  [140, 110, 100],
+  [150, 115, 100]
 ];

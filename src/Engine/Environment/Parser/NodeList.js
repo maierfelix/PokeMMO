@@ -1,4 +1,22 @@
 /**
+ * Numeric node types
+ * @type {Object}
+ */
+export let NODE_TYPES = {
+  Program: 1,
+  BlockStatement: 2,
+  ReturnStatement: 3,
+  Literal: 4,
+  Identifier: 5,
+  IfStatement: 6,
+  BinaryExpression: 7,
+  AsyncStatement: 8,
+  MemberExpression: 9,
+  CallExpression: 10,
+  AssignmentExpression: 11
+};
+
+/**
  * NODE_LIST
  * @class NODE_LIST
  * @export
@@ -11,7 +29,7 @@ export default class NODE_LIST {
     return (
       class Program {
         constructor() {
-          this.type = "Program";
+          this.type = NODE_TYPES.Program;
           this.body = [];
         }
       }
@@ -22,7 +40,7 @@ export default class NODE_LIST {
     return (
       class BlockStatement {
         constructor() {
-          this.type = "BlockStatement";
+          this.type = NODE_TYPES.BlockStatement;
           this.body = [];
         }
       }
@@ -33,7 +51,7 @@ export default class NODE_LIST {
     return (
       class ReturnStatement {
         constructor() {
-          this.type = "ReturnStatement";
+          this.type = NODE_TYPES.ReturnStatement;
           this.value = null;
         }
       }
@@ -44,7 +62,7 @@ export default class NODE_LIST {
     return (
       class Literal {
         constructor() {
-          this.type = "Literal";
+          this.type = NODE_TYPES.Literal;
           this.name  = null;
           this.value = null;
         }
@@ -56,7 +74,7 @@ export default class NODE_LIST {
     return (
       class Identifier {
         constructor() {
-          this.type = "Identifier";
+          this.type = NODE_TYPES.Identifier;
           this.name = null;
         }
       }
@@ -67,7 +85,7 @@ export default class NODE_LIST {
     return (
       class IfStatement {
         constructor() {
-          this.type = "IfStatement";
+          this.type = NODE_TYPES.IfStatement;
           this.condition  = null;
           this.consequent = null;
           this.alternate  = null;
@@ -80,7 +98,7 @@ export default class NODE_LIST {
     return (
       class BinaryExpression {
         constructor() {
-          this.type = "BinaryExpression";
+          this.type = NODE_TYPES.BinaryExpression;
           this.operator = null;
           this.left  = null;
           this.right = null;
@@ -93,7 +111,7 @@ export default class NODE_LIST {
     return (
       class AsyncStatement {
         constructor() {
-          this.type = "AsyncStatement";
+          this.type = NODE_TYPES.AsyncStatement;
           this.init = null;
         }
       }
@@ -104,7 +122,7 @@ export default class NODE_LIST {
     return (
       class MemberExpression {
         constructor() {
-          this.type = "MemberExpression";
+          this.type = NODE_TYPES.MemberExpression;
           this.object   = null;
           this.property = null;
         }
@@ -116,7 +134,7 @@ export default class NODE_LIST {
     return (
       class CallExpression {
         constructor() {
-          this.type = "CallExpression";
+          this.type = NODE_TYPES.CallExpression;
           this.callee = null;
           this.arguments = [];
         }
@@ -128,7 +146,7 @@ export default class NODE_LIST {
     return (
       class AssignmentExpression {
         constructor() {
-          this.type = "AssignmentExpression";
+          this.type = NODE_TYPES.AssignmentExpression;
           this.operator = null;
           this.left  = null;
           this.right = null;

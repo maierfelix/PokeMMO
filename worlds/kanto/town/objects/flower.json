@@ -9,6 +9,6 @@
   "collidable": false,
   "animation": true,
   "animationFrames": 4,
-  "animationSpeed": 800,
+  "animationSpeed": 500,
   "loop": true
 }

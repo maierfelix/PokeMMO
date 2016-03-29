@@ -2,7 +2,8 @@ import {
   DIMENSION, GRAVITY,
   LEFT, RIGHT, UP, DOWN,
   SHADOW_X, SHADOW_Y,
-  WGL_SUPPORT
+  WGL_SUPPORT,
+  IS_CLIENT
 } from "../../cfg";
 
 import math from "../../Math";
@@ -20,11 +21,10 @@ import Shadow from "../Shadow";
 export default class Entity extends DisplayObject {
 
   /**
-   * @param {Object}   obj
-   * @param {Function} resolve
+   * @param {Object} obj
    * @constructor
    */
-  constructor(obj, resolve) {
+  constructor(obj) {
 
     super(null);
 
@@ -49,6 +49,12 @@ export default class Entity extends DisplayObject {
       LOCK:    false,
       EDITING: false
     };
+
+    /**
+     * Socket
+     * @type {Object}
+     */
+    this.socket = null;
 
     /**
      * Life time
@@ -186,7 +192,7 @@ export default class Entity extends DisplayObject {
      * Entity has shadow
      * @type {Boolean}
      */
-    this.hasShadow = obj.shadow || false;
+    this.hasShadow = obj.shadow === void 0 ? true : obj.shadow;
 
     /**
      * Animation index
@@ -286,6 +292,12 @@ export default class Entity extends DisplayObject {
      * Enter trigger
      * @type {Function}
      */
+    this.onLoad = null;
+
+    /**
+     * Enter trigger
+     * @type {Function}
+     */
     this.onEnter = null;
 
     /**
@@ -300,6 +312,9 @@ export default class Entity extends DisplayObject {
      */
     this.onCollide = null;
 
+    if (obj.onLoad !== void 0) {
+      this.onLoad = obj.onLoad;
+    }
     if (obj.onEnter !== void 0) {
       this.onEnter = obj.onEnter;
     }
@@ -309,22 +324,6 @@ export default class Entity extends DisplayObject {
     if (obj.onCollide !== void 0) {
       this.onCollide = obj.onCollide;
     }
-
-    /** Load texture */
-    getSprite(
-      this.sprite, this.width, this.height, this::function(texture) {
-      this.texture = texture;
-      if (obj.shadow === true) {
-        this.shadow = new Shadow(this);
-      }
-      if (WGL_SUPPORT === true) {
-        this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
-      }
-      if (
-        resolve !== void 0 &&
-        resolve instanceof Function
-      ) resolve();
-    });
 
     /**
      * X
@@ -355,6 +354,27 @@ export default class Entity extends DisplayObject {
       },
       set: function(value) {
         this.position.y = value;
+      }
+    });
+
+    if (IS_CLIENT === false) return void 0;
+
+    /** Load texture */
+    getSprite(
+      this.sprite, this.width, this.height, this::function(texture) {
+      this.texture = texture;
+      if (this.hasShadow === true) {
+        this.shadow = new Shadow(this);
+        this.shadow.position.set(this.shadowX, this.shadowY);
+      }
+      if (WGL_SUPPORT === true) {
+        this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
+      }
+      if (
+        this.onLoad !== null &&
+        this.onLoad instanceof Function
+      ) {
+        this.onLoad();
       }
     });
 
@@ -533,6 +553,11 @@ export default class Entity extends DisplayObject {
     );
   }
 
+  /**
+   * Facing to key
+   * @param  {Number} key
+   * @return {Number}
+   */
   facingToKey(facing) {
     return (
       facing === LEFT  ? 37 :
@@ -553,6 +578,20 @@ export default class Entity extends DisplayObject {
       key === 38 ? UP    :
       key === 39 ? RIGHT :
       key === 40 ? DOWN  : UP
+    );
+  }
+
+  /**
+   * Opposit facing
+   * @param  {Number} key
+   * @return {Number}
+   */
+  oppositFacing(key) {
+    return (
+      key === LEFT  ? RIGHT :
+      key === RIGHT ? LEFT  :
+      key === DOWN  ? UP    :
+      key === UP    ? DOWN  : UP
     );
   }
 

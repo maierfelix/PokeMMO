@@ -17,6 +17,10 @@ export default class Math {
    */
   constructor() {}
 
+  /**
+   * Seed
+   * @getter
+   */
   static get Seed() {
 
     return (
@@ -56,6 +60,10 @@ export default class Math {
 
   }
 
+  /**
+   * Point
+   * @getter
+   */
   static get Point() {
 
     return (

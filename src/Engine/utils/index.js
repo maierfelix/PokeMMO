@@ -29,7 +29,7 @@ export function supportWGL() {
 
   try {
     canvas = document.createElement("canvas");
-    if (window.WebGLRenderingContext !== void 0) {
+    if (WebGLRenderingContext !== void 0) {
       return (!!getWGLContext(canvas));
     }
    } catch(e) {
@@ -38,6 +38,17 @@ export function supportWGL() {
 
   return (false);
 
+}
+
+/**
+ * Get local host
+ * @return {String}
+ */
+export function getLocalHost() {
+  if (typeof document === "undefined") return void 0;
+  return (
+    document.location.host.replace(/:.*/, "")
+  );
 }
 
 /**

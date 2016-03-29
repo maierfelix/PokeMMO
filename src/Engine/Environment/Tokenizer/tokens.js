@@ -28,7 +28,11 @@ export const TOKENS = {
   "^": "POW",
   /** Compare operators */
   "<": "LT",
+  "<=": "LE",
   ">": "GT",
+  ">=": "GE",
+  "==": "EQ",
+  "!=": "NEQ",
   /** Assignment operators */
   "=": "ASSIGN",
   /** Unary operators */

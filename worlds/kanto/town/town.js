@@ -61,17 +61,21 @@ return (function() {
 
   MAP.entities.push({
     x: 168, y: 136,
-    type: "water1"
+    type: "water1",
+    collidable: false,
+    shadow: false
   });
 
   MAP.entities.push({
     x: 160, y: 128,
     type: "treestub",
-    onCollide: `
-      if (1 - (2 * 7) < 3) {
-        window.a.b = c;
+    onCollide: {
+      JavaScript: function(entity) {
+        if (entity.facing === 2) {
+          entity.jump();
+        }
       }
-    `
+    }
   });
 
   MAP.entities.push({

@@ -44,8 +44,6 @@ export default class Shadow extends DisplayObject {
      */
     this.sprites = [];
 
-    this.position.set(parent.shadowX, parent.shadowY);
-
     this.scale.set(0, 0);
 
     this.init();

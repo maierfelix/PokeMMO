@@ -59,15 +59,18 @@ export function parseExpression(id) {
 
   ast = state === void 0 ? this.parseUnary() : this.parseExpression(id + 1);
 
-  for (;this.acceptPrecedenceState(state);) {
+  for (;this.acceptPrecedenceState(state) === true;) {
     parent = new NODE_LIST.BinaryExpression();
     parent.operator = this.node.name;
-    parent.right = ast;
+    parent.left = ast;
     this.next();
     tmp = (state === void 0 ? this.parseUnary() : this.parseExpression(id + 1));
     if (tmp === null) return (null);
-    parent.left = tmp;
+    parent.right = tmp;
     ast = parent;
+    if (this.accept("SEMICOLON") === true) {
+      this.next();
+    }
   };
 
   return (ast);
@@ -112,7 +115,10 @@ export function parseBase() {
 
   let ast = null;
 
-  if (this.accept("IDENTIFIER") === true) {
+  if (
+    this.accept("TRUE")  === true ||
+    this.accept("FALSE") === true
+  ) {
     ast = new NODE_LIST.Identifier();
     ast.name = this.node.value;
     this.next();
@@ -138,6 +144,19 @@ export function parseBase() {
   if (this.accept("LPAREN") === true) {
     this.next();
     ast = this.parseExpression(0);
+    this.next();
+    return (ast);
+  }
+
+  if (this.accept("IDENTIFIER") === true) {
+    ast = new NODE_LIST.Identifier();
+    ast.name = this.node.value;
+    if (this.tokens[this.index + 1].name === "PERIOD") {
+      this.next();
+      let exp = this.parseMemberExpression();
+      exp.object = ast;
+      return (exp);
+    }
     this.next();
     return (ast);
   }

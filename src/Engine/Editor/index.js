@@ -299,7 +299,7 @@ export default class Editor {
     /** Don't allow dragging of focused entity */
     if (
       FREE_CAMERA === false &&
-      this.camera.entityFocus !== void 0 &&
+      this.camera.entityFocus !== null &&
       entity.id === this.camera.entityFocus.id
     ) {
       return void 0;

@@ -72,7 +72,7 @@ export function draw() {
       this.camera.position.x, this.camera.position.y,
       this.width, this.height,
       this.dimension,
-      this.camera.resolution,
+      this.camera.resolution * GRID_WIDTH,
       .05,
       "#FFF"
     );

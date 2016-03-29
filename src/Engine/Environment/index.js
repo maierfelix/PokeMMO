@@ -1,5 +1,6 @@
 import * as tokens from "./Tokenizer/tokens";
 
+import Tester from "./Tester/";
 import Tokenizer from "./Tokenizer/";
 import Parser from "./Parser/";
 import Evaluator from "./Evaluator/";
@@ -24,6 +25,14 @@ export default class Environment {
     this.instance = instance;
 
     /**
+     * Global flags
+     * @type {Object}
+     */
+    this.FLAGS = {
+      GOT_STARTER_PKMN: 2
+    };
+
+    /**
      * Tokenizer instance
      * @type {Object}
      */
@@ -39,22 +48,24 @@ export default class Environment {
      * Evaluator instance
      * @type {Object}
      */
-    this.evaluator = new Evaluator();
+    this.evaluator = new Evaluator(this);
 
     /**
-     * Global flags
+     * Tester instance
      * @type {Object}
      */
-    this.GLOBAL_FLAG = {};
-
-    /**
-     * Map specific flags
-     * @type {Object}
-     */
-    this.MAP_FLAGS = {};
+    this.tester = new Tester(
+      this.tokenizer,
+      this.parser,
+      this.evaluator
+    );
 
     this.run(null, null, `
-      window.a.b = c;
+      if (FLAGS.GOT_STARTER_PKMN == 2) {
+        FLAGS.GOT_STARTER_PKMN = 1337;
+      } {
+        FLAGS.GOT_STARTER_PKMN = 99;
+      }
     `);
 
   }
@@ -72,8 +83,6 @@ export default class Environment {
     let ast = this.parser.parse(tokens);
 
     let result = this.evaluator.evaluate(ast);
-
-    console.log(result);
 
   }
 
