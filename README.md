@@ -3,22 +3,22 @@
    - [x] Camera
    - [x] 3D Audio implementation
    - [x] Grid based path finding
-   - [ ] Maps
+   - [x] Maps
    - [ ] Map connections
    - [ ] Dynamic multi-lingual support
    - [ ] Mini map?
-   - [ ] Pings
+   - [x] Pings
    - [ ] Notifications (Map name, dialog boxes etc)
    - [ ] Record/Replay Mode
    - [ ] Seed based animations
 
  - [ ] Editor
-   - [ ] Undo & Redo
-   - [ ] Select, Copy, Paste, Cut, Delete
+   - [x] Undo & Redo
+   - [x] Select, Copy, Paste, Cut, Delete (unstable)
    - [ ] Range map entity selections
-   - [ ] Map entities
+   - [x] Map entities
    - [ ] Map entities settings
-   - [ ] Map entity add & edit support
+   - [x] Map entity add & edit support
    - [ ] Map entity collison box editor
    - [x] Draggable map entities
    - [ ] UI
@@ -28,8 +28,8 @@
    - [ ] Map entity event code editor
 
  - [ ] Interpreter
-   - [ ] Syntax
-   - [ ] Global flags
-   - [ ] Expressions
+   - [x] Syntax
+   - [x] Global flags
+   - [x] Expressions
    - [ ] Game api
    - [ ] Frame based step script execution
