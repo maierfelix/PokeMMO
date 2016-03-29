@@ -1,9 +1,10 @@
-"use strict";
-
 return (function() {
 
+  "use strict";
+
   var MAP = {
-    entities: []
+    entities: [],
+    settings: {}
   };
 
   var x = 0;
@@ -16,8 +17,7 @@ return (function() {
       {
         x: x,
         y: y,
-        type: "tree",
-        static: false
+        type: "tree"
       }
     );
     x += 16;
@@ -37,8 +37,7 @@ return (function() {
       {
         x: x,
         y: y,
-        type: "tree",
-        static: false
+        type: "tree"
       }
     );
     x += 16;
@@ -49,8 +48,34 @@ return (function() {
   };
 
   MAP.entities.push({
-    x: 160, y: 112,
-    type: "treestub"
+    x: -112, y: -112,
+    type: "ping"
+  });
+
+  /*MAP.entities.push({
+    x: 144, y: 40,
+    type: "cloud",
+    opacity: .75,
+    scale: .1
+  });*/
+
+  MAP.entities.push({
+    x: 168, y: 136,
+    type: "water1",
+    collidable: false,
+    shadow: false
+  });
+
+  MAP.entities.push({
+    x: 160, y: 128,
+    type: "treestub",
+    onCollide: {
+      JavaScript: function(entity) {
+        if (entity.facing === 2) {
+          entity.jump();
+        }
+      }
+    }
   });
 
   MAP.entities.push({
@@ -59,8 +84,15 @@ return (function() {
   });
 
   MAP.entities.push({
-    x: 160, y: 120,
-    type: "windmill"
+    x: 192, y: 120,
+    type: "windmill",
+    scale: 1
+  });
+
+  MAP.entities.push({
+    x: 256, y: 120,
+    type: "windmill",
+    scale: 2
   });
 
   MAP.entities.push({

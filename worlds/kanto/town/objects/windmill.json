@@ -3,8 +3,6 @@
   "sprite" : "windmill.png",
   "width"  : 40,
   "height" : 56,
-  "scale"  : 1,
-  "zIndex" : 4,
   "shadowY": -11,
   "shadow" : true,
   "collidable": true,

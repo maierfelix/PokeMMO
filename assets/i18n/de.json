@@ -1,0 +1,33 @@
+{
+  "s_BrowserNotSupported": "Browser nicht unterstützt.",
+  "s_Days": [
+    "Sonntag",
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag"
+  ],
+  "s_Months": [
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember"
+  ],
+  "s_German": "Deutsch",
+  "s_English": "Englisch",
+  "s_Settings": "Einstellungen",
+  "s_Objects": "Objekte",
+  "s_On": "An",
+  "s_Off": "Aus",
+  "s_ChangeLanguage": "Sprache wechseln"
+}
