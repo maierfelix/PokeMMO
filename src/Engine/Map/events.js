@@ -90,7 +90,7 @@ export function isEntityCollidable(entity, x, y) {
   let ii = 0;
   let length = entities.length;
 
-  let cubicCollision = false;
+  let intersection = false;
 
   let collide = false;
 
@@ -101,7 +101,7 @@ export function isEntityCollidable(entity, x, y) {
   for (; ii < length; ++ii) {
     event = entities[ii];
     if (event.id === id) continue;
-    cubicCollision = math.cubicCollision(
+    intersection = math.linearIntersect(
       event.position.x << 0, event.position.y << 0,
       ((event.size.x * event.scale) + event.xMargin) - DIMENSION,
       ((event.size.y * event.scale) + event.yMargin) - DIMENSION,
@@ -118,14 +118,14 @@ export function isEntityCollidable(entity, x, y) {
         }
       /** Cubic based collision */
       } else {
-        if (cubicCollision === true) {
+        if (intersection === true) {
           this.triggerEvent(event, entity, "onCollide");
           collide = true;
         }
       }
     } else {
       if (
-        math.cubicCollision(
+        math.linearIntersect(
           event.position.x << 0, event.position.y << 0,
           ((event.size.x * event.scale) + event.xMargin) - DIMENSION,
           ((event.size.y * event.scale) + event.yMargin) - DIMENSION,
@@ -135,7 +135,7 @@ export function isEntityCollidable(entity, x, y) {
       ) {
         this.triggerEvent(event, entity, "onLeave");
       }
-      if (cubicCollision === true) {
+      if (intersection === true) {
         this.triggerEvent(event, entity, "onEnter");
       }
     }

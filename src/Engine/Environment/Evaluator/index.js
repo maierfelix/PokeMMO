@@ -33,10 +33,38 @@ export default class Evaluator {
        * Flags ref
        * @type {Object}
        */
-      FLAGS: this.instance.FLAGS
+      FLAGS: this.instance.FLAGS,
+
+      /**
+       * Dynamic global scope ref
+       * @type {Object}
+       */
+      this: null,
+
+      /**
+       * Dynamic trigger scope ref
+       * @type {Object}
+       */
+      trigger: null
 
     };
 
+  }
+
+  /**
+   * Set global scope
+   * @param {Object} scope
+   */
+  setGlobalScope(scope) {
+    this.context["this"] = scope;
+  }
+
+  /**
+   * Set trigger scope
+   * @param {Object} scope
+   */
+  setTriggerScope(scope) {
+    this.context["trigger"] = scope;
   }
 
   /**
@@ -107,13 +135,38 @@ export default class Evaluator {
   }
 
   /**
+   * Is call expression
+   * @param  {Object}  ast
+   * @return {Boolean}
+   */
+  isCallExpression(ast) {
+    return (
+      ast.type === NODE_TYPES.CallExpression
+    );
+  }
+
+  /**
+   * Is asynchronous statement
+   * @param  {Object}  ast
+   * @return {Boolean}
+   */
+  isAsyncStatement(ast) {
+    return (
+      ast.type === NODE_TYPES.AsyncStatement
+    );
+  }
+
+  /**
    * Is binary expression
    * @param  {Object}  ast
    * @return {Boolean}
    */
   isBinaryExpression(ast) {
     return (
-      ast.type === NODE_TYPES.BinaryExpression
+      ast.type === NODE_TYPES.BinaryExpression ||
+      ast.type === NODE_TYPES.UnaryExpression ||
+      this.isLiteral(ast) === true ||
+      this.isIdentifier(ast) === true
     );
   }
 
@@ -122,29 +175,31 @@ export default class Evaluator {
    * @param  {Object} ast
    * @return {*}
    */
-  evaluate(ast) {
-    return (
-      this.evaluateBody(ast)
+  evaluate(ast, resolve) {
+    this.evaluateBody(
+      ast, 0,
+      (result) => resolve(result)
     );
   }
 
   /**
    * Evaluate an ast body
-   * @param  {Object} ast
+   * @param  {Object}   ast
+   * @param  {Number}   index
+   * @param  {Function} resolve
    * @return {*}
    */
-  evaluateBody(ast) {
+  evaluateBody(ast, index, resolve) {
 
-    let ii = 0;
-    let length = ast.body.length;
+    this.evalStatement(ast.body[index], this::function(result) {
+      if (++index < ast.body.length) {
+        this.evaluateBody(ast, index, (result) => resolve(result));
+      } else {
+        resolve(result);
+      }
+    });
 
-    let result = null;
-
-    for (; ii < length; ++ii) {
-      result = this.evalStatement(ast.body[ii]);
-    };
-
-    return (result);
+    return void 0;
 
   }
 
@@ -152,10 +207,10 @@ export default class Evaluator {
    * Eval statement
    * @param {Object} ast
    */
-  evalStatement(ast) {
+  evalStatement(ast, resolve) {
 
     if (this.isBinaryExpression(ast) === true) {
-      return (
+      return resolve(
         this.evalBinaryExpression(ast)
       );
     }
@@ -164,15 +219,15 @@ export default class Evaluator {
       if (ast.condition !== null) {
         /** Condition met */
         if (this.evalExpression(ast.condition).value === true) {
-          return (this.evaluateBody(ast.consequent));
+          return this.evaluateBody(ast.consequent, 0, (result) => resolve(result));
         }
         if (ast.alternate !== null) {
-          return (this.evaluateBody(ast.alternate));
+          return this.evaluateBody(ast.alternate, 0, (result) => resolve(result));
         }
       } else {
         throw new Error("Invalid if statement condition");
       }
-      return void 0;
+      return resolve();
     }
 
     if (this.isAssignmentExpression(ast) === true) {
@@ -185,7 +240,72 @@ export default class Evaluator {
       }
     }
 
+    if (this.isCallExpression(ast) === true) {
+      this.evalCallExpression(ast);
+      return resolve();
+    }
+
+    if (this.isAsyncStatement(ast) === true) {
+      return this.evalCallExpression(ast.init, (result) => resolve(result));
+    }
+
+    return resolve();
+
+  }
+
+  /**
+   * Eval call expression
+   * @param {Object} ast
+   */
+  evalCallExpression(ast, resolve) {
+
+    let callee = this.evalExpression(ast.callee);
+    let cmd = callee.link[callee.property];
+
+    this.evalArguments(ast.arguments, function(args) {
+
+      if (args.length >= 1) {
+        args.push((result) => resolve(result));
+        cmd.apply(callee.link, args);
+      } else {
+        cmd.bind(callee.link)((result) => resolve(result));
+      }
+
+    });
+
     return void 0;
+
+  }
+
+  /**
+   * Eval arguments
+   * @param  {Array} args
+   * @param  {Function} resolve
+   * @return {Array}
+   */
+  evalArguments(args, resolve) {
+
+    let eArgs = [];
+
+    let ii = 0;
+    let length = args.length;
+
+    let index = 0;
+
+    if (length >= 1) {
+      for (; ii < length; ++ii) {
+        this.evalStatement(args[ii], function(result) {
+          index++;
+          eArgs.push(result);
+          if (index >= length) {
+            resolve(eArgs);
+          }
+        });
+      };
+    } else {
+      resolve(eArgs);
+      return void 0;
+    }
 
   }
 
@@ -346,11 +466,29 @@ export default class Evaluator {
       );
     }
 
-    if (ast.operator === "%") {
+    if (ast.operator === "MOD") {
       return (
         this.evalBinaryExpression(ast.left) %
         this.evalBinaryExpression(ast.right)
       );
+    }
+
+    if (ast.operator === "AND") {
+      return (
+        this.evalBinaryExpression(ast.left) &&
+        this.evalBinaryExpression(ast.right)
+      );
+    }
+
+    if (ast.operator === "OR") {
+      return (
+        this.evalBinaryExpression(ast.left) ||
+        this.evalBinaryExpression(ast.right)
+      );
+    }
+
+    if (ast.operator === "NOT") {
+      return (!this.evalBinaryExpression(ast.init));
     }
 
     return (0);

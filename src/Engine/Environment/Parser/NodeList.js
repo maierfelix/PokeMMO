@@ -10,10 +10,11 @@ export let NODE_TYPES = {
   Identifier: 5,
   IfStatement: 6,
   BinaryExpression: 7,
-  AsyncStatement: 8,
-  MemberExpression: 9,
-  CallExpression: 10,
-  AssignmentExpression: 11
+  UnaryExpression: 8,
+  AsyncStatement: 9,
+  MemberExpression: 10,
+  CallExpression: 11,
+  AssignmentExpression: 12
 };
 
 /**
@@ -102,6 +103,18 @@ export default class NODE_LIST {
           this.operator = null;
           this.left  = null;
           this.right = null;
+        }
+      }
+    );
+  }
+
+  static get UnaryExpression() {
+    return (
+      class UnaryExpression {
+        constructor() {
+          this.type = NODE_TYPES.UnaryExpression;
+          this.operator = null;
+          this.init = null;
         }
       }
     );

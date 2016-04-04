@@ -1,4 +1,5 @@
 import {
+  OFFLINE_MODE,
   EDIT_MODE,
   MIN_SCALE,
   LEFT, RIGHT, UP, DOWN,
@@ -8,6 +9,7 @@ import {
 import Engine from "../Engine";
 import Input  from "../Engine/Input";
 import Editor from "../Engine/Editor";
+import MiniMap from "../Engine/MiniMap";
 import Connection from "../Engine/Connection";
 
 import * as Events from "./input.js";
@@ -59,7 +61,7 @@ export default class Game {
         this.addEntities(() => this.setup(stage));
       return void 0;
       case 4:
-        //this.animateNPC();
+        this.animateNPC();
         this.setup(stage);
       return void 0;
       case 5:
@@ -74,23 +76,29 @@ export default class Game {
         this.setup(stage);
       return void 0;
       case 7:
-        window.rAF(() => this.engine.renderer.render());
+        this.engine.mini = new MiniMap(this.engine);
         this.setup(stage);
       return void 0;
       case 8:
-        this.input = new Input(Events, this);
+        window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
       case 9:
-        this.engine.renderer.glRenderer.init();
+        this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
       case 10:
-        this.engine.connection = new Connection(
-          this,
-          `${CONNECTION_URL}:${CONNECTION_PORT}`,
-          null
-        );
+        this.engine.renderer.glRenderer.init();
+        this.setup(stage);
+      return void 0;
+      case 11:
+        if (!OFFLINE_MODE) {
+          this.engine.connection = new Connection(
+            this,
+            `${CONNECTION_URL}:${CONNECTION_PORT}`,
+            null
+          );
+        }
       return void 0;
     };
 
@@ -138,6 +146,10 @@ export default class Game {
         }
       }
     }));
+
+    if (OFFLINE_MODE) {
+      this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 152, y: 128, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true }));
+    }
 
     return (resolve());
 

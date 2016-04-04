@@ -312,6 +312,12 @@ export default class Entity extends DisplayObject {
      */
     this.onCollide = null;
 
+    /**
+     * Jump trigger
+     * @type {Function}
+     */
+    this.onJump = null;
+
     if (obj.onLoad !== void 0) {
       this.onLoad = obj.onLoad;
     }
@@ -323,6 +329,9 @@ export default class Entity extends DisplayObject {
     }
     if (obj.onCollide !== void 0) {
       this.onCollide = obj.onCollide;
+    }
+    if (obj.onJump !== void 0) {
+      this.onJump = obj.onJump;
     }
 
     /**
@@ -354,6 +363,22 @@ export default class Entity extends DisplayObject {
       },
       set: function(value) {
         this.position.y = value;
+      }
+    });
+
+    /**
+     * Lock
+     * @type {Number}
+     * @getter
+     * @setter
+     * @overwrite
+     */
+    Object.defineProperty(this, "lock", {
+      get: function() {
+        return (this.STATES.LOCK);
+      },
+      set: function(value) {
+        this.STATES.LOCK = value === true;
       }
     });
 
@@ -403,7 +428,7 @@ export default class Entity extends DisplayObject {
   /**
    * Jump
    */
-  jump() {
+  jump(resolve) {
 
     this.refreshState();
 
@@ -415,6 +440,8 @@ export default class Entity extends DisplayObject {
     this.STATES.JUMPING = true;
 
     this.idleTime = 0;
+
+    this.jumpCB = resolve || null;
 
   }
 
@@ -444,6 +471,9 @@ export default class Entity extends DisplayObject {
         this.shadow.position.y = this.shadowY;
         this.shadow.scale.x = 0;
         this.shadow.scale.y = 0;
+      }
+      if (this.jumpCB !== null) {
+        this.jumpCB();
       }
     }
 
@@ -487,28 +517,32 @@ export default class Entity extends DisplayObject {
 
   /**
    * Fade in
-   * @param {Number} speed
+   * @param {Number}   speed
+   * @param {Function} resolve
    */
-  fadeIn(speed = speed || 1) {
+  fadeIn(speed = speed || 1, resolve) {
     this.animations.push({
       type: "fade",
       fade: 1,
       speed: speed
     });
+    this.fadeInCB = resolve || null;
   }
 
   /**
    * Fade out
-   * @param {Number} speed
-   * @param {Boolean} kill
+   * @param {Number}   speed
+   * @param {Boolean}  kill
+   * @param {Function} resolve
    */
-  fadeOut(speed = speed || 1, kill) {
+  fadeOut(speed = speed || 1, kill, resolve) {
     this.animations.push({
       type: "fade",
       fade: 0,
       kill: kill,
       speed: speed
     });
+    this.fadeOutCB = resolve || null;
   }
 
   /**
@@ -524,8 +558,15 @@ export default class Entity extends DisplayObject {
     if (animation.fade === 1 && this.opacity > 1) {
       this.opacity = 1.0;
       this.stopAnimation();
+      if (this.fadeInCB !== null) {
+        this.fadeInCB();
+        this.fadeInCB = null;
+      }
     } else if (animation.fade === 0 && this.opacity < 0) {
       this.opacity = animation.kill === true ? -.01 : .0;
+      if (this.fadeOutCB !== null) {
+        this.fadeOutCB();
+      }
       this.stopAnimation();
     }
 

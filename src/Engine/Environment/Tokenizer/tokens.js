@@ -16,10 +16,12 @@ export const TOKENS = {
   "?": "CONDITIONAL",
   "$": "DOLLAR",
   "@": "ATSIGN",
+  /** Logical operators */
+  "!": "NOT",
+  "||": "OR",
+  "&&": "AND",
   /** Binary operators */
   ",": "COMMA",
-  "|": "OR",
-  "&": "AND",
   "+": "ADD",
   "-": "SUB",
   "*": "MUL",
@@ -35,9 +37,10 @@ export const TOKENS = {
   "!=": "NEQ",
   /** Assignment operators */
   "=": "ASSIGN",
-  /** Unary operators */
-  "!": "NOT",
+  /** Bitwise operators */
   "~": "BIT_NOT",
+  "|": "BIT_OR",
+  "&": "BIT_AND",
   /** Literals */
   "null": "NULL",
   "true": "TRUE",

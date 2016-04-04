@@ -220,7 +220,7 @@ export default class Editor {
       eWidth  = (entity.width * entity.scale) + ((x2 >= x1) ? -DIMENSION : 0);
       eHeight = (entity.height * entity.scale);
       if (
-        math.cubicCollision(
+        math.linearIntersect(
           xx1, yy1,
           width + eWidth - DIMENSION, height + eHeight - DIMENSION,
           entity.x + entity.xMargin + eWidth - DIMENSION, (entity.y + entity.yMargin + entity.z + Y_DEPTH_HACK) + eHeight - DIMENSION,
@@ -261,7 +261,7 @@ export default class Editor {
     for (; ii < length; ++ii) {
       entity = this.map.entities[ii];
       if (
-        math.cubicCollision(
+        math.linearIntersect(
           math.roundTo(entity.position.x, DIMENSION), math.roundTo(entity.position.y, DIMENSION) << 0,
           ((entity.size.x * entity.scale) + entity.xMargin) - DIMENSION,
           ((entity.size.y * entity.scale) + entity.yMargin) - DIMENSION,
@@ -299,8 +299,8 @@ export default class Editor {
     /** Don't allow dragging of focused entity */
     if (
       FREE_CAMERA === false &&
-      this.camera.entityFocus !== null &&
-      entity.id === this.camera.entityFocus.id
+      this.camera.objectFocus !== null &&
+      entity.id === this.camera.objectFocus.id
     ) {
       return void 0;
     }

@@ -1,4 +1,5 @@
 import {
+  OFFLINE_MODE,
   Y_DEPTH_HACK,
   DIMENSION, GRAVITY,
   BGM, BGS,
@@ -28,9 +29,13 @@ export function jump() {
 
   this.STATES.JUMPING = true;
 
+  if (this.onJump !== null) {
+    Maps[this.map].triggerEvent(this, this, "onJump");
+  }
+
   this.jumping();
 
-  if (this.isLocalPlayer === true) {
+  if (this.isLocalPlayer === true && OFFLINE_MODE === false) {
     this.instance.engine.connection.sendData(
       "Jumping",
       [this.id]
@@ -84,10 +89,37 @@ export function jumping() {
 }
 
 /**
- * Move player
- * @param {Number} dir
+ * Walk a path
+ * moveRoute("1d,2r,2u,2l,1d,1r");
+ * @param  {String} path
  */
-export function move(dir) {
+export function moveRoute(path) {
+
+  let move = null;
+  let moves = path.split(",");
+
+  let ii = 0;
+  let length = moves.length;
+
+  let rxN = /(\d+)/g;
+
+  for (; ii < length; ++ii) {
+    move = moves[ii].replace('"', "");
+    let dir = move.replace(rxN, "");
+    let amount = Number(move.match(rxN));
+    console.log(dir, amount);
+  };
+
+  return void 0;
+
+}
+
+/**
+ * Move player
+ * @param {Number}   dir
+ * @param {Function} resolve
+ */
+export function move(dir, resolve) {
 
   if (
     this.STATES.LOCK    === true ||
@@ -113,6 +145,8 @@ export function move(dir) {
 
   if (this.STATES.BUMPING === true) return void 0;
 
+  this.moveCB = resolve || null;
+
   this.startMoving(this.x, this.y, dir);
 
   this.refreshState();
@@ -135,7 +169,7 @@ export function changeFacing(dir) {
   ) {
     this.lastFacing = this.facing;
     this.facing = dir;
-    if (this.isLocalPlayer === true) {
+    if (this.isLocalPlayer === true && OFFLINE_MODE === false) {
       this.instance.engine.connection.sendData(
         "Facing",
         [this.id, this.facing]
@@ -292,6 +326,9 @@ export function startMoving(x, y, dir) {
 
   if (this.facing !== dir) {
     this.changeFacing(dir);
+    if (this.moveCB !== null) {
+      this.moveCB();
+    }
     return void 0;
   }
 
@@ -302,7 +339,7 @@ export function startMoving(x, y, dir) {
     obstacle = false;
   }
 
-  if (this.isLocalPlayer === true) {
+  if (this.isLocalPlayer === true && OFFLINE_MODE === false) {
     this.instance.engine.connection.sendData(
       "Position",
       [this.id, dir, x, y]
@@ -363,6 +400,8 @@ export function stopMoving(animation) {
 
   this.stopAnimation();
 
+  this.refreshState();
+
   /** Continue moving */
   if (this.isLocalPlayer === true) {
     if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(LEFT)) === true) {
@@ -383,6 +422,8 @@ export function stopMoving(animation) {
     this.soundSteps = DIMENSION;
   }
 
-  this.refreshState();
+  if (this.moveCB !== null) {
+    this.moveCB();
+  }
 
 }

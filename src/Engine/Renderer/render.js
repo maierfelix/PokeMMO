@@ -4,7 +4,8 @@ import {
   GRID_WIDTH,
   DIMENSION,
   DISPLAY_SHADOWS, SHADOW_X, SHADOW_Y,
-  RENDER_MODE, CANVAS, WGL
+  RENDER_MODE, CANVAS, WGL,
+  MINI_MAP
 } from "../../cfg";
 
 import math from "../../Math";
@@ -83,6 +84,17 @@ export function draw() {
     this.renderDebugScene();
   }
 
+  if (MINI_MAP === true) {
+    if (this.instance.mini.redraw === true) {
+      this.instance.mini.draw(0, this.instance.currentMap.entities);
+      this.context.drawImage(
+        this.instance.mini.bgBuffer.canvas,
+        this.instance.mini.position.x, this.instance.mini.position.y,
+        this.instance.mini.width, this.instance.mini.height
+      );
+    }
+  }
+
   return void 0;
 
 }
@@ -104,7 +116,7 @@ export function renderMap() {
     map.size.x * dim, map.size.y * dim,
     this.camera.position.x << 0, this.camera.position.y << 0,
     ((map.size.x * dim) / 2 * this.camera.resolution) << 0,
-    ((map.size.y * dim) / 2 * this.camera.resolution) << 0,
+    ((map.size.y * dim) / 2 * this.camera.resolution) << 0
   );
 
   return void 0;
@@ -210,7 +222,7 @@ export function updateEntity(entity) {
   }
 
   if (this.instance.camera.isInView(
-    entity.position.x, entity.position.y,
+    entity.position.x + entity.xMargin, entity.position.y + entity.yMargin,
     entity.size.x * entity.scale, ((entity.size.y * 2) * entity.scale) + entity.shadowY
   ) === false) {
     return (false);

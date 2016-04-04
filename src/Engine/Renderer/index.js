@@ -180,8 +180,8 @@ export default class Renderer {
 
     this.updateTimers();
 
-    if (this.camera.entityFocus !== null) {
-      this.camera.animate(this.camera.entityFocus);
+    if (this.camera.objectFocus !== null) {
+      this.camera.animate(this.camera.objectFocus);
     }
 
     return void 0;
@@ -222,6 +222,7 @@ export default class Renderer {
     }
     this.clear();
     if (redraw === true) {
+      this.instance.mini.resize();
       this.draw();
     }
   }

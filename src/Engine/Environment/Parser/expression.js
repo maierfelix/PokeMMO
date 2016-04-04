@@ -27,22 +27,6 @@ export function parseMemberExpression() {
 }
 
 /**
- * Parse call expression
- * @return {Object}
- */
-export function parseCallExpression() {
-
-  let ast = null;
-
-  ast = new NODE_LIST.CallExpression();
-  ast.callee = this.parseUnary();
-  ast.arguments = this.parseArguments();
-
-  return (ast);
-
-}
-
-/**
  * Recursive operator precedence based
  * binary expression parsing
  * @param  {Number} id
@@ -96,7 +80,14 @@ export function parseUnary() {
     this.next();
     if ((tmp = this.parseBase()) === null) return (null);
     ast.left = tmp;
-  } else {
+  }
+  else if (this.accept("NOT") === true) {
+    ast = new NODE_LIST.UnaryExpression();
+    ast.operator = this.node.name;
+    this.next();
+    ast.init = this.parseExpression(0);
+  }
+  else {
     if (this.accept("ADD") === true) {
       this.next();
     }

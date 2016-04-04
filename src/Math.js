@@ -173,7 +173,7 @@ export default class Math {
   }
 
   /**
-   * Cubic collision
+   * Linear intersection
    * @param {Number} xx
    * @param {Number} yy
    * @param {Number} width
@@ -183,10 +183,31 @@ export default class Math {
    * @param {Number} scale
    * @return {Boolean}
    */
-  static cubicCollision(xx, yy, width, height, x, y, scale) {
+  static linearIntersect(xx, yy, width, height, x, y, scale) {
     return (
       window.Math.abs(2 * (x - ((xx * scale))) + -(width * scale)) <= (width * scale) &&
       window.Math.abs(2 * (y - ((yy * scale))) + -(height * scale)) <= (height * scale)
+    );
+  }
+
+  /**
+   * Cubic collision
+   * @param {Number} x1
+   * @param {Number} y1
+   * @param {Number} w1
+   * @param {Number} h1
+   * @param {Number} x2
+   * @param {Number} y2
+   * @param {Number} w2
+   * @param {Number} h2
+   * @return {Boolean}
+   */
+  static cubicCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return !(
+      y1 + h1 < y2 ||
+      y1 > y2 + h2 ||
+      x1 + w1 < x2 ||
+      x1 > x2 + w2
     );
   }
 

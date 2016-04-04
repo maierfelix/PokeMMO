@@ -33,6 +33,10 @@ export default class MapEntity extends Entity {
 
     this.reverseShadow = [0, 0];
 
+    if (obj.collisionBox !== void 0) {
+      this.collisionBox = obj.collisionBox;
+    }
+
     return (this);
 
   }

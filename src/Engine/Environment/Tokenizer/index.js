@@ -41,6 +41,7 @@ export default class Tokenizer {
   /**
    * Is digit
    * @param {Number} c
+   * @return {Boolean}
    */
   isDigit(c) {
     return (
@@ -51,6 +52,7 @@ export default class Tokenizer {
   /**
    * Is alpha
    * @param {Number} c
+   * @return {Boolean}
    */
   isAlpha(c) {
     return (
@@ -62,6 +64,7 @@ export default class Tokenizer {
   /**
    * Is alpha digit
    * @param {Number} c
+   * @return {Boolean}
    */
   isAlphaDigit(c) {
     return (
@@ -69,6 +72,17 @@ export default class Tokenizer {
       c > 64 && c < 91  ||
       c > 96 && c < 123 ||
       c === 95
+    );
+  }
+
+  /**
+   * Is string
+   * @param {Number} c
+   * @return {Boolean}
+   */
+  isString(c) {
+    return (
+      c === 34 || c === 39
     );
   }
 
@@ -97,6 +111,7 @@ export default class Tokenizer {
 
   /**
    * Creates number token
+   * @return {Object}
    */
   readNumber() {
 
@@ -123,6 +138,7 @@ export default class Tokenizer {
 
   /**
    * Creates identifier or keyword token
+   * @return {Object}
    */
   readIdentifier() {
 
@@ -152,6 +168,7 @@ export default class Tokenizer {
 
   /**
    * Creates string token
+   * @return {Object}
    */
   readString() {
 
@@ -173,6 +190,18 @@ export default class Tokenizer {
 
   }
 
+  readNegativeNumber() {
+
+    let node = null;
+
+    node = this.readNumber();
+
+    node.value = "-" + node.value;
+
+    return (node);
+
+  }
+
   /**
    * Read sign
    * @return {Object}
@@ -181,17 +210,26 @@ export default class Tokenizer {
 
     let c = null;
 
+    let code = 0;
+
     let name = null;
 
     let value = "";
 
     for (;;) {
       c = this.buffer.charAt(this.index);
+      code = c.charCodeAt(0);
+      if (this.isDigit(code) === true) {
+        if (value === "-") {
+          return (this.readNegativeNumber());
+
+        }
+      }
       value += c;
       if (this.TOKEN_LIST[value] === void 0) break;
+      this.index++;
       name = this.TOKEN_LIST[value];
       if (this.index > this.length) break;
-      this.index++;
     };
 
     return ({
@@ -204,6 +242,7 @@ export default class Tokenizer {
   /**
    * Lexical analysis
    * @param {String} stream
+   * @return {Array}
    */
   scan(stream) {
 
@@ -227,21 +266,19 @@ export default class Tokenizer {
 
       if ((op = this.TOKEN_LIST[c]) !== void 0) {
         token = this.readSign();
-        if (this.isValidToken(token)) {
-          tokens.push(token);
-        }
-      }
-      if (this.isAlpha(cCode) === true) {
-        token = this.readIdentifier();
-        if (this.isValidToken(token)) tokens.push(token);
+        if (this.isValidToken(token) === true) tokens.push(token);
       }
       if (this.isDigit(cCode) === true) {
         token = this.readNumber();
-        if (this.isValidToken(token)) tokens.push(token);
+        if (this.isValidToken(token) === true) tokens.push(token);
       }
-      if (cCode === 34 || cCode === 39) {
+      if (this.isAlpha(cCode) === true) {
+        token = this.readIdentifier();
+        if (this.isValidToken(token) === true) tokens.push(token);
+      }
+      if (this.isString(cCode) === true) {
         token = this.readString();
-        if (this.isValidToken(token)) tokens.push(token);
+        if (this.isValidToken(token) === true) tokens.push(token);
       }
 
     };

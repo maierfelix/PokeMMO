@@ -60,29 +60,28 @@ export default class Environment {
       this.evaluator
     );
 
-    this.run(null, null, `
-      if (FLAGS.GOT_STARTER_PKMN == 2) {
-        FLAGS.GOT_STARTER_PKMN = 1337;
-      } {
-        FLAGS.GOT_STARTER_PKMN = 99;
-      }
-    `);
+    console.log(this.FLAGS);
 
   }
 
   /**
    * Run a stream
-   * @param {Object} parent
-   * @param {Object} entity
+   * @param {Object} local
+   * @param {Object} trigger
    * @param {String} stream
    */
-  run(parent, entity, stream) {
+  run(local, trigger, stream) {
+
+    this.evaluator.setTriggerScope(local);
+    this.evaluator.setGlobalScope(trigger);
 
     let tokens = this.tokenizer.scan(stream);
 
     let ast = this.parser.parse(tokens);
 
-    let result = this.evaluator.evaluate(ast);
+    this.evaluator.evaluate(ast, function(result) {
+      console.log("Ok!", result);
+    });
 
   }
 

@@ -7,6 +7,12 @@ import { supportWGL, getLocalHost } from "./Engine/utils";
 export let IS_CLIENT = true;
 
 /**
+ * Offline mode
+ * @type {Boolean}
+ */
+export let OFFLINE_MODE = true;
+
+/**
  * Canvas rendering mode
  * @constant
  * @type {Number}
@@ -35,12 +41,14 @@ export const GRID_WIDTH = 1;
 
 /**
  * Connection url
+ * @constant
  * @type {String}
  */
 export const CONNECTION_URL = getLocalHost();
 
 /**
  * Connection port
+ * @constant
  * @type {String}
  */
 export const CONNECTION_PORT = 449;
@@ -60,6 +68,7 @@ export const VERSION = "0.1.0";
 
 /**
  * WebGL support
+ * @constant
  * @type {Boolean}
  */
 export const WGL_SUPPORT = supportWGL();
@@ -97,17 +106,21 @@ export let FIX_CAMERA = false;
 
 /**
  * God mode
- * @constant
  * @type {Boolean}
  */
 export let GOD_MODE = false;
 
 /**
  * Debug mode
- * @constant
  * @type {Boolean}
  */
 export let DEBUG_MODE = true;
+
+/**
+ * Debug mode
+ * @type {Boolean}
+ */
+export let MINI_MAP = true;
 
 /**
  * Debug fps
@@ -230,7 +243,7 @@ export const GRAVITY = -1;
  */
 export const VOLUME = {
   LOCAL_PLAYER:   100,
-  NETWORK_PLAYER: 20
+  NETWORK_PLAYER: 10
 };
 
 /**

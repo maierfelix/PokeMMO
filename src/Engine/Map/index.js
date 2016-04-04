@@ -217,10 +217,24 @@ export default class Map extends DisplayObject {
     for (; ii < length; ++ii) {
       name = this.entities[ii].type;
       this.objectTemplates[name] = this.objects[this.entities[ii].type];
-      this.entities[ii] = this.addEntity(Object.assign(
+      this.entities[ii] = this.addEntity(this.inheritProperties(
         this.entities[ii], this.objects[this.entities[ii].type]
       ));
     };
+
+  }
+
+  inheritProperties(entity, parent) {
+
+    let key = null;
+
+    for (key in parent) {
+      if (entity.hasOwnProperty(key) === false) {
+        entity[key] = parent[key];
+      }
+    };
+
+    return (entity);
 
   }
 

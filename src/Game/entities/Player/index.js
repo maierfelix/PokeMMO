@@ -1,5 +1,6 @@
 import math from "../../../Math";
 import {
+  OFFLINE_MODE,
   DIMENSION, GRAVITY
 } from "../../../cfg";
 
@@ -158,7 +159,7 @@ export class Player extends Entity {
    */
   set velocity(value) {
     this.latency = value / 2;
-    if (this.isLocalPlayer === true) {
+    if (this.isLocalPlayer === true && OFFLINE_MODE === false) {
       this.instance.engine.connection.sendData(
         "Velocity",
         [this.id, value]

@@ -45,25 +45,23 @@ export default class Tester {
 
   /**
    * Test
-   * @param {String} title
-   * @param {String} expression
-   * @param {*} result
-   * @return {Boolean}
+   * @param {Object}   key
+   * @param {Function} resolve
    */
-  test(title, expression, result) {
+  test(key, resolve) {
 
-    console.log(title);
+    let ast = this.parser.parse(this.tokenizer.scan(key.expression));
 
-    let calc1 = this.evaluator.evaluate(this.parser.parse(this.tokenizer.scan(expression)));
-    let calc2 = eval(expression);
+    this.evaluator.evaluate(ast, this::function(result) {
+      if (result !== key.expect) {
+        console.log(this.parser.parse(this.tokenizer.scan(key.expression)));
+        console.info(`%c ☓ ${key.name} :: ${key.expression} = ${result}`, "color: darkred;");
+        resolve(false);
+      }
+      resolve(true);
+    });
 
-    if (calc1 !== calc2) {
-      console.log(this.parser.parse(this.tokenizer.scan(expression)));
-    }
-
-    return (
-      calc1 === calc2
-    );
+    return void 0;
 
   }
 
@@ -74,14 +72,19 @@ export default class Tester {
 
     let failures = 0;
 
-    for (let key of tests.tests) {
-      this.test(key.name, key.exp) === false && ++failures;
+    for (let type in tests) {
+      for (let key of tests[type]) {
+        this.test(key, (result) => result === false && ++failures);
+      };
+      if (failures <= 0) {
+        console.info(`%c ✓ ${type}`, "color: darkgreen;");
+      }
     };
 
     if (failures) {
-      console.error(`${failures} ${failures === 1 ? "tests" : "test"} failed!`);
+      console.error(`${failures} ${failures > 1 || failures === 0 ? "tests" : "test"} failed!`);
     } else {
-      console.info("All tests passed successfully!");
+      console.info("%cAll tests passed successfully!", "color: green;");
     }
 
   }

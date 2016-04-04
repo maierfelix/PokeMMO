@@ -43,7 +43,7 @@ export function distance(entity, camera) {
   let distance = math.distance(
     entity.x,
     entity.y,
-    (((camera.size.x / 2) - camera.position.x) / camera.resolution) - DIMENSION / 2,
+    (((camera.size.x / 2) - camera.position.x) / camera.resolution),
     (((camera.size.y / 2) - camera.position.y) / camera.resolution)
   );
 

@@ -6,61 +6,146 @@ import NODE_LIST from "./NodeList";
  */
 export function parseBlock() {
 
-  let ast = null;
-  let tmp = null;
-
   if (this.accept("IF") === true) {
-    this.next();
-    ast = new NODE_LIST.IfStatement();
-    ast.condition = this.parseParentheseExpression();
-    ast.consequent = this.parseBraceBody();
-    if (this.accept("LBRACE")) {
-      ast.alternate = this.parseBraceBody();
-    }
-    return (ast);
+    return (this.parseIfStatement());
   }
 
   if (this.accept("RETURN") === true) {
-    this.next();
-    ast = new NODE_LIST.ReturnStatement();
-    ast.value = this.parseParentheseExpression();
-    this.next();
-    return (ast);
+    return (this.parseReturnStatement());
   }
 
   if (this.accept("ATSIGN") === true) {
-    this.next();
-    ast = new NODE_LIST.AsyncStatement();
-    ast.init = this.parseBlock();
-    return (ast);
+    return (this.parseAsyncStatement());
   }
 
   if (this.accept("IDENTIFIER") === true) {
-    /** Function call */
-    if (this.tokens[this.index + 1].name === "LBRACK") {
-      ast = this.parseCallExpression();
-      this.next();
-      return (ast);
-    } else {
-      ast = new NODE_LIST.AssignmentExpression();
-      ast.left = this.parseExpression(0);
-      ast.operator = this.node.value;
-      this.expect("ASSIGN");
-      ast.right = this.parseExpression(0);
-      this.next();
-      return (ast);
-    }
+    return (this.parseIdentifierRoute());
   }
 
-  if (
-    this.accept("NUMBER") === true ||
-    this.accept("STRING") === true
-  ) {
-    ast = this.parseExpression(0);
-    return (ast);
+  return (this.parseExpression(0));
+
+}
+
+/**
+ * Parse async statement
+ * Identifier () | = | ; 
+ * @return {Object}
+ */
+export function parseAsyncStatement() {
+
+  let ast = null;
+
+  this.next();
+  ast = new NODE_LIST.AsyncStatement();
+  ast.init = this.parseBlock();
+
+  return (ast);
+
+}
+
+/**
+ * Parse identifier route
+ * Identifier () | = | . | ; 
+ * @return {Object}
+ */
+export function parseIdentifierRoute() {
+
+  let ast = null;
+
+  let tmp = this.parseExpression(0);
+
+  /** Call expression */
+  if (this.accept("LPAREN")) {
+    ast = this.parseCallExpression();
+    ast.callee = tmp;
   }
 
-  return (null);
+  /** Assignment expression */
+  if (this.accept("ASSIGN")) {
+    ast = this.parseAssignmentExpression();
+    ast.left = tmp;
+  }
+
+  return (ast);
+
+}
+
+/**
+ * Parse call expression
+ * MemberExpression () ;
+ * @return {Object}
+ */
+export function parseCallExpression() {
+
+  let ast = null;
+
+  ast = new NODE_LIST.CallExpression();
+  ast.arguments = this.parseArguments();
+
+  this.next();
+
+  return (ast);
+
+}
+
+/**
+ * Parse assignment expression
+ * Expression = Expression
+ * @return {Object}
+ */
+export function parseAssignmentExpression() {
+
+  let ast = null;
+
+  ast = new NODE_LIST.AssignmentExpression();
+  ast.left = this.parseExpression(0);
+  ast.operator = this.node.value;
+  this.expect("ASSIGN");
+  ast.right = this.parseExpression(0);
+  this.next();
+
+  return (ast);
+
+}
+
+/**
+ * Parse if statement
+ * if ( Expression ) { Body } | { Body }
+ * @return {Object}
+ */
+export function parseIfStatement() {
+
+  let ast = null;
+
+  this.next();
+
+  ast = new NODE_LIST.IfStatement();
+  ast.condition = this.parseParentheseExpression();
+  ast.consequent = this.parseBraceBody();
+
+  if (this.accept("LBRACE")) {
+    ast.alternate = this.parseBraceBody();
+  }
+
+  return (ast);
+
+}
+
+/**
+ * Parse return statement
+ * return ( Expression )
+ * @return {Object}
+ */
+export function parseReturnStatement() {
+
+  let ast = null;
+
+  this.next();
+  ast = new NODE_LIST.ReturnStatement();
+  ast.value = this.parseParentheseExpression();
+  this.next();
+
+  return (ast);
 
 }
 
@@ -109,23 +194,39 @@ export function parseArguments() {
 
   let args = [];
 
-  this.expect("LBRACK");
+  let tmp = null;
 
-  args[0] = this.parseBlock();
+  this.expect("LPAREN");
+
+  tmp = this.parseBlock();
+
+  if (tmp !== null) {
+    args.push(tmp);
+  }
 
   for (;this.accept("COMMA") === true;) {
     this.next();
-    if (this.accept("LBRACK") === true) {
+    if (this.accept("LPAREN") === true) {
       this.next();
-      args.push(this.parseCallExpression());
+      tmp = this.parseCallExpression();
+      if (tmp !== null) {
+        args.push(tmp);
+      }
     } else {
-      args.push(this.parseBlock());
+      tmp = this.parseBlock();
+      if (tmp !== null) {
+        args.push(tmp);
+      }
     }
-    if (this.accept("RBRACK") === true) {
+    if (this.accept("RPAREN") === true) {
       this.next();
       break;
     }
   };
+
+  if (args.length <= 1 && this.accept("RPAREN")) {
+    this.next();
+  }
 
   return (args);
 

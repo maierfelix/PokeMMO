@@ -87,10 +87,10 @@ export default class Camera extends DisplayObject {
     this.target = new math.Point(.0, .0);
 
     /**
-     * Entity to focus
+     * Object to focus
      * @type {Object}
      */
-    this.entityFocus = null;
+    this.objectFocus = null;
 
     /**
      * Scale
@@ -188,9 +188,9 @@ export default class Camera extends DisplayObject {
       this.position.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
       this.position.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
     } else {
-      if (this.entityFocus !== null) {
-        this.position.x -= (this.entityFocus.x) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
-        this.position.y -= (this.entityFocus.y) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+      if (this.objectFocus !== null) {
+        this.position.x -= (this.objectFocus.x) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+        this.position.y -= (this.objectFocus.y) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
       }
     }
 
@@ -202,9 +202,8 @@ export default class Camera extends DisplayObject {
    * @return {Number}
    */
   getX(x) {
-    x -= (DIMENSION / 2);
     return (
-      this.size.x / 2 - (x * this.resolution) - ((DIMENSION / 2) * this.resolution)
+      this.size.x / 2 - (x * this.resolution)
     );
   }
 
@@ -220,10 +219,10 @@ export default class Camera extends DisplayObject {
   }
 
   /**
-   * Update entity focus
-   * @param  {Number} entity
+   * Update object focus
+   * @param  {Number} object
    */
-  updateFocus(entity) {
+  updateFocus(object) {
 
     this.base = {
       x: this.position.x,
@@ -231,8 +230,8 @@ export default class Camera extends DisplayObject {
     };
 
     this.target = {
-      x: this.getX(entity.x),
-      y: this.getY(entity.y + entity.z)
+      x: this.getX(object.position.x),
+      y: this.getY(object.position.y + object.z)
     };
 
     this.deltaX = this.target.x - this.base.x;
@@ -244,30 +243,31 @@ export default class Camera extends DisplayObject {
 
   /**
    * Play camera animations
+   * @param {Object} object
    */
-  animate(entity) {
+  animate(object) {
 
     if (FREE_CAMERA === true) return void 0;
 
-    this.updateFocus(entity);
+    this.updateFocus(object);
 
     let velocity = FIX_CAMERA === true ? 0 : math.ease(Math.atan(1.05));
 
     let x = this.target.x - (this.base.x + (velocity * this.deltaX));
     let y = this.target.y - (this.base.y + (velocity * this.deltaY));
 
-    if (Math.abs(this.x + x - this.target.x) > Math.abs(this.x - this.target.x)) {
-      this.x = this.target.x;
+    if (Math.abs(this.position.x + x - this.target.x) > Math.abs(this.position.x - this.target.x)) {
+      this.position.x = this.target.x;
       this.base.x = this.target.x;
     } else {
-      this.x += x;                
+      this.position.x += x;                
     }
 
-    if (Math.abs(this.y + y - this.target.y) > Math.abs(this.y - this.target.y)) {
-      this.y = this.target.y;
+    if (Math.abs(this.position.y + y - this.target.y) > Math.abs(this.position.y - this.target.y)) {
+      this.position.y = this.target.y;
       this.base.y = this.target.y;
     } else {
-      this.y += y;                
+      this.position.y += y;                
     }
 
     return void 0;
@@ -276,30 +276,30 @@ export default class Camera extends DisplayObject {
 
   /**
    * Animate focus
-   * @param {Object} entity
+   * @param {Object} object
    */
-  animateFocus(entity) {
-    this.updateFocus(entity);
-    this.entityFocus = entity;
+  animateFocus(object) {
+    this.updateFocus(object);
+    this.objectFocus = object;
   }
 
   /**
-   * Focus a entity
-   * @param {Object}  entity
+   * Focus a object
+   * @param {Object}  object
    * @param {Boolean} instant
    */
-  focus(entity, instant) {
+  focus(object, instant) {
     if (instant === true) {
       if (
-        entity === null ||
-        entity === void 0
+        object === null ||
+        object === void 0
       ) return void 0;
-      this.entityFocus = entity;
-      this.position.x = this.getX(entity.x);
-      this.position.y = this.getY(entity.y);
+      this.objectFocus = object;
+      this.position.x = this.getX(object.position.x);
+      this.position.y = this.getY(object.position.y);
       return void 0;
     }
-    this.animateFocus(entity);
+    this.animateFocus(object);
   }
 
   /**

@@ -128,6 +128,12 @@ export default class Engine extends DisplayObject {
     this.editor = null;
 
     /**
+     * MiniMap instance
+     * @type {Object}
+     */
+    this.mini = null;
+
+    /**
      * Environment instance
      * @type {Object}
      */

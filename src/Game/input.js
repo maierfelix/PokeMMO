@@ -242,6 +242,20 @@ export const keys = [
         local.move(cfg.RIGHT);
       }
     }
+  },
+  {
+    name: "SPACE",
+    fire: function() {
+      let local = this.engine.localEntity;
+      if (
+        cfg.FREE_CAMERA ||
+        this.engine.camera.objectFocus !== null &&
+        this.engine.camera.objectFocus.id !== local.id
+      ) {
+        this.engine.camera.focus(local, true);
+        cfg.FREE_CAMERA = false;
+      }
+    }
   }
 ];
 
@@ -251,6 +265,7 @@ export const mouse = [
     fire: function(e) {
       e.preventDefault();
       if (!cfg.DEBUG_MODE) return void 0;
+      cfg.FREE_CAMERA = false;
       if (cfg.EDIT_MODE) {
         if (!this.engine.editor.dragging) {
           let entity = this.engine.editor.getEntityByMouse(e.clientX, e.clientY);
@@ -278,6 +293,9 @@ export const mouse = [
         this.engine.editor.selectFrom(x, y);
         this.engine.editor.selectTo(x, y);
         return void 0;
+      }
+      if (e.which !== 1) {
+        cfg.FREE_CAMERA = true;
       }
       if (cfg.FREE_CAMERA && (e instanceof TouchEvent || e.which !== 1)) {
         this.engine.camera.dragging = true;
