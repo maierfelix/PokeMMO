@@ -52,6 +52,21 @@ return (function() {
     type: "ping"
   });
 
+  MAP.entities.push({
+    x: 208, y: 168,
+    type: "ping",
+    opacity: .0,
+    collidable: true,
+    onCollide: {
+      EngelScript: `
+        trigger.lock = true;
+        @ trigger.move(0);
+        @ trigger.move(0);
+        trigger.lock = false;
+      `
+    }
+  });
+
   /*MAP.entities.push({
     x: 144, y: 40,
     type: "cloud",
@@ -66,15 +81,56 @@ return (function() {
     shadow: false
   });
 
+  MAP.entities.push(
+    {
+      x: 176,
+      y: 104,
+      type: "tree",
+      collisionBox: [
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 1, 1, 0
+      ]
+    }
+  );
+
   MAP.entities.push({
     x: 160, y: 128,
     type: "treestub",
     onCollide: {
-      JavaScript: function(entity) {
+      /*JavaScript: function(entity) {
         if (entity.facing === 2) {
           entity.jump();
         }
-      }
+      },*/
+      EngelScript: `
+        if (trigger.facing == 2) {
+          @ this.jump();
+          @ this.jump();
+          @ this.fadeOut(1, false);
+          @ this.fadeIn(1);
+          @ trigger.fadeOut(1, false);
+          @ trigger.fadeIn(1);
+          trigger.jump();
+          @ trigger.move(0);
+          @ trigger.move(0);
+          @ trigger.move(2);
+          @ trigger.move(2);
+          @ trigger.move(2);
+          @ trigger.move(1);
+          @ trigger.move(1);
+          @ trigger.move(1);
+          trigger.jump();
+          @ trigger.move(3);
+          @ trigger.move(3);
+          @ trigger.move(3);
+          @ trigger.move(0);
+          @ trigger.move(0);
+          @ trigger.move(2);
+          @ trigger.move(2);
+        }
+      `
     }
   });
 

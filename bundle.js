@@ -72,19 +72,23 @@
 
 	var _Editor2 = _interopRequireDefault(_Editor);
 
-	var _Connection = __webpack_require__(140);
+	var _MiniMap = __webpack_require__(140);
+
+	var _MiniMap2 = _interopRequireDefault(_MiniMap);
+
+	var _Connection = __webpack_require__(141);
 
 	var _Connection2 = _interopRequireDefault(_Connection);
 
-	var _input = __webpack_require__(150);
+	var _input = __webpack_require__(151);
 
 	var Events = _interopRequireWildcard(_input);
 
-	var _entities = __webpack_require__(151);
+	var _entities = __webpack_require__(152);
 
 	var entities = _interopRequireWildcard(_entities);
 
-	var _scenes = __webpack_require__(156);
+	var _scenes = __webpack_require__(157);
 
 	var scenes = _interopRequireWildcard(_scenes);
 
@@ -151,7 +155,7 @@
 	          });
 	          return void 0;
 	        case 4:
-	          //this.animateNPC();
+	          this.animateNPC();
 	          this.setup(stage);
 	          return void 0;
 	        case 5:
@@ -166,20 +170,24 @@
 	          this.setup(stage);
 	          return void 0;
 	        case 7:
+	          this.engine.mini = new _MiniMap2.default(this.engine);
+	          this.setup(stage);
+	          return void 0;
+	        case 8:
 	          window.rAF(function () {
 	            return _this.engine.renderer.render();
 	          });
 	          this.setup(stage);
 	          return void 0;
-	        case 8:
+	        case 9:
 	          this.input = new _Input2.default(Events, this);
 	          this.setup(stage);
 	          return void 0;
-	        case 9:
+	        case 10:
 	          this.engine.renderer.glRenderer.init();
 	          this.setup(stage);
 	          return void 0;
-	        case 10:
+	        case 11:
 	          if (!_cfg.OFFLINE_MODE) {
 	            this.engine.connection = new _Connection2.default(this, _cfg.CONNECTION_URL + ":" + _cfg.CONNECTION_PORT, null);
 	          }
@@ -342,7 +350,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.ColorPalette = exports.VOLUME = exports.GRAVITY = exports.DOWN = exports.RIGHT = exports.UP = exports.LEFT = exports.SHADOW_ALPHA = exports.SHADOW_Y = exports.SHADOW_X = exports.DISPLAY_SHADOWS = exports.MAX_SCALE = exports.MIN_SCALE = exports.PIXEL_SCALE = exports.DIMENSION = exports.Y_DEPTH_HACK = exports.BGS = exports.BGM = exports.DEBUG_FPS = exports.DEBUG_MODE = exports.GOD_MODE = exports.FIX_CAMERA = exports.FREE_CAMERA = exports.EDIT_MODE = exports.RECORD_MODE = exports.WALK_BY_KEYBOARD = exports.WGL_SUPPORT = exports.VERSION = exports.__dirname = exports.CONNECTION_PORT = exports.CONNECTION_URL = exports.GRID_WIDTH = exports.RENDER_MODE = exports.WGL = exports.CANVAS = exports.OFFLINE_MODE = exports.IS_CLIENT = undefined;
+	exports.ColorPalette = exports.VOLUME = exports.GRAVITY = exports.DOWN = exports.RIGHT = exports.UP = exports.LEFT = exports.SHADOW_ALPHA = exports.SHADOW_Y = exports.SHADOW_X = exports.DISPLAY_SHADOWS = exports.MAX_SCALE = exports.MIN_SCALE = exports.PIXEL_SCALE = exports.DIMENSION = exports.Y_DEPTH_HACK = exports.BGS = exports.BGM = exports.DEBUG_FPS = exports.MINI_MAP = exports.DEBUG_MODE = exports.GOD_MODE = exports.FIX_CAMERA = exports.FREE_CAMERA = exports.EDIT_MODE = exports.RECORD_MODE = exports.WALK_BY_KEYBOARD = exports.WGL_SUPPORT = exports.VERSION = exports.__dirname = exports.CONNECTION_PORT = exports.CONNECTION_URL = exports.GRID_WIDTH = exports.RENDER_MODE = exports.WGL = exports.CANVAS = exports.OFFLINE_MODE = exports.IS_CLIENT = undefined;
 
 	var _utils = __webpack_require__(7);
 
@@ -387,12 +395,14 @@
 
 	/**
 	 * Connection url
+	 * @constant
 	 * @type {String}
 	 */
 	var CONNECTION_URL = exports.CONNECTION_URL = (0, _utils.getLocalHost)();
 
 	/**
 	 * Connection port
+	 * @constant
 	 * @type {String}
 	 */
 	var CONNECTION_PORT = exports.CONNECTION_PORT = 449;
@@ -412,6 +422,7 @@
 
 	/**
 	 * WebGL support
+	 * @constant
 	 * @type {Boolean}
 	 */
 	var WGL_SUPPORT = exports.WGL_SUPPORT = (0, _utils.supportWGL)();
@@ -449,17 +460,21 @@
 
 	/**
 	 * God mode
-	 * @constant
 	 * @type {Boolean}
 	 */
 	var GOD_MODE = exports.GOD_MODE = false;
 
 	/**
 	 * Debug mode
-	 * @constant
 	 * @type {Boolean}
 	 */
 	var DEBUG_MODE = exports.DEBUG_MODE = true;
+
+	/**
+	 * Debug mode
+	 * @type {Boolean}
+	 */
+	var MINI_MAP = exports.MINI_MAP = true;
 
 	/**
 	 * Debug fps
@@ -582,7 +597,7 @@
 	 */
 	var VOLUME = exports.VOLUME = {
 	  LOCAL_PLAYER: 100,
-	  NETWORK_PLAYER: 20
+	  NETWORK_PLAYER: 10
 	};
 
 	/**
@@ -2574,6 +2589,12 @@
 	        _this.editor = null;
 
 	        /**
+	         * MiniMap instance
+	         * @type {Object}
+	         */
+	        _this.mini = null;
+
+	        /**
 	         * Environment instance
 	         * @type {Object}
 	         */
@@ -3393,7 +3414,7 @@
 	    }
 
 	    /**
-	     * Cubic collision
+	     * Linear intersection
 	     * @param {Number} xx
 	     * @param {Number} yy
 	     * @param {Number} width
@@ -3405,9 +3426,28 @@
 	     */
 
 	  }, {
-	    key: "cubicCollision",
-	    value: function cubicCollision(xx, yy, width, height, x, y, scale) {
+	    key: "linearIntersect",
+	    value: function linearIntersect(xx, yy, width, height, x, y, scale) {
 	      return window.Math.abs(2 * (x - xx * scale) + -(width * scale)) <= width * scale && window.Math.abs(2 * (y - yy * scale) + -(height * scale)) <= height * scale;
+	    }
+
+	    /**
+	     * Cubic collision
+	     * @param {Number} x1
+	     * @param {Number} y1
+	     * @param {Number} w1
+	     * @param {Number} h1
+	     * @param {Number} x2
+	     * @param {Number} y2
+	     * @param {Number} w2
+	     * @param {Number} h2
+	     * @return {Boolean}
+	     */
+
+	  }, {
+	    key: "cubicCollision",
+	    value: function cubicCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+	      return !(y1 + h1 < y2 || y1 > y2 + h2 || x1 + w1 < x2 || x1 > x2 + w2);
 	    }
 
 	    /**
@@ -3995,7 +4035,7 @@
 	 */
 	function distance(entity, camera) {
 
-	  var distance = _Math2.default.distance(entity.x, entity.y, (camera.size.x / 2 - camera.position.x) / camera.resolution - _cfg.DIMENSION / 2, (camera.size.y / 2 - camera.position.y) / camera.resolution);
+	  var distance = _Math2.default.distance(entity.x, entity.y, (camera.size.x / 2 - camera.position.x) / camera.resolution, (camera.size.y / 2 - camera.position.y) / camera.resolution);
 
 	  distance.x /= 10;
 	  distance.y /= 10;
@@ -4012,10 +4052,6 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _assign = __webpack_require__(90);
-
-	var _assign2 = _interopRequireDefault(_assign);
 
 	var _getIterator2 = __webpack_require__(94);
 
@@ -4322,8 +4358,22 @@
 	      for (; ii < length; ++ii) {
 	        name = this.entities[ii].type;
 	        this.objectTemplates[name] = this.objects[this.entities[ii].type];
-	        this.entities[ii] = this.addEntity((0, _assign2.default)(this.entities[ii], this.objects[this.entities[ii].type]));
+	        this.entities[ii] = this.addEntity(this.inheritProperties(this.entities[ii], this.objects[this.entities[ii].type]));
 	      };
+	    }
+	  }, {
+	    key: "inheritProperties",
+	    value: function inheritProperties(entity, parent) {
+
+	      var key = null;
+
+	      for (key in parent) {
+	        if (entity.hasOwnProperty(key) === false) {
+	          entity[key] = parent[key];
+	        }
+	      };
+
+	      return entity;
 	    }
 
 	    /**
@@ -4413,66 +4463,10 @@
 	(0, _utils.inherit)(Map, functions);
 
 /***/ },
-/* 90 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(91), __esModule: true };
-
-/***/ },
-/* 91 */
-/***/ function(module, exports, __webpack_require__) {
-
-	__webpack_require__(92);
-	module.exports = __webpack_require__(19).Object.assign;
-
-/***/ },
-/* 92 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 19.1.3.1 Object.assign(target, source)
-	var $export = __webpack_require__(17);
-
-	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(93)});
-
-/***/ },
-/* 93 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// 19.1.2.1 Object.assign(target, source, ...)
-	var $        = __webpack_require__(5)
-	  , toObject = __webpack_require__(68)
-	  , IObject  = __webpack_require__(39);
-
-	// should work with symbols and should have deterministic property order (V8 bug)
-	module.exports = __webpack_require__(26)(function(){
-	  var a = Object.assign
-	    , A = {}
-	    , B = {}
-	    , S = Symbol()
-	    , K = 'abcdefghijklmnopqrst';
-	  A[S] = 7;
-	  K.split('').forEach(function(k){ B[k] = k; });
-	  return a({}, A)[S] != 7 || Object.keys(a({}, B)).join('') != K;
-	}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
-	  var T     = toObject(target)
-	    , $$    = arguments
-	    , $$len = $$.length
-	    , index = 1
-	    , getKeys    = $.getKeys
-	    , getSymbols = $.getSymbols
-	    , isEnum     = $.isEnum;
-	  while($$len > index){
-	    var S      = IObject($$[index++])
-	      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
-	      , length = keys.length
-	      , j      = 0
-	      , key;
-	    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
-	  }
-	  return T;
-	} : Object.assign;
-
-/***/ },
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
 /* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4572,6 +4566,10 @@
 	        _this.reversed = [0, 0];
 
 	        _this.reverseShadow = [0, 0];
+
+	        if (obj.collisionBox !== void 0) {
+	            _this.collisionBox = obj.collisionBox;
+	        }
 
 	        return _ret = _this, (0, _possibleConstructorReturn3.default)(_this, _ret);
 	    }
@@ -4947,6 +4945,12 @@
 	     */
 	    _this.onCollide = null;
 
+	    /**
+	     * Jump trigger
+	     * @type {Function}
+	     */
+	    _this.onJump = null;
+
 	    if (obj.onLoad !== void 0) {
 	      _this.onLoad = obj.onLoad;
 	    }
@@ -4958,6 +4962,9 @@
 	    }
 	    if (obj.onCollide !== void 0) {
 	      _this.onCollide = obj.onCollide;
+	    }
+	    if (obj.onJump !== void 0) {
+	      _this.onJump = obj.onJump;
 	    }
 
 	    /**
@@ -4989,6 +4996,22 @@
 	      },
 	      set: function set(value) {
 	        this.position.y = value;
+	      }
+	    });
+
+	    /**
+	     * Lock
+	     * @type {Number}
+	     * @getter
+	     * @setter
+	     * @overwrite
+	     */
+	    Object.defineProperty(_this, "lock", {
+	      get: function get() {
+	        return this.STATES.LOCK;
+	      },
+	      set: function set(value) {
+	        this.STATES.LOCK = value === true;
 	      }
 	    });
 
@@ -5044,7 +5067,7 @@
 
 	  }, {
 	    key: "jump",
-	    value: function jump() {
+	    value: function jump(resolve) {
 
 	      this.refreshState();
 
@@ -5053,6 +5076,8 @@
 	      this.STATES.JUMPING = true;
 
 	      this.idleTime = 0;
+
+	      this.jumpCB = resolve || null;
 	    }
 
 	    /**
@@ -5084,6 +5109,9 @@
 	          this.shadow.position.y = this.shadowY;
 	          this.shadow.scale.x = 0;
 	          this.shadow.scale.y = 0;
+	        }
+	        if (this.jumpCB !== null) {
+	          this.jumpCB();
 	        }
 	      }
 	    }
@@ -5131,25 +5159,29 @@
 
 	    /**
 	     * Fade in
-	     * @param {Number} speed
+	     * @param {Number}   speed
+	     * @param {Function} resolve
 	     */
 
 	  }, {
 	    key: "fadeIn",
 	    value: function fadeIn() {
 	      var speed = arguments.length <= 0 || arguments[0] === undefined ? speed || 1 : arguments[0];
+	      var resolve = arguments[1];
 
 	      this.animations.push({
 	        type: "fade",
 	        fade: 1,
 	        speed: speed
 	      });
+	      this.fadeInCB = resolve || null;
 	    }
 
 	    /**
 	     * Fade out
-	     * @param {Number} speed
-	     * @param {Boolean} kill
+	     * @param {Number}   speed
+	     * @param {Boolean}  kill
+	     * @param {Function} resolve
 	     */
 
 	  }, {
@@ -5157,6 +5189,7 @@
 	    value: function fadeOut() {
 	      var speed = arguments.length <= 0 || arguments[0] === undefined ? speed || 1 : arguments[0];
 	      var kill = arguments[1];
+	      var resolve = arguments[2];
 
 	      this.animations.push({
 	        type: "fade",
@@ -5164,6 +5197,7 @@
 	        kill: kill,
 	        speed: speed
 	      });
+	      this.fadeOutCB = resolve || null;
 	    }
 
 	    /**
@@ -5182,8 +5216,15 @@
 	      if (animation.fade === 1 && this.opacity > 1) {
 	        this.opacity = 1.0;
 	        this.stopAnimation();
+	        if (this.fadeInCB !== null) {
+	          this.fadeInCB();
+	          this.fadeInCB = null;
+	        }
 	      } else if (animation.fade === 0 && this.opacity < 0) {
 	        this.opacity = animation.kill === true ? -.01 : .0;
+	        if (this.fadeOutCB !== null) {
+	          this.fadeOutCB();
+	        }
 	        this.stopAnimation();
 	      }
 	    }
@@ -6172,7 +6213,7 @@
 	  var ii = 0;
 	  var length = entities.length;
 
-	  var cubicCollision = false;
+	  var intersection = false;
 
 	  var collide = false;
 
@@ -6183,7 +6224,7 @@
 	  for (; ii < length; ++ii) {
 	    event = entities[ii];
 	    if (event.id === id) continue;
-	    cubicCollision = _Math2.default.cubicCollision(event.position.x << 0, event.position.y << 0, event.size.x * event.scale + event.xMargin - _cfg.DIMENSION, event.size.y * event.scale + event.yMargin - _cfg.DIMENSION, x, y, 1);
+	    intersection = _Math2.default.linearIntersect(event.position.x << 0, event.position.y << 0, event.size.x * event.scale + event.xMargin - _cfg.DIMENSION, event.size.y * event.scale + event.yMargin - _cfg.DIMENSION, x, y, 1);
 	    /** Entity is a collidable */
 	    if (event.collidable === true) {
 	      /** Collision box */
@@ -6194,16 +6235,16 @@
 	        }
 	        /** Cubic based collision */
 	      } else {
-	          if (cubicCollision === true) {
+	          if (intersection === true) {
 	            this.triggerEvent(event, entity, "onCollide");
 	            collide = true;
 	          }
 	        }
 	    } else {
-	      if (_Math2.default.cubicCollision(event.position.x << 0, event.position.y << 0, event.size.x * event.scale + event.xMargin - _cfg.DIMENSION, event.size.y * event.scale + event.yMargin - _cfg.DIMENSION, entity.position.x << 0, entity.position.y << 0, 1) === true) {
+	      if (_Math2.default.linearIntersect(event.position.x << 0, event.position.y << 0, event.size.x * event.scale + event.xMargin - _cfg.DIMENSION, event.size.y * event.scale + event.yMargin - _cfg.DIMENSION, entity.position.x << 0, entity.position.y << 0, 1) === true) {
 	        this.triggerEvent(event, entity, "onLeave");
 	      }
-	      if (cubicCollision === true) {
+	      if (intersection === true) {
 	        this.triggerEvent(event, entity, "onEnter");
 	      }
 	    }
@@ -6464,25 +6505,30 @@
 	         */
 	        this.tester = new _Tester2.default(this.tokenizer, this.parser, this.evaluator);
 
-	        this.run(null, null, "\n      if (FLAGS.GOT_STARTER_PKMN == 2) {\n        FLAGS.GOT_STARTER_PKMN = 1337;\n      } {\n        FLAGS.GOT_STARTER_PKMN = 99;\n      }\n    ");
+	        console.log(this.FLAGS);
 	    }
 
 	    /**
 	     * Run a stream
-	     * @param {Object} parent
-	     * @param {Object} entity
+	     * @param {Object} local
+	     * @param {Object} trigger
 	     * @param {String} stream
 	     */
 
 	    (0, _createClass3.default)(Environment, [{
 	        key: "run",
-	        value: function run(parent, entity, stream) {
+	        value: function run(local, trigger, stream) {
+
+	            this.evaluator.setTriggerScope(local);
+	            this.evaluator.setGlobalScope(trigger);
 
 	            var tokens = this.tokenizer.scan(stream);
 
 	            var ast = this.parser.parse(tokens);
 
-	            var result = this.evaluator.evaluate(ast);
+	            this.evaluator.evaluate(ast, function (result) {
+	                console.log("Ok!", result);
+	            });
 	        }
 	    }]);
 	    return Environment;
@@ -6517,10 +6563,12 @@
 	  "?": "CONDITIONAL",
 	  "$": "DOLLAR",
 	  "@": "ATSIGN",
+	  /** Logical operators */
+	  "!": "NOT",
+	  "||": "OR",
+	  "&&": "AND",
 	  /** Binary operators */
 	  ",": "COMMA",
-	  "|": "OR",
-	  "&": "AND",
 	  "+": "ADD",
 	  "-": "SUB",
 	  "*": "MUL",
@@ -6536,9 +6584,10 @@
 	  "!=": "NEQ",
 	  /** Assignment operators */
 	  "=": "ASSIGN",
-	  /** Unary operators */
-	  "!": "NOT",
+	  /** Bitwise operators */
 	  "~": "BIT_NOT",
+	  "|": "BIT_OR",
+	  "&": "BIT_AND",
 	  /** Literals */
 	  "null": "NULL",
 	  "true": "TRUE",
@@ -6642,26 +6691,26 @@
 
 	  /**
 	   * Test
-	   * @param {String} title
-	   * @param {String} expression
-	   * @param {*} result
-	   * @return {Boolean}
+	   * @param {Object}   key
+	   * @param {Function} resolve
 	   */
 
 	  (0, _createClass3.default)(Tester, [{
 	    key: "test",
-	    value: function test(title, expression, result) {
+	    value: function test(key, resolve) {
 
-	      console.log(title);
+	      var ast = this.parser.parse(this.tokenizer.scan(key.expression));
 
-	      var calc1 = this.evaluator.evaluate(this.parser.parse(this.tokenizer.scan(expression)));
-	      var calc2 = eval(expression);
+	      this.evaluator.evaluate(ast, function (result) {
+	        if (result !== key.expect) {
+	          console.log(this.parser.parse(this.tokenizer.scan(key.expression)));
+	          console.info("%c ☓ " + key.name + " :: " + key.expression + " = " + result, "color: darkred;");
+	          resolve(false);
+	        }
+	        resolve(true);
+	      }.bind(this));
 
-	      if (calc1 !== calc2) {
-	        console.log(this.parser.parse(this.tokenizer.scan(expression)));
-	      }
-
-	      return calc1 === calc2;
+	      return void 0;
 	    }
 
 	    /**
@@ -6674,37 +6723,44 @@
 
 	      var failures = 0;
 
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
+	      for (var type in tests) {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
 
-	      try {
-	        for (var _iterator = (0, _getIterator3.default)(tests.tests), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var key = _step.value;
-
-	          this.test(key.name, key.exp) === false && ++failures;
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
 	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
+	          for (var _iterator = (0, _getIterator3.default)(tests[type]), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var key = _step.value;
+
+	            this.test(key, function (result) {
+	              return result === false && ++failures;
+	            });
 	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
 	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
 	          }
 	        }
-	      }
 
-	      ;
+	        ;
+	        if (failures <= 0) {
+	          console.info("%c ✓ " + type, "color: darkgreen;");
+	        }
+	      };
 
 	      if (failures) {
-	        console.error(failures + " " + (failures === 1 ? "tests" : "test") + " failed!");
+	        console.error(failures + " " + (failures > 1 || failures === 0 ? "tests" : "test") + " failed!");
 	      } else {
-	        console.info("All tests passed successfully!");
+	        console.info("%cAll tests passed successfully!", "color: green;");
 	      }
 	    }
 	  }]);
@@ -6746,10 +6802,11 @@
 	  Identifier: 5,
 	  IfStatement: 6,
 	  BinaryExpression: 7,
-	  AsyncStatement: 8,
-	  MemberExpression: 9,
-	  CallExpression: 10,
-	  AssignmentExpression: 11
+	  UnaryExpression: 8,
+	  AsyncStatement: 9,
+	  MemberExpression: 10,
+	  CallExpression: 11,
+	  AssignmentExpression: 12
 	};
 
 	/**
@@ -6839,6 +6896,17 @@
 	      };
 	    }
 	  }, {
+	    key: "UnaryExpression",
+	    get: function get() {
+	      return function UnaryExpression() {
+	        (0, _classCallCheck3.default)(this, UnaryExpression);
+
+	        this.type = NODE_TYPES.UnaryExpression;
+	        this.operator = null;
+	        this.init = null;
+	      };
+	    }
+	  }, {
 	    key: "AsyncStatement",
 	    get: function get() {
 	      return function AsyncStatement() {
@@ -6897,21 +6965,160 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var tests = exports.tests = [{
+	/**
+	 * Mathematical tests
+	 * @type {Array}
+	 */
+	var Mathematical = exports.Mathematical = [
+	/** Logical */
+	{
+	  name: "Not",
+	  expression: "!true",
+	  expect: false
+	}, {
+	  name: "Not",
+	  expression: "!!true",
+	  expect: true
+	}, {
+	  name: "Not",
+	  expression: "!!!false",
+	  expect: true
+	}, {
+	  name: "Logical And",
+	  expression: "1 && 2",
+	  expect: 2
+	}, {
+	  name: "Logical And",
+	  expression: "1 == 1 && 2 >= 2",
+	  expect: true
+	}, {
+	  name: "Logical And",
+	  expression: "1 != 1 && 2 < 2",
+	  expect: false
+	}, {
+	  name: "Logical Or",
+	  expression: "0 || 2",
+	  expect: 2
+	}, {
+	  name: "Logical Or",
+	  expression: "2 || 0",
+	  expect: 2
+	}, {
+	  name: "Logical Or",
+	  expression: "10 <= 2 || 5 < 2 || 50 / 2 == 25",
+	  expect: true
+	}, {
+	  name: "Logical And Or",
+	  expression: "5 == 1 || 1 == 2 || 5 == 5",
+	  expect: true
+	},
+	/** Comparisions */
+	{
 	  name: "Equality",
-	  exp: "1 == 5"
+	  expression: "1 == 5",
+	  expect: false
 	}, {
 	  name: "Equality",
-	  exp: "5 == 5"
+	  expression: "5 == 5",
+	  expect: true
 	}, {
 	  name: "Inequality",
-	  exp: "1 != 5"
+	  expression: "1 != 5",
+	  expect: true
 	}, {
 	  name: "Inequality",
-	  exp: "5 != 5"
+	  expression: "5 != 5",
+	  expect: false
 	}, {
-	  name: "Plus operator",
-	  exp: "5 + 1 / 2 * 2 - ((2.5 * (6 + 4 * 2) / 5) * 5) - 1.5"
+	  name: "LW",
+	  expression: "5 < 10",
+	  expect: true
+	}, {
+	  name: "LW",
+	  expression: "10 < 5",
+	  expect: false
+	}, {
+	  name: "LW",
+	  expression: "5 < 5",
+	  expect: false
+	}, {
+	  name: "LE",
+	  expression: "5 <= 10",
+	  expect: true
+	}, {
+	  name: "LE",
+	  expression: "10 <= 5",
+	  expect: false
+	}, {
+	  name: "LE",
+	  expression: "5 <= 5",
+	  expect: true
+	}, {
+	  name: "GT",
+	  expression: "5 > 10",
+	  expect: false
+	}, {
+	  name: "GT",
+	  expression: "10 > 5",
+	  expect: true
+	}, {
+	  name: "GT",
+	  expression: "5 > 5",
+	  expect: false
+	}, {
+	  name: "GE",
+	  expression: "5 >= 10",
+	  expect: false
+	}, {
+	  name: "GE",
+	  expression: "10 >= 5",
+	  expect: true
+	}, {
+	  name: "GE",
+	  expression: "5 >= 5",
+	  expect: true
+	},
+	/** Binary operators */
+	{
+	  name: "Add operator",
+	  expression: "5.5 + 2.5 + 7",
+	  expect: 15
+	}, {
+	  name: "Minus operator",
+	  expression: "5.5 - 2.5 - 7",
+	  expect: -4
+	}, {
+	  name: "Mul operator",
+	  expression: "5.5 * 2.5 * 7",
+	  expect: 96.25
+	}, {
+	  name: "Div operator",
+	  expression: "25 / 5 / 2.5",
+	  expect: 2
+	}, {
+	  name: "Mod operator",
+	  expression: "32 % 6",
+	  expect: 2
+	}, {
+	  name: "Complex",
+	  expression: "5 + 1 / 2 * 2 - ((2.5 * (6 + 4 * 2) / 5) * 5) - 1.5",
+	  expect: -30.5
+	},
+	/** Numbers */
+	{
+	  name: "Negative integer",
+	  expression: "-77.5",
+	  expect: -77.5
+	},
+	/** Booleans */
+	{
+	  name: "True bool",
+	  expression: "true",
+	  expect: true
+	}, {
+	  name: "False bool",
+	  expression: "false",
+	  expect: false
 	}];
 
 /***/ },
@@ -6979,6 +7186,7 @@
 	  /**
 	   * Is digit
 	   * @param {Number} c
+	   * @return {Boolean}
 	   */
 
 	  (0, _createClass3.default)(Tokenizer, [{
@@ -6990,6 +7198,7 @@
 	    /**
 	     * Is alpha
 	     * @param {Number} c
+	     * @return {Boolean}
 	     */
 
 	  }, {
@@ -7001,12 +7210,25 @@
 	    /**
 	     * Is alpha digit
 	     * @param {Number} c
+	     * @return {Boolean}
 	     */
 
 	  }, {
 	    key: "isAlphaDigit",
 	    value: function isAlphaDigit(c) {
 	      return c > 47 && c < 58 || c > 64 && c < 91 || c > 96 && c < 123 || c === 95;
+	    }
+
+	    /**
+	     * Is string
+	     * @param {Number} c
+	     * @return {Boolean}
+	     */
+
+	  }, {
+	    key: "isString",
+	    value: function isString(c) {
+	      return c === 34 || c === 39;
 	    }
 
 	    /**
@@ -7035,6 +7257,7 @@
 
 	    /**
 	     * Creates number token
+	     * @return {Object}
 	     */
 
 	  }, {
@@ -7063,6 +7286,7 @@
 
 	    /**
 	     * Creates identifier or keyword token
+	     * @return {Object}
 	     */
 
 	  }, {
@@ -7094,6 +7318,7 @@
 
 	    /**
 	     * Creates string token
+	     * @return {Object}
 	     */
 
 	  }, {
@@ -7116,6 +7341,18 @@
 
 	      return token;
 	    }
+	  }, {
+	    key: "readNegativeNumber",
+	    value: function readNegativeNumber() {
+
+	      var node = null;
+
+	      node = this.readNumber();
+
+	      node.value = "-" + node.value;
+
+	      return node;
+	    }
 
 	    /**
 	     * Read sign
@@ -7128,17 +7365,25 @@
 
 	      var c = null;
 
+	      var code = 0;
+
 	      var name = null;
 
 	      var value = "";
 
 	      for (;;) {
 	        c = this.buffer.charAt(this.index);
+	        code = c.charCodeAt(0);
+	        if (this.isDigit(code) === true) {
+	          if (value === "-") {
+	            return this.readNegativeNumber();
+	          }
+	        }
 	        value += c;
 	        if (this.TOKEN_LIST[value] === void 0) break;
+	        this.index++;
 	        name = this.TOKEN_LIST[value];
 	        if (this.index > this.length) break;
-	        this.index++;
 	      };
 
 	      return {
@@ -7150,6 +7395,7 @@
 	    /**
 	     * Lexical analysis
 	     * @param {String} stream
+	     * @return {Array}
 	     */
 
 	  }, {
@@ -7176,21 +7422,19 @@
 
 	        if ((op = this.TOKEN_LIST[c]) !== void 0) {
 	          token = this.readSign();
-	          if (this.isValidToken(token)) {
-	            tokens.push(token);
-	          }
-	        }
-	        if (this.isAlpha(cCode) === true) {
-	          token = this.readIdentifier();
-	          if (this.isValidToken(token)) tokens.push(token);
+	          if (this.isValidToken(token) === true) tokens.push(token);
 	        }
 	        if (this.isDigit(cCode) === true) {
 	          token = this.readNumber();
-	          if (this.isValidToken(token)) tokens.push(token);
+	          if (this.isValidToken(token) === true) tokens.push(token);
 	        }
-	        if (cCode === 34 || cCode === 39) {
+	        if (this.isAlpha(cCode) === true) {
+	          token = this.readIdentifier();
+	          if (this.isValidToken(token) === true) tokens.push(token);
+	        }
+	        if (this.isString(cCode) === true) {
 	          token = this.readString();
-	          if (this.isValidToken(token)) tokens.push(token);
+	          if (this.isValidToken(token) === true) tokens.push(token);
 	        }
 	      };
 
@@ -7389,7 +7633,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var precedence = exports.precedence = [["LOR"], ["LAND"], ["OR"], ["XOR"], ["AND"], ["EQ", "NEQ"], ["LE", "LT", "GE", "GT"], ["ADD", "SUB"], ["MUL", "DIV", "MOD"]];
+	var precedence = exports.precedence = [["OR"], ["AND"], ["EQ", "NEQ"], ["LE", "LT", "GE", "GT"], ["ADD", "SUB"], ["MUL", "DIV", "MOD"]];
 
 /***/ },
 /* 114 */
@@ -7401,6 +7645,12 @@
 	  value: true
 	});
 	exports.parseBlock = parseBlock;
+	exports.parseAsyncStatement = parseAsyncStatement;
+	exports.parseIdentifierRoute = parseIdentifierRoute;
+	exports.parseCallExpression = parseCallExpression;
+	exports.parseAssignmentExpression = parseAssignmentExpression;
+	exports.parseIfStatement = parseIfStatement;
+	exports.parseReturnStatement = parseReturnStatement;
 	exports.parseBraceBody = parseBraceBody;
 	exports.parseBlockStatement = parseBlockStatement;
 	exports.parseArguments = parseArguments;
@@ -7419,58 +7669,140 @@
 	 */
 	function parseBlock() {
 
-	  var ast = null;
-	  var tmp = null;
-
 	  if (this.accept("IF") === true) {
-	    this.next();
-	    ast = new _NodeList2.default.IfStatement();
-	    ast.condition = this.parseParentheseExpression();
-	    ast.consequent = this.parseBraceBody();
-	    if (this.accept("LBRACE")) {
-	      ast.alternate = this.parseBraceBody();
-	    }
-	    return ast;
+	    return this.parseIfStatement();
 	  }
 
 	  if (this.accept("RETURN") === true) {
-	    this.next();
-	    ast = new _NodeList2.default.ReturnStatement();
-	    ast.value = this.parseParentheseExpression();
-	    this.next();
-	    return ast;
+	    return this.parseReturnStatement();
 	  }
 
 	  if (this.accept("ATSIGN") === true) {
-	    this.next();
-	    ast = new _NodeList2.default.AsyncStatement();
-	    ast.init = this.parseBlock();
-	    return ast;
+	    return this.parseAsyncStatement();
 	  }
 
 	  if (this.accept("IDENTIFIER") === true) {
-	    /** Function call */
-	    if (this.tokens[this.index + 1].name === "LBRACK") {
-	      ast = this.parseCallExpression();
-	      this.next();
-	      return ast;
-	    } else {
-	      ast = new _NodeList2.default.AssignmentExpression();
-	      ast.left = this.parseExpression(0);
-	      ast.operator = this.node.value;
-	      this.expect("ASSIGN");
-	      ast.right = this.parseExpression(0);
-	      this.next();
-	      return ast;
-	    }
+	    return this.parseIdentifierRoute();
 	  }
 
-	  if (this.accept("NUMBER") === true || this.accept("STRING") === true) {
-	    ast = this.parseExpression(0);
-	    return ast;
+	  return this.parseExpression(0);
+	}
+
+	/**
+	 * Parse async statement
+	 * Identifier () | = | ; 
+	 * @return {Object}
+	 */
+	function parseAsyncStatement() {
+
+	  var ast = null;
+
+	  this.next();
+	  ast = new _NodeList2.default.AsyncStatement();
+	  ast.init = this.parseBlock();
+
+	  return ast;
+	}
+
+	/**
+	 * Parse identifier route
+	 * Identifier () | = | . | ; 
+	 * @return {Object}
+	 */
+	function parseIdentifierRoute() {
+
+	  var ast = null;
+
+	  var tmp = this.parseExpression(0);
+
+	  /** Call expression */
+	  if (this.accept("LPAREN")) {
+	    ast = this.parseCallExpression();
+	    ast.callee = tmp;
 	  }
 
-	  return null;
+	  /** Assignment expression */
+	  if (this.accept("ASSIGN")) {
+	    ast = this.parseAssignmentExpression();
+	    ast.left = tmp;
+	  }
+
+	  return ast;
+	}
+
+	/**
+	 * Parse call expression
+	 * MemberExpression () ;
+	 * @return {Object}
+	 */
+	function parseCallExpression() {
+
+	  var ast = null;
+
+	  ast = new _NodeList2.default.CallExpression();
+	  ast.arguments = this.parseArguments();
+
+	  this.next();
+
+	  return ast;
+	}
+
+	/**
+	 * Parse assignment expression
+	 * Expression = Expression
+	 * @return {Object}
+	 */
+	function parseAssignmentExpression() {
+
+	  var ast = null;
+
+	  ast = new _NodeList2.default.AssignmentExpression();
+	  ast.left = this.parseExpression(0);
+	  ast.operator = this.node.value;
+	  this.expect("ASSIGN");
+	  ast.right = this.parseExpression(0);
+	  this.next();
+
+	  return ast;
+	}
+
+	/**
+	 * Parse if statement
+	 * if ( Expression ) { Body } | { Body }
+	 * @return {Object}
+	 */
+	function parseIfStatement() {
+
+	  var ast = null;
+
+	  this.next();
+
+	  ast = new _NodeList2.default.IfStatement();
+	  ast.condition = this.parseParentheseExpression();
+	  ast.consequent = this.parseBraceBody();
+
+	  if (this.accept("LBRACE")) {
+	    ast.alternate = this.parseBraceBody();
+	  }
+
+	  return ast;
+	}
+
+	/**
+	 * Parse return statement
+	 * return ( Expression )
+	 * @return {Object}
+	 */
+	function parseReturnStatement() {
+
+	  var ast = null;
+
+	  this.next();
+	  ast = new _NodeList2.default.ReturnStatement();
+	  ast.value = this.parseParentheseExpression();
+	  this.next();
+
+	  return ast;
 	}
 
 	/**
@@ -7516,23 +7848,39 @@
 
 	  var args = [];
 
-	  this.expect("LBRACK");
+	  var tmp = null;
 
-	  args[0] = this.parseBlock();
+	  this.expect("LPAREN");
+
+	  tmp = this.parseBlock();
+
+	  if (tmp !== null) {
+	    args.push(tmp);
+	  }
 
 	  for (; this.accept("COMMA") === true;) {
 	    this.next();
-	    if (this.accept("LBRACK") === true) {
+	    if (this.accept("LPAREN") === true) {
 	      this.next();
-	      args.push(this.parseCallExpression());
+	      tmp = this.parseCallExpression();
+	      if (tmp !== null) {
+	        args.push(tmp);
+	      }
 	    } else {
-	      args.push(this.parseBlock());
+	      tmp = this.parseBlock();
+	      if (tmp !== null) {
+	        args.push(tmp);
+	      }
 	    }
-	    if (this.accept("RBRACK") === true) {
+	    if (this.accept("RPAREN") === true) {
 	      this.next();
 	      break;
 	    }
 	  };
+
+	  if (args.length <= 1 && this.accept("RPAREN")) {
+	    this.next();
+	  }
 
 	  return args;
 	}
@@ -7578,7 +7926,6 @@
 	  value: true
 	});
 	exports.parseMemberExpression = parseMemberExpression;
-	exports.parseCallExpression = parseCallExpression;
 	exports.parseExpression = parseExpression;
 	exports.parseUnary = parseUnary;
 	exports.parseBase = parseBase;
@@ -7610,21 +7957,6 @@
 	    parent.property = tmp;
 	    ast = parent;
 	  };
-
-	  return ast;
-	}
-
-	/**
-	 * Parse call expression
-	 * @return {Object}
-	 */
-	function parseCallExpression() {
-
-	  var ast = null;
-
-	  ast = new _NodeList2.default.CallExpression();
-	  ast.callee = this.parseUnary();
-	  ast.arguments = this.parseArguments();
 
 	  return ast;
 	}
@@ -7682,6 +8014,11 @@
 	    this.next();
 	    if ((tmp = this.parseBase()) === null) return null;
 	    ast.left = tmp;
+	  } else if (this.accept("NOT") === true) {
+	    ast = new _NodeList2.default.UnaryExpression();
+	    ast.operator = this.node.name;
+	    this.next();
+	    ast.init = this.parseExpression(0);
 	  } else {
 	    if (this.accept("ADD") === true) {
 	      this.next();
@@ -7802,18 +8139,52 @@
 	       * Flags ref
 	       * @type {Object}
 	       */
-	      FLAGS: this.instance.FLAGS
+	      FLAGS: this.instance.FLAGS,
+
+	      /**
+	       * Dynamic global scope ref
+	       * @type {Object}
+	       */
+	      this: null,
+
+	      /**
+	       * Dynamic trigger scope ref
+	       * @type {Object}
+	       */
+	      trigger: null
 
 	    };
 	  }
 
 	  /**
-	   * Is value
-	   * @param  {Object}  ast
-	   * @return {Boolean}
+	   * Set global scope
+	   * @param {Object} scope
 	   */
 
 	  (0, _createClass3.default)(Evaluator, [{
+	    key: "setGlobalScope",
+	    value: function setGlobalScope(scope) {
+	      this.context["this"] = scope;
+	    }
+
+	    /**
+	     * Set trigger scope
+	     * @param {Object} scope
+	     */
+
+	  }, {
+	    key: "setTriggerScope",
+	    value: function setTriggerScope(scope) {
+	      this.context["trigger"] = scope;
+	    }
+
+	    /**
+	     * Is value
+	     * @param  {Object}  ast
+	     * @return {Boolean}
+	     */
+
+	  }, {
 	    key: "isLiteral",
 	    value: function isLiteral(ast) {
 	      return ast.type === _NodeList.NODE_TYPES.Literal;
@@ -7880,6 +8251,30 @@
 	    }
 
 	    /**
+	     * Is call expression
+	     * @param  {Object}  ast
+	     * @return {Boolean}
+	     */
+
+	  }, {
+	    key: "isCallExpression",
+	    value: function isCallExpression(ast) {
+	      return ast.type === _NodeList.NODE_TYPES.CallExpression;
+	    }
+
+	    /**
+	     * Is asynchronous statement
+	     * @param  {Object}  ast
+	     * @return {Boolean}
+	     */
+
+	  }, {
+	    key: "isAsyncStatement",
+	    value: function isAsyncStatement(ast) {
+	      return ast.type === _NodeList.NODE_TYPES.AsyncStatement;
+	    }
+
+	    /**
 	     * Is binary expression
 	     * @param  {Object}  ast
 	     * @return {Boolean}
@@ -7888,7 +8283,7 @@
 	  }, {
 	    key: "isBinaryExpression",
 	    value: function isBinaryExpression(ast) {
-	      return ast.type === _NodeList.NODE_TYPES.BinaryExpression;
+	      return ast.type === _NodeList.NODE_TYPES.BinaryExpression || ast.type === _NodeList.NODE_TYPES.UnaryExpression || this.isLiteral(ast) === true || this.isIdentifier(ast) === true;
 	    }
 
 	    /**
@@ -7899,30 +8294,35 @@
 
 	  }, {
 	    key: "evaluate",
-	    value: function evaluate(ast) {
-	      return this.evaluateBody(ast);
+	    value: function evaluate(ast, resolve) {
+	      this.evaluateBody(ast, 0, function (result) {
+	        return resolve(result);
+	      });
 	    }
 
 	    /**
 	     * Evaluate an ast body
-	     * @param  {Object} ast
+	     * @param  {Object}   ast
+	     * @param  {Number}   index
+	     * @param  {Function} resolve
 	     * @return {*}
 	     */
 
 	  }, {
 	    key: "evaluateBody",
-	    value: function evaluateBody(ast) {
+	    value: function evaluateBody(ast, index, resolve) {
 
-	      var ii = 0;
-	      var length = ast.body.length;
+	      this.evalStatement(ast.body[index], function (result) {
+	        if (++index < ast.body.length) {
+	          this.evaluateBody(ast, index, function (result) {
+	            return resolve(result);
+	          });
+	        } else {
+	          resolve(result);
+	        }
+	      }.bind(this));
 
-	      var result = null;
-
-	      for (; ii < length; ++ii) {
-	        result = this.evalStatement(ast.body[ii]);
-	      };
-
-	      return result;
+	      return void 0;
 	    }
 
 	    /**
@@ -7932,25 +8332,29 @@
 
 	  }, {
 	    key: "evalStatement",
-	    value: function evalStatement(ast) {
+	    value: function evalStatement(ast, resolve) {
 
 	      if (this.isBinaryExpression(ast) === true) {
-	        return this.evalBinaryExpression(ast);
+	        return resolve(this.evalBinaryExpression(ast));
 	      }
 
 	      if (this.isIfStatement(ast) === true) {
 	        if (ast.condition !== null) {
 	          /** Condition met */
 	          if (this.evalExpression(ast.condition).value === true) {
-	            return this.evaluateBody(ast.consequent);
+	            return this.evaluateBody(ast.consequent, 0, function (result) {
+	              return resolve(result);
+	            });
 	          }
 	          if (ast.alternate !== null) {
-	            return this.evaluateBody(ast.alternate);
+	            return this.evaluateBody(ast.alternate, 0, function (result) {
+	              return resolve(result);
+	            });
 	          }
 	        } else {
 	          throw new Error("Invalid if statement condition");
 	        }
-	        return void 0;
+	        return resolve();
 	      }
 
 	      if (this.isAssignmentExpression(ast) === true) {
@@ -7963,7 +8367,81 @@
 	        }
 	      }
 
+	      if (this.isCallExpression(ast) === true) {
+	        this.evalCallExpression(ast);
+	        return resolve();
+	      }
+
+	      if (this.isAsyncStatement(ast) === true) {
+	        return this.evalCallExpression(ast.init, function (result) {
+	          return resolve(result);
+	        });
+	      }
+
+	      return resolve();
+	    }
+
+	    /**
+	     * Eval call expression
+	     * @param {Object} ast
+	     */
+
+	  }, {
+	    key: "evalCallExpression",
+	    value: function evalCallExpression(ast, resolve) {
+
+	      var callee = this.evalExpression(ast.callee);
+	      var cmd = callee.link[callee.property];
+
+	      this.evalArguments(ast.arguments, function (args) {
+
+	        if (args.length >= 1) {
+	          args.push(function (result) {
+	            return resolve(result);
+	          });
+	          cmd.apply(callee.link, args);
+	        } else {
+	          cmd.bind(callee.link)(function (result) {
+	            return resolve(result);
+	          });
+	        }
+	      });
+
 	      return void 0;
+	    }
+
+	    /**
+	     * Eval arguments
+	     * @param  {Array} args
+	     * @param  {Function} resolve
+	     * @return {Array}
+	     */
+
+	  }, {
+	    key: "evalArguments",
+	    value: function evalArguments(args, resolve) {
+
+	      var eArgs = [];
+
+	      var ii = 0;
+	      var length = args.length;
+
+	      var index = 0;
+
+	      if (length >= 1) {
+	        for (; ii < length; ++ii) {
+	          this.evalStatement(args[ii], function (result) {
+	            index++;
+	            eArgs.push(result);
+	            if (index >= length) {
+	              resolve(eArgs);
+	            }
+	          });
+	        };
+	      } else {
+	        resolve(eArgs);
+	        return void 0;
+	      }
 	    }
 
 	    /**
@@ -8094,8 +8572,20 @@
 	        return this.evalBinaryExpression(ast.left) / this.evalBinaryExpression(ast.right);
 	      }
 
-	      if (ast.operator === "%") {
+	      if (ast.operator === "MOD") {
 	        return this.evalBinaryExpression(ast.left) % this.evalBinaryExpression(ast.right);
+	      }
+
+	      if (ast.operator === "AND") {
+	        return this.evalBinaryExpression(ast.left) && this.evalBinaryExpression(ast.right);
+	      }
+
+	      if (ast.operator === "OR") {
+	        return this.evalBinaryExpression(ast.left) || this.evalBinaryExpression(ast.right);
+	      }
+
+	      if (ast.operator === "NOT") {
+	        return !this.evalBinaryExpression(ast.init);
 	      }
 
 	      return 0;
@@ -8323,8 +8813,8 @@
 
 	            this.updateTimers();
 
-	            if (this.camera.entityFocus !== null) {
-	                this.camera.animate(this.camera.entityFocus);
+	            if (this.camera.objectFocus !== null) {
+	                this.camera.animate(this.camera.objectFocus);
 	            }
 
 	            return void 0;
@@ -8370,6 +8860,7 @@
 	            }
 	            this.clear();
 	            if (redraw === true) {
+	                this.instance.mini.resize();
 	                this.draw();
 	            }
 	        }
@@ -9995,6 +10486,13 @@
 	    this.renderDebugScene();
 	  }
 
+	  if (_cfg.MINI_MAP === true) {
+	    if (this.instance.mini.redraw === true) {
+	      this.instance.mini.draw(0, this.instance.currentMap.entities);
+	      this.context.drawImage(this.instance.mini.bgBuffer.canvas, this.instance.mini.position.x, this.instance.mini.position.y, this.instance.mini.width, this.instance.mini.height);
+	    }
+	  }
+
 	  return void 0;
 	}
 
@@ -10101,7 +10599,7 @@
 	    this.orbit(entity);
 	  }
 
-	  if (this.instance.camera.isInView(entity.position.x, entity.position.y, entity.size.x * entity.scale, entity.size.y * 2 * entity.scale + entity.shadowY) === false) {
+	  if (this.instance.camera.isInView(entity.position.x + entity.xMargin, entity.position.y + entity.yMargin, entity.size.x * entity.scale, entity.size.y * 2 * entity.scale + entity.shadowY) === false) {
 	    return false;
 	  }
 
@@ -10905,10 +11403,10 @@
 	    _this.target = new _Math2.default.Point(.0, .0);
 
 	    /**
-	     * Entity to focus
+	     * Object to focus
 	     * @type {Object}
 	     */
-	    _this.entityFocus = null;
+	    _this.objectFocus = null;
 
 	    /**
 	     * Scale
@@ -11019,9 +11517,9 @@
 	        this.position.x -= this.drag.sx * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
 	        this.position.y -= this.drag.sy * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
 	      } else {
-	        if (this.entityFocus !== null) {
-	          this.position.x -= this.entityFocus.x * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
-	          this.position.y -= this.entityFocus.y * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
+	        if (this.objectFocus !== null) {
+	          this.position.x -= this.objectFocus.x * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
+	          this.position.y -= this.objectFocus.y * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
 	        }
 	      }
 	    }
@@ -11035,8 +11533,7 @@
 	  }, {
 	    key: "getX",
 	    value: function getX(x) {
-	      x -= _cfg.DIMENSION / 2;
-	      return this.size.x / 2 - x * this.resolution - _cfg.DIMENSION / 2 * this.resolution;
+	      return this.size.x / 2 - x * this.resolution;
 	    }
 
 	    /**
@@ -11052,13 +11549,13 @@
 	    }
 
 	    /**
-	     * Update entity focus
-	     * @param  {Number} entity
+	     * Update object focus
+	     * @param  {Number} object
 	     */
 
 	  }, {
 	    key: "updateFocus",
-	    value: function updateFocus(entity) {
+	    value: function updateFocus(object) {
 
 	      this.base = {
 	        x: this.position.x,
@@ -11066,8 +11563,8 @@
 	      };
 
 	      this.target = {
-	        x: this.getX(entity.x),
-	        y: this.getY(entity.y + entity.z)
+	        x: this.getX(object.position.x),
+	        y: this.getY(object.position.y + object.z)
 	      };
 
 	      this.deltaX = this.target.x - this.base.x;
@@ -11078,33 +11575,34 @@
 
 	    /**
 	     * Play camera animations
+	     * @param {Object} object
 	     */
 
 	  }, {
 	    key: "animate",
-	    value: function animate(entity) {
+	    value: function animate(object) {
 
 	      if (_cfg.FREE_CAMERA === true) return void 0;
 
-	      this.updateFocus(entity);
+	      this.updateFocus(object);
 
 	      var velocity = _cfg.FIX_CAMERA === true ? 0 : _Math2.default.ease(Math.atan(1.05));
 
 	      var x = this.target.x - (this.base.x + velocity * this.deltaX);
 	      var y = this.target.y - (this.base.y + velocity * this.deltaY);
 
-	      if (Math.abs(this.x + x - this.target.x) > Math.abs(this.x - this.target.x)) {
-	        this.x = this.target.x;
+	      if (Math.abs(this.position.x + x - this.target.x) > Math.abs(this.position.x - this.target.x)) {
+	        this.position.x = this.target.x;
 	        this.base.x = this.target.x;
 	      } else {
-	        this.x += x;
+	        this.position.x += x;
 	      }
 
-	      if (Math.abs(this.y + y - this.target.y) > Math.abs(this.y - this.target.y)) {
-	        this.y = this.target.y;
+	      if (Math.abs(this.position.y + y - this.target.y) > Math.abs(this.position.y - this.target.y)) {
+	        this.position.y = this.target.y;
 	        this.base.y = this.target.y;
 	      } else {
-	        this.y += y;
+	        this.position.y += y;
 	      }
 
 	      return void 0;
@@ -11112,33 +11610,33 @@
 
 	    /**
 	     * Animate focus
-	     * @param {Object} entity
+	     * @param {Object} object
 	     */
 
 	  }, {
 	    key: "animateFocus",
-	    value: function animateFocus(entity) {
-	      this.updateFocus(entity);
-	      this.entityFocus = entity;
+	    value: function animateFocus(object) {
+	      this.updateFocus(object);
+	      this.objectFocus = object;
 	    }
 
 	    /**
-	     * Focus a entity
-	     * @param {Object}  entity
+	     * Focus a object
+	     * @param {Object}  object
 	     * @param {Boolean} instant
 	     */
 
 	  }, {
 	    key: "focus",
-	    value: function focus(entity, instant) {
+	    value: function focus(object, instant) {
 	      if (instant === true) {
-	        if (entity === null || entity === void 0) return void 0;
-	        this.entityFocus = entity;
-	        this.position.x = this.getX(entity.x);
-	        this.position.y = this.getY(entity.y);
+	        if (object === null || object === void 0) return void 0;
+	        this.objectFocus = object;
+	        this.position.x = this.getX(object.position.x);
+	        this.position.y = this.getY(object.position.y);
 	        return void 0;
 	      }
-	      this.animateFocus(entity);
+	      this.animateFocus(object);
 	    }
 
 	    /**
@@ -13134,7 +13632,7 @@
 	                entity = this.map.entities[ii];
 	                eWidth = entity.width * entity.scale + (x2 >= x1 ? -_cfg.DIMENSION : 0);
 	                eHeight = entity.height * entity.scale;
-	                if (_Math2.default.cubicCollision(xx1, yy1, width + eWidth - _cfg.DIMENSION, height + eHeight - _cfg.DIMENSION, entity.x + entity.xMargin + eWidth - _cfg.DIMENSION, entity.y + entity.yMargin + entity.z + _cfg.Y_DEPTH_HACK + eHeight - _cfg.DIMENSION, 1)) {
+	                if (_Math2.default.linearIntersect(xx1, yy1, width + eWidth - _cfg.DIMENSION, height + eHeight - _cfg.DIMENSION, entity.x + entity.xMargin + eWidth - _cfg.DIMENSION, entity.y + entity.yMargin + entity.z + _cfg.Y_DEPTH_HACK + eHeight - _cfg.DIMENSION, 1)) {
 	                    entities.push(entity.id);
 	                }
 	            };
@@ -13170,7 +13668,7 @@
 
 	            for (; ii < length; ++ii) {
 	                entity = this.map.entities[ii];
-	                if (_Math2.default.cubicCollision(_Math2.default.roundTo(entity.position.x, _cfg.DIMENSION), _Math2.default.roundTo(entity.position.y, _cfg.DIMENSION) << 0, entity.size.x * entity.scale + entity.xMargin - _cfg.DIMENSION, entity.size.y * entity.scale + entity.yMargin - _cfg.DIMENSION, xx, yy, 1) === true) {
+	                if (_Math2.default.linearIntersect(_Math2.default.roundTo(entity.position.x, _cfg.DIMENSION), _Math2.default.roundTo(entity.position.y, _cfg.DIMENSION) << 0, entity.size.x * entity.scale + entity.xMargin - _cfg.DIMENSION, entity.size.y * entity.scale + entity.yMargin - _cfg.DIMENSION, xx, yy, 1) === true) {
 	                    entities.push(entity);
 	                }
 	            };
@@ -13199,7 +13697,7 @@
 	            if ((entity = this.entitySelection) === null) return void 0;
 
 	            /** Don't allow dragging of focused entity */
-	            if (_cfg.FREE_CAMERA === false && this.camera.entityFocus !== null && entity.id === this.camera.entityFocus.id) {
+	            if (_cfg.FREE_CAMERA === false && this.camera.objectFocus !== null && entity.id === this.camera.objectFocus.id) {
 	                return void 0;
 	            }
 
@@ -13859,10 +14357,349 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _cfg = __webpack_require__(6);
+
+	var _utils = __webpack_require__(7);
+
+	var _Math = __webpack_require__(85);
+
+	var _Math2 = _interopRequireDefault(_Math);
+
+	var _MapEntity = __webpack_require__(97);
+
+	var _MapEntity2 = _interopRequireDefault(_MapEntity);
+
+	var _Camera = __webpack_require__(131);
+
+	var _Camera2 = _interopRequireDefault(_Camera);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * MiniMap
+	 * @class MiniMap
+	 * @export
+	 */
+
+	var MiniMap = function () {
+
+	    /**
+	     * @constructor
+	     * @param {Object} instance
+	     */
+
+	    function MiniMap(instance) {
+	        (0, _classCallCheck3.default)(this, MiniMap);
+
+	        /**
+	         * Game instance ref
+	         * @type {Object}
+	         */
+	        this.instance = instance;
+
+	        /**
+	         * Camera ref
+	         * @type {Object}
+	         */
+	        this.camera = new _Camera2.default(this);
+
+	        /**
+	         * Camera size ref
+	         * @type {Object}
+	         */
+	        this.camera.size = this.instance.camera.size;
+
+	        /**
+	         * Camera pos ref
+	         * @type {Object}
+	         */
+	        this.camera.position = this.instance.camera.position;
+
+	        /**
+	         * Width
+	         * @type {Number}
+	         */
+	        this.width = 300;
+
+	        /**
+	         * Height
+	         * @type {Number}
+	         */
+	        this.height = 200;
+
+	        /**
+	         * Minimap buffer
+	         * @type {Object}
+	         */
+	        this.buffer = null;
+
+	        /**
+	         * Minimap background buffer
+	         * @type {Object}
+	         */
+	        this.bgBuffer = null;
+
+	        /**
+	         * Minimap front buffer
+	         * @type {Object}
+	         */
+	        this.frBuffer = null;
+
+	        /**
+	         * Redraw state
+	         * @type {Boolean}
+	         */
+	        this.redraw = true;
+
+	        this.entities = {};
+
+	        this.resolution = 1.0;
+
+	        this.position = new _Math2.default.Point();
+
+	        this.init();
+	    }
+
+	    /**
+	     * Initialise
+	     */
+
+	    (0, _createClass3.default)(MiniMap, [{
+	        key: "init",
+	        value: function init() {
+
+	            this.buffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
+
+	            this.bgBuffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
+
+	            this.frBuffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
+
+	            this.createEntityBuffer("Player", "#DBB78A", "#905A23");
+	            this.createEntityBuffer("Entity", "#697a21", "#c9db8a");
+	            this.createEntityBuffer("LocalPlayer", "#119617", "#abf4c0");
+	            this.createEntityBuffer("Tree", "#697a21", "darkgreen");
+
+	            this.resize();
+
+	            this.draw();
+	        }
+
+	        /**
+	         * Resize
+	         */
+
+	    }, {
+	        key: "resize",
+	        value: function resize() {
+
+	            this.position.x = this.camera.width - this.width;
+	            this.position.y = this.camera.height - this.height;
+	        }
+
+	        /**
+	         * Mouse inside this map offset
+	         * @param  {Number} x
+	         * @param  {Number} y
+	         * @return {Boolean}
+	         */
+
+	    }, {
+	        key: "inside",
+	        value: function inside(x, y) {
+
+	            return _Math2.default.cubicCollision(x, y, 1, 1, this.position.x, this.position.y, this.width, this.height);
+	        }
+
+	        /**
+	         * Create a entity buffer
+	         * @param {String} type
+	         * @param {String} fillColor
+	         * @param {String} strokeColor
+	         */
+
+	    }, {
+	        key: "createEntityBuffer",
+	        value: function createEntityBuffer(type, fillColor, strokeColor) {
+
+	            var radius = 6;
+
+	            var width = 16;
+	            var height = 16;
+
+	            var link = null;
+
+	            this.entities[type] = (0, _utils.createCanvasBuffer)(width, height);
+
+	            link = this.entities[type];
+
+	            link.beginPath();
+	            link.arc(width / 2, height / 2, radius, 0, 2 * Math.PI, false);
+	            link.fillStyle = fillColor;
+	            link.fill();
+	            link.lineWidth = 1.5;
+	            link.strokeStyle = strokeColor;
+	            link.stroke();
+	        }
+
+	        /**
+	         * Draw mini map
+	         * @param {Number} mode
+	         * @param {Array}  entities
+	         */
+
+	    }, {
+	        key: "draw",
+	        value: function draw(mode, entities) {
+
+	            this.buffer.clear();
+	            this.bgBuffer.clear();
+	            this.frBuffer.clear();
+
+	            /** Redraw everything */
+	            if (mode === 0) {
+	                this.drawBackground();
+	                this.drawFront(entities);
+	                return void 0;
+	            }
+
+	            /** Redraw front only */
+	            if (mode === 1) {
+	                this.drawFront(entities);
+	                return void 0;
+	            }
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw a background
+	         */
+
+	    }, {
+	        key: "drawBackground",
+	        value: function drawBackground() {
+
+	            this.bgBuffer.strokeStyle = "red";
+	            this.bgBuffer.strokeRect(0, 0, this.width, this.height);
+	            this.bgBuffer.stroke();
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw the front layer
+	         * @param {Array} entities
+	         */
+
+	    }, {
+	        key: "drawFront",
+	        value: function drawFront(entities) {
+
+	            var entity = null;
+
+	            var ii = 0;
+	            var length = 0;
+
+	            length = entities.length;
+
+	            var resolution = this.instance.camera.resolution;
+	            var scaling = .0;
+
+	            var camX = this.width / 2 - (this.camera.size.x / 2 - this.camera.position.x) / resolution;
+	            var camY = this.height / 2 - (this.camera.size.y / 2 - this.camera.position.y) / resolution;
+
+	            var color = null;
+
+	            var x = 0;
+	            var y = 0;
+
+	            var width = 0;
+	            var height = 0;
+
+	            for (; ii < length; ++ii) {
+	                entity = entities[ii];
+	                //if ((entity instanceof Player) === false) continue;
+	                scaling = entity.scale + -entity.z / this.resolution / ((entity.width + entity.height) / 2);
+	                if (entity.texture === null) continue;
+	                x = (camX + entity.x + entity.xMargin + entity.z / (entity.width / 2) / 2) * this.resolution << 0;
+	                y = (camY + entity.y + entity.yMargin + entity.z) * this.resolution << 0;
+	                width = entity.size.x * scaling << 0;
+	                height = entity.size.y * scaling << 0;
+	                this.drawEntity(entity, x, y, width, height);
+	            };
+
+	            this.drawCameraViewport(camX, camY);
+
+	            return void 0;
+	        }
+	    }, {
+	        key: "drawEntity",
+	        value: function drawEntity(entity, x, y, width, height) {
+
+	            var tmpl = null;
+
+	            var Player = this.instance.instance.entities.Player;
+
+	            if (entity.id === this.instance.localEntity.id) {
+	                tmpl = this.entities["LocalPlayer"];
+	            } else if (entity instanceof Player) {
+	                tmpl = this.entities["Player"];
+	            } else if (entity.name === "Tree") {
+	                tmpl = this.entities["Tree"];
+	            } else {
+	                tmpl = this.entities["Entity"];
+	            }
+
+	            this.bgBuffer.drawImage(tmpl.canvas, x, y);
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw camera viewport
+	         */
+
+	    }, {
+	        key: "drawCameraViewport",
+	        value: function drawCameraViewport(x, y) {
+
+	            var resolution = this.instance.camera.resolution;
+
+	            this.bgBuffer.lineWidth = 1;
+	            this.bgBuffer.strokeStyle = "red";
+	            this.bgBuffer.strokeRect(x - this.camera.position.x / resolution, y - this.camera.position.y / resolution, this.camera.size.x / resolution, this.camera.size.y / resolution);
+	            this.bgBuffer.stroke();
+
+	            return void 0;
+	        }
+	    }]);
+	    return MiniMap;
+	}();
+
+	exports.default = MiniMap;
+
+/***/ },
+/* 141 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _toConsumableArray2 = __webpack_require__(141);
+	var _toConsumableArray2 = __webpack_require__(142);
 
 	var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
@@ -13874,7 +14711,7 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _Packets = __webpack_require__(145);
+	var _Packets = __webpack_require__(146);
 
 	var Packet = _interopRequireWildcard(_Packets);
 
@@ -14204,14 +15041,14 @@
 	exports.default = Connection;
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _from = __webpack_require__(142);
+	var _from = __webpack_require__(143);
 
 	var _from2 = _interopRequireDefault(_from);
 
@@ -14230,21 +15067,21 @@
 	};
 
 /***/ },
-/* 142 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(143), __esModule: true };
-
-/***/ },
 /* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(11);
-	__webpack_require__(144);
-	module.exports = __webpack_require__(19).Array.from;
+	module.exports = { "default": __webpack_require__(144), __esModule: true };
 
 /***/ },
 /* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	__webpack_require__(11);
+	__webpack_require__(145);
+	module.exports = __webpack_require__(19).Array.from;
+
+/***/ },
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14286,7 +15123,7 @@
 
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14295,7 +15132,7 @@
 	  value: true
 	});
 
-	var _Facing = __webpack_require__(146);
+	var _Facing = __webpack_require__(147);
 
 	Object.defineProperty(exports, "Facing", {
 	  enumerable: true,
@@ -14304,7 +15141,7 @@
 	  }
 	});
 
-	var _Jumping = __webpack_require__(147);
+	var _Jumping = __webpack_require__(148);
 
 	Object.defineProperty(exports, "Jumping", {
 	  enumerable: true,
@@ -14313,7 +15150,7 @@
 	  }
 	});
 
-	var _Position = __webpack_require__(148);
+	var _Position = __webpack_require__(149);
 
 	Object.defineProperty(exports, "Position", {
 	  enumerable: true,
@@ -14322,7 +15159,7 @@
 	  }
 	});
 
-	var _Velocity = __webpack_require__(149);
+	var _Velocity = __webpack_require__(150);
 
 	Object.defineProperty(exports, "Velocity", {
 	  enumerable: true,
@@ -14332,7 +15169,7 @@
 	});
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14410,7 +15247,7 @@
 	}();
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14481,7 +15318,7 @@
 	}();
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14573,7 +15410,7 @@
 	}();
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14649,7 +15486,7 @@
 	}();
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14884,6 +15721,15 @@
 	      local.move(cfg.RIGHT);
 	    }
 	  }
+	}, {
+	  name: "SPACE",
+	  fire: function fire() {
+	    var local = this.engine.localEntity;
+	    if (cfg.FREE_CAMERA || this.engine.camera.objectFocus !== null && this.engine.camera.objectFocus.id !== local.id) {
+	      this.engine.camera.focus(local, true);
+	      cfg.FREE_CAMERA = false;
+	    }
+	  }
 	}];
 
 	var mouse = exports.mouse = [{
@@ -14891,6 +15737,7 @@
 	  fire: function fire(e) {
 	    e.preventDefault();
 	    if (!cfg.DEBUG_MODE) return void 0;
+	    cfg.FREE_CAMERA = false;
 	    if (cfg.EDIT_MODE) {
 	      if (!this.engine.editor.dragging) {
 	        var entity = this.engine.editor.getEntityByMouse(e.clientX, e.clientY);
@@ -14917,6 +15764,9 @@
 	      this.engine.editor.selectFrom(x, y);
 	      this.engine.editor.selectTo(x, y);
 	      return void 0;
+	    }
+	    if (e.which !== 1) {
+	      cfg.FREE_CAMERA = true;
 	    }
 	    if (cfg.FREE_CAMERA && (e instanceof TouchEvent || e.which !== 1)) {
 	      this.engine.camera.dragging = true;
@@ -14985,7 +15835,7 @@
 	}];
 
 /***/ },
-/* 151 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14994,7 +15844,7 @@
 	  value: true
 	});
 
-	var _Player = __webpack_require__(152);
+	var _Player = __webpack_require__(153);
 
 	Object.defineProperty(exports, "Player", {
 	  enumerable: true,
@@ -15003,7 +15853,7 @@
 	  }
 	});
 
-	var _Monster = __webpack_require__(155);
+	var _Monster = __webpack_require__(156);
 
 	Object.defineProperty(exports, "Monster", {
 	  enumerable: true,
@@ -15013,7 +15863,7 @@
 	});
 
 /***/ },
-/* 152 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15055,7 +15905,7 @@
 
 	var _Entity3 = _interopRequireDefault(_Entity2);
 
-	var _movement = __webpack_require__(153);
+	var _movement = __webpack_require__(154);
 
 	var movement = _interopRequireWildcard(_movement);
 
@@ -15333,7 +16183,7 @@
 	(0, _utils.inherit)(Player, movement);
 
 /***/ },
-/* 153 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15343,6 +16193,7 @@
 	});
 	exports.jump = jump;
 	exports.jumping = jumping;
+	exports.moveRoute = moveRoute;
 	exports.move = move;
 	exports.changeFacing = changeFacing;
 	exports.halfStep = halfStep;
@@ -15364,7 +16215,7 @@
 
 	var _Math2 = _interopRequireDefault(_Math);
 
-	var _Audio = __webpack_require__(154);
+	var _Audio = __webpack_require__(155);
 
 	var _Audio2 = _interopRequireDefault(_Audio);
 
@@ -15380,6 +16231,10 @@
 	  if (this.STATES.JUMPING === true || this.STATES.LOCK === true) return void 0;
 
 	  this.STATES.JUMPING = true;
+
+	  if (this.onJump !== null) {
+	    _utils.Maps[this.map].triggerEvent(this, this, "onJump");
+	  }
 
 	  this.jumping();
 
@@ -15461,10 +16316,36 @@
 	}
 
 	/**
-	 * Move player
-	 * @param {Number} dir
+	 * Walk a path
+	 * moveRoute("1d,2r,2u,2l,1d,1r");
+	 * @param  {String} path
 	 */
-	function move(dir) {
+	function moveRoute(path) {
+
+	  var move = null;
+	  var moves = path.split(",");
+
+	  var ii = 0;
+	  var length = moves.length;
+
+	  var rxN = /(\d+)/g;
+
+	  for (; ii < length; ++ii) {
+	    move = moves[ii].replace('"', "");
+	    var dir = move.replace(rxN, "");
+	    var amount = Number(move.match(rxN));
+	    console.log(dir, amount);
+	  };
+
+	  return void 0;
+	}
+
+	/**
+	 * Move player
+	 * @param {Number}   dir
+	 * @param {Function} resolve
+	 */
+	function move(dir, resolve) {
 
 	  if (this.STATES.LOCK === true || this.STATES.EDITING === true) return void 0;
 
@@ -15486,6 +16367,8 @@
 	  }
 
 	  if (this.STATES.BUMPING === true) return void 0;
+
+	  this.moveCB = resolve || null;
 
 	  this.startMoving(this.x, this.y, dir);
 
@@ -15647,6 +16530,9 @@
 
 	  if (this.facing !== dir) {
 	    this.changeFacing(dir);
+	    if (this.moveCB !== null) {
+	      this.moveCB();
+	    }
 	    return void 0;
 	  }
 
@@ -15710,6 +16596,8 @@
 
 	  this.stopAnimation();
 
+	  this.refreshState();
+
 	  /** Continue moving */
 	  if (this.isLocalPlayer === true) {
 	    if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(_cfg.LEFT)) === true) {
@@ -15727,11 +16615,13 @@
 	    this.soundSteps = _cfg.DIMENSION;
 	  }
 
-	  this.refreshState();
+	  if (this.moveCB !== null) {
+	    this.moveCB();
+	  }
 	}
 
 /***/ },
-/* 154 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15792,7 +16682,7 @@
 	exports.default = Audio = new Audio();
 
 /***/ },
-/* 155 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15855,7 +16745,7 @@
 	}(_Entity3.default);
 
 /***/ },
-/* 156 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15864,7 +16754,7 @@
 	  value: true
 	});
 
-	var _Pause = __webpack_require__(157);
+	var _Pause = __webpack_require__(158);
 
 	Object.defineProperty(exports, "Pause", {
 	  enumerable: true,
@@ -15874,7 +16764,7 @@
 	});
 
 /***/ },
-/* 157 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15906,11 +16796,11 @@
 
 	var _cfg = __webpack_require__(6);
 
-	var _Element2 = __webpack_require__(158);
+	var _Element2 = __webpack_require__(159);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
-	var _UI = __webpack_require__(159);
+	var _UI = __webpack_require__(160);
 
 	var elements = _interopRequireWildcard(_UI);
 
@@ -16124,7 +17014,7 @@
 	}(_Element3.default);
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16367,7 +17257,7 @@
 	exports.default = Element;
 
 /***/ },
-/* 159 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16376,7 +17266,7 @@
 	  value: true
 	});
 
-	var _Label = __webpack_require__(160);
+	var _Label = __webpack_require__(161);
 
 	Object.defineProperty(exports, "Label", {
 	  enumerable: true,
@@ -16385,7 +17275,7 @@
 	  }
 	});
 
-	var _Button = __webpack_require__(161);
+	var _Button = __webpack_require__(162);
 
 	Object.defineProperty(exports, "Button", {
 	  enumerable: true,
@@ -16394,7 +17284,7 @@
 	  }
 	});
 
-	var _Background = __webpack_require__(162);
+	var _Background = __webpack_require__(163);
 
 	Object.defineProperty(exports, "Background", {
 	  enumerable: true,
@@ -16404,7 +17294,7 @@
 	});
 
 /***/ },
-/* 160 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16434,7 +17324,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Element2 = __webpack_require__(158);
+	var _Element2 = __webpack_require__(159);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
@@ -16517,7 +17407,7 @@
 	}(_Element3.default);
 
 /***/ },
-/* 161 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16547,7 +17437,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Element2 = __webpack_require__(158);
+	var _Element2 = __webpack_require__(159);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
@@ -16637,7 +17527,7 @@
 	}(_Element3.default);
 
 /***/ },
-/* 162 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16667,7 +17557,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Element2 = __webpack_require__(158);
+	var _Element2 = __webpack_require__(159);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
