@@ -5,20 +5,28 @@ import {
   RECORD_MODE,
   DIMENSION,
   LEFT, RIGHT, UP, DOWN,
-  WGL_SUPPORT
+  WGL_SUPPORT,
+  MIN_SCALE
 } from "../cfg";
 
+import {
+  inherit,
+  getWGLContext,
+  ajax as $GET
+} from "./utils";
+
+import * as logic from "./logic";
 import * as map from "./Map/functions";
 import * as entity from "./Entity/functions";
 
+import Editor from "./Editor";
+import MiniMap from "./MiniMap";
 import Environment from "./Environment";
 import Renderer from "./Renderer";
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
 
 import { Language } from "./Language";
-
-import { inherit, getWGLContext, ajax as $GET } from "./utils";
 
 /**
  * Engine
@@ -42,6 +50,12 @@ export default class Engine extends DisplayObject {
      * @type {Object}
      */
     this.instance = instance;
+
+    /**
+     * Current map
+     * @type {Object}
+     */
+    this.currentMap = null;
 
     /**
      * Active scene state
@@ -125,13 +139,13 @@ export default class Engine extends DisplayObject {
      * Editor instance
      * @type {Object}
      */
-    this.editor = null;
+    this.editor = new Editor(this);
 
     /**
      * MiniMap instance
      * @type {Object}
      */
-    this.mini = null;
+    this.mini = new MiniMap(this);
 
     /**
      * Environment instance
@@ -145,7 +159,20 @@ export default class Engine extends DisplayObject {
      */
     this.connection = null;
 
+    this.init();
+
+  }
+
+  /**
+   * Initialise
+   */
+  init() {
+
     this.initScenes();
+
+    this.camera.scale = MIN_SCALE;
+
+    setInterval(() => this.logic(), 1e3 / 60);
 
   }
 
@@ -340,3 +367,4 @@ export default class Engine extends DisplayObject {
 
 inherit(Engine, map);
 inherit(Engine, entity);
+inherit(Engine, logic);

@@ -1,6 +1,7 @@
 import {
+  DEBUG_FPS,
   FREE_CAMERA,
-  FIX_CAMERA,
+  EASING_CAMERA,
   DIMENSION,
   MIN_SCALE, MAX_SCALE,
   PIXEL_SCALE
@@ -184,13 +185,15 @@ export default class Camera extends DisplayObject {
     if (this.scale < MIN_SCALE) this.scale = MIN_SCALE;
     if (this.scale > MAX_SCALE) this.scale = MAX_SCALE;
 
+    let focus = this.objectFocus;
+
     if (FREE_CAMERA === true) {
       this.position.x -= (this.drag.sx) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
       this.position.y -= (this.drag.sy) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
     } else {
-      if (this.objectFocus !== null) {
-        this.position.x -= (this.objectFocus.x) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
-        this.position.y -= (this.objectFocus.y) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+      if (focus !== null) {
+        this.position.x -= (focus.position.x + (focus.size.x * focus.scale / 2) + focus.xMargin) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
+        this.position.y -= (focus.position.y + ((focus.size.y * focus.scale / 2) + focus.yMargin + focus.z)) * (math.zoomScale(this.resolution) - math.zoomScale(this.drag.pz));
       }
     }
 
@@ -198,23 +201,23 @@ export default class Camera extends DisplayObject {
 
   /**
    * Get x center position
-   * @param  {Number} x
+   * @param  {Object} object
    * @return {Number}
    */
-  getX(x) {
+  getX(object) {
     return (
-      this.size.x / 2 - (x * this.resolution)
+      this.size.x / 2 - ((object.position.x + (object.size.x * object.scale / 2) + object.xMargin) * this.resolution)
     );
   }
 
   /**
    * Get y center position
-   * @param  {Number} y
+   * @param  {Object} object
    * @return {Number}
    */
-  getY(y) {
+  getY(object) {
     return (
-      this.size.y / 2 - (y * this.resolution)
+      this.size.y / 2 - ((object.position.y + ((object.size.y * object.scale / 2) + object.yMargin + object.z)) * this.resolution)
     );
   }
 
@@ -230,8 +233,8 @@ export default class Camera extends DisplayObject {
     };
 
     this.target = {
-      x: this.getX(object.position.x),
-      y: this.getY(object.position.y + object.z)
+      x: this.getX(object),
+      y: this.getY(object)
     };
 
     this.deltaX = this.target.x - this.base.x;
@@ -251,7 +254,7 @@ export default class Camera extends DisplayObject {
 
     this.updateFocus(object);
 
-    let velocity = FIX_CAMERA === true ? 0 : math.ease(Math.atan(1.05));
+    let velocity = EASING_CAMERA === true ? 0 : math.ease(Math.atan(DEBUG_FPS / 60 + .05));
 
     let x = this.target.x - (this.base.x + (velocity * this.deltaX));
     let y = this.target.y - (this.base.y + (velocity * this.deltaY));
@@ -295,8 +298,8 @@ export default class Camera extends DisplayObject {
         object === void 0
       ) return void 0;
       this.objectFocus = object;
-      this.position.x = this.getX(object.position.x);
-      this.position.y = this.getY(object.position.y);
+      this.position.x = this.getX(object);
+      this.position.y = this.getY(object);
       return void 0;
     }
     this.animateFocus(object);

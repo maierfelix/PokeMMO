@@ -20,6 +20,8 @@ import Audio from "../../../Engine/Audio";
  */
 export function jump() {
 
+  if (this.jumpable === false) return void 0;
+
   this.refreshState();
 
   if (

@@ -334,7 +334,7 @@ export default class Editor {
 
     let offset = this.camera.getGameMouseOffset(x, y);
 
-    if (entity !== null) {
+    if (entity !== null && entity.texture !== null) {
       if (tileContainsImageData(
         entity.texture.sprites[entity.sFrame],
         ((offset.x - entity.x) / entity.scale) << 0,

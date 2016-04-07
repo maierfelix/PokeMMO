@@ -265,13 +265,24 @@ export default class MiniMap {
 
   }
 
+  /**
+   * Draw a entity
+   * @param  {Object} entity
+   * @param  {Number} x
+   * @param  {Number} y
+   * @param  {Number} width
+   * @param  {Number} height
+   */
   drawEntity(entity, x, y, width, height) {
 
     let tmpl = null;
 
     let Player = this.instance.instance.entities.Player;
 
-    if (entity.id === this.instance.localEntity.id) {
+    if (
+      this.instance.localEntity !== null &&
+      entity.id === this.instance.localEntity.id
+    ) {
       tmpl = this.entities["LocalPlayer"];
     }
     else if (entity instanceof Player) {

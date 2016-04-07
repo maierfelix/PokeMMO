@@ -49,8 +49,7 @@ export function clear() {
     this.context.setImageSmoothing(this.imageSmoothing);
   }
   if (RENDER_MODE === WGL) {
-    this.glRenderer.gl.clearColor(0, 0, 0, 0);
-    this.glRenderer.gl.clear(this.glRenderer.gl.COLOR_BUFFER_BIT);
+    this.glRenderer.clear();
   }
   return void 0;
 }
@@ -60,14 +59,20 @@ export function clear() {
  */
 export function draw() {
 
-  if (RENDER_MODE === CANVAS) {
+  let gl = RENDER_MODE === WGL;
+
+  if (gl === false) {
     this.renderMap();
+  } else {
+    if (this.glRenderer.ready === true) {
+      this.glRenderer.draw();
+    }
+    return void 0;
   }
 
   this.renderEntities();
 
   if (DEBUG_MODE === true) {
-    this.context.beginPath();
     drawGrid(
       this.context,
       this.camera.position.x, this.camera.position.y,
@@ -77,7 +82,6 @@ export function draw() {
       .05,
       "#FFF"
     );
-    this.context.closePath();
     if (EDIT_MODE === true) {
       this.instance.editor.renderEditorMode();
     }
@@ -124,21 +128,6 @@ export function renderMap() {
 }
 
 /**
- * Get animation frame
- * @param  {Object} entity
- * @return {Number}
- */
-export function getAnimationFrame(entity) {
-  return (
-    Math.floor(
-      (this.now - entity.animationStart) / entity.animationSpeed
-    ) %
-    ((entity.animationFrames - 1) + (entity.loop === true ? 1 : 0)) *
-    ((entity.size.x * 2) << 0 * entity.size.x / entity.frames)
-  );
-}
-
-/**
  * Check if entity is in selection range
  * @param  {Number}  id
  * @return {Boolean}
@@ -161,83 +150,18 @@ export function entityInSelectionRange(id) {
 }
 
 /**
- * Orbit animation
+ * Get animation frame
  * @param  {Object} entity
+ * @return {Number}
  */
-export function orbit(entity) {
-
-  entity.orbitAngle += (entity.velocity * 2) * Math.PI / 180;
-
-  let target = entity.orbitTarget;
-
-  let radius = ((target.size.x * target.scale + target.size.y * target.scale) / DIMENSION) * 2;
-
-  let xPadding = radius - (DIMENSION / 2);
-  let yPadding = radius - (DIMENSION / 2);
-
-  xPadding += target.xMargin;
-  yPadding += target.yMargin / 2;
-
-  entity.x = (target.position.x + xPadding) + radius * Math.cos(entity.orbitAngle);
-  entity.y = (target.position.y + yPadding) + radius * Math.sin(entity.orbitAngle);
-
-  /** Stop the orbit on a dimension friendly position */
-  if (
-    entity.stopOrbit === true &&
-    (entity.x << 0) % 8 === 0 &&
-    (entity.y << 0) % 8 === 0
-  ) {
-    entity.x = math.roundTo(entity.x, DIMENSION);
-    entity.y = math.roundTo(entity.y, DIMENSION);
-    entity.orbitAround(null);
-    entity.stopOrbit = false;
-  }
-
-  /*if (entity.orbitAngle > 360) {
-    entity.orbitAngle = 0;
-  }*/
-
-  return void 0;
-
-}
-
-/**
- * Update entity
- * @param  {Object} entity
- * @return {Boolean} renderable
- */
-export function updateEntity(entity) {
-
-  if (entity.lifeTime > 0) {
-    if (this.now >= entity.lifeTime) {
-      entity.lifeTime = 0;
-      entity.fadeOut(1, true);
-    }
-  }
-
-  entity.animate();
-
-  if (entity.orbit === true) {
-    this.orbit(entity);
-  }
-
-  if (this.instance.camera.isInView(
-    entity.position.x + entity.xMargin, entity.position.y + entity.yMargin,
-    entity.size.x * entity.scale, ((entity.size.y * 2) * entity.scale) + entity.shadowY
-  ) === false) {
-    return (false);
-  }
-
-  if (entity.opacity === .0) {
-    return (false);
-  }
-
-  if (entity.texture === null) {
-    return (false);
-  }
-
-  return (true);
-
+export function getAnimationFrame(entity) {
+  return (
+    Math.floor(
+      (this.now - entity.animationStart) / entity.animationSpeed
+    ) %
+    ((entity.animationFrames - 1) + (entity.loop === true ? 1 : 0)) *
+    ((entity.size.x * 2) << 0 * entity.size.x / entity.frames)
+  );
 }
 
 /**
@@ -261,11 +185,8 @@ export function updateEntitySpriteFrame(entity) {
  */
 export function renderEntities() {
 
-  let gl = RENDER_MODE === WGL;
-
-  let entities = this.instance.currentMap.entities;
-
   let entity = null;
+  let entities = this.instance.currentMap.entities;
 
   let resolution = this.camera.resolution;
 
@@ -279,17 +200,9 @@ export function renderEntities() {
 
   for (; ii < length; ++ii) {
     entity = entities[ii];
-    entity.idleTime++;
-    if (this.updateEntity(entity) === false) continue;
-    if (entity.opacity < 0) {
-      this.instance.removeEntity(entity);
-      --length;
-      --ii;
-      continue;
-    }
-    this.updateEntitySpriteFrame(entity);
-    if (gl === true) continue;
     scaling = entity.scale + (-entity.z / resolution) / ((entity.size.x + entity.size.y) / 2);
+    if (entity.renderable === false) continue;
+    this.updateEntitySpriteFrame(entity);
     this.renderEntity(
       entity,
       /** Position */
@@ -301,13 +214,6 @@ export function renderEntities() {
       ((entity.size.x /scaling) * 2) * scaling << 0, ((entity.size.y / scaling) * 2) * scaling << 0
     );
   };
-
-  if (
-    gl === true &&
-    this.glRenderer.ready === true
-  ) {
-    this.glRenderer.draw();
-  }
 
   return void 0;
 

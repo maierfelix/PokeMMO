@@ -9,11 +9,10 @@ export default class Connection {
 
   /**
    * @constructor
-   * @param {Object}   instance
-   * @param {String}   url
-   * @param {Function} handler
+   * @param {Object} instance
+   * @param {String} url
    */
-  constructor(instance, url, handler) {
+  constructor(instance, url) {
 
     /**
      * Instance ref
@@ -32,13 +31,6 @@ export default class Connection {
      * @type {Boolean}
      */
     this.open = false;
-
-    if (
-      handler !== void 0 &&
-      handler instanceof Function
-    ) {
-      this.handleMessage = handler;
-    }
 
     this.init(url);
 

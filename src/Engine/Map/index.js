@@ -25,13 +25,20 @@ import * as functions from "./functions";
 export default class Map extends DisplayObject {
 
   /**
+   * @param {Object}   instance
    * @param {Object}   obj
    * @param {Function} resolve
    * @constructor
    */
-  constructor(obj, resolve) {
+  constructor(instance, obj, resolve) {
 
     super(null);
+
+    /**
+     * Instance
+     * @type {Object}
+     */
+    this.instance = instance;
 
     /**
      * Tileset

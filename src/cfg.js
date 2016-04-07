@@ -7,12 +7,6 @@ import { supportWGL, getLocalHost } from "./Engine/utils";
 export let IS_CLIENT = true;
 
 /**
- * Offline mode
- * @type {Boolean}
- */
-export let OFFLINE_MODE = true;
-
-/**
  * Canvas rendering mode
  * @constant
  * @type {Number}
@@ -81,6 +75,25 @@ export const WGL_SUPPORT = supportWGL();
 export const WALK_BY_KEYBOARD = true;
 
 /**
+ * Free camera
+ * @type {Boolean}
+ */
+export let FREE_CAMERA = false;
+
+/**
+ * Easing camera
+ * @type {Boolean}
+ */
+export let EASING_CAMERA = false;
+
+/**
+ * Offline mode
+ * @constant
+ * @type {Boolean}
+ */
+export let OFFLINE_MODE = true;
+
+/**
  * Record mode
  * @type {Boolean}
  */
@@ -91,18 +104,6 @@ export let RECORD_MODE = true;
  * @type {Boolean}
  */
 export let EDIT_MODE = true;
-
-/**
- * Free camera
- * @type {Boolean}
- */
-export let FREE_CAMERA = false;
-
-/**
- * Fix camera
- * @type {Boolean}
- */
-export let FIX_CAMERA = false;
 
 /**
  * God mode
@@ -141,7 +142,7 @@ export const BGM = false;
  * @constant
  * @type {Number}
  */
-export const BGS = true;
+export const BGS = false;
 
 /**
  * Vertical depth sorting hack

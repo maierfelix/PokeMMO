@@ -1,4 +1,7 @@
 import { Howler } from "./libs/Howler";
+import "./libs/Pixi";
+
+PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
 window.rAF = (function() {
   return (

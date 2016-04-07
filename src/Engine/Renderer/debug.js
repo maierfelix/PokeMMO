@@ -121,4 +121,39 @@ export function renderDebugScene() {
     color
   );
 
+  this.drawPixelText(
+    `F1: DEBUG MODE`,
+    15, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `F2: EDIT MODE`,
+    155, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `F3: FREE CAMERA`,
+    290, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `F4: GOD MODE`,
+    450, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `SPACE: PLAYER FOCUS`,
+    575, this.height - 10,
+    20, 1.5,
+    color
+  );
+
 }

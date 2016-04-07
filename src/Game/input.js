@@ -74,6 +74,7 @@ export const keys = [
       cfg.DEBUG_MODE = cfg.DEBUG_MODE ? false : true;
       if (!cfg.DEBUG_MODE) {
         cfg.FREE_CAMERA = false;
+        this.engine.camera.focus(this.engine.localEntity, false);
       }
       this.engine.renderer.switchRenderingMode(cfg.DEBUG_MODE ? 0 : 1);
       this.engine.renderer.resize(true);
@@ -294,7 +295,7 @@ export const mouse = [
         this.engine.editor.selectTo(x, y);
         return void 0;
       }
-      if (e.which !== 1) {
+      if (e.which !== 1 && !this.input.KeyBoard.isKeyPressed("SPACE")) {
         cfg.FREE_CAMERA = true;
       }
       if (cfg.FREE_CAMERA && (e instanceof TouchEvent || e.which !== 1)) {
@@ -331,7 +332,11 @@ export const mouse = [
       let y = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
       e.preventDefault();
       if (!cfg.DEBUG_MODE) return void 0;
-      if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
+      if (
+        cfg.FREE_CAMERA &&
+        this.engine.camera.dragging &&
+        !this.input.KeyBoard.isKeyPressed("SPACE")
+      ) {
         this.engine.camera.move(x, y);
       }
       if (this.input.KeyBoard.isKeyPressed("SHIFT") && this.engine.editor.STATES.SELECTING) {

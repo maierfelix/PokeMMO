@@ -181,6 +181,7 @@ export class Pause extends Element {
   show() {
     this.active = true;
     this.instance.activeScene = true;
+    this.drawContext.canvas.style.display = "block";
     this.updatePositions();
     this.render();
     this.draw();
@@ -192,6 +193,7 @@ export class Pause extends Element {
   hide() {
     this.active = false;
     this.instance.activeScene = false;
+    this.drawContext.canvas.style.display = "none";
     this.drawContext.canvas.width = this.width;
   }
 

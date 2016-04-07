@@ -128,6 +128,7 @@ export default class Renderer {
 
     if (cfg.WGL_SUPPORT) {
       this.glRenderer = new WGL_Renderer(this);
+      this.glRenderer.init();
     }
 
     /**
@@ -146,9 +147,13 @@ export default class Renderer {
   switchRenderingMode(mode) {
 
     if (mode === cfg.WGL) {
-      this.node.style.display = "none";
-      this.glNode.style.display = "block";
-      cfg.RENDER_MODE = mode;
+      if (cfg.WGL_SUPPORT) {
+        this.node.style.display = "none";
+        this.glNode.style.display = "block";
+        cfg.RENDER_MODE = mode;
+      } else {
+        mode = cfg.CANVAS;
+      }
     }
 
     if (mode === cfg.CANVAS) {
@@ -215,7 +220,7 @@ export default class Renderer {
     if (cfg.RENDER_MODE === cfg.WGL) {
       this.glNode.width = this.width;
       this.glNode.height = this.height;
-      this.gl.viewport(0, 0, this.width, this.height);
+      this.glRenderer.resize(this.width, this.height);
     } else {
       this.node.width = this.width;
       this.node.height = this.height;

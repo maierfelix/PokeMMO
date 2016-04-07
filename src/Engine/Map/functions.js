@@ -22,10 +22,13 @@ export function addMap(path, resolve) {
     JSON.parse
   ).then(this::function(data) {
     data.path = getPath(path);
-    let map = new Map(data, this::function() {
+    let map = new Map(this, data, this::function() {
       map.instance = this;
       this.maps[map.name] = map;
       this.currentMap = this.maps[map.name];
+      if (this.editor !== null) {
+        this.editor.map = this.currentMap;
+      }
       return (resolve());
     });
   });

@@ -1,15 +1,12 @@
 import {
+  WGL_SUPPORT,
   OFFLINE_MODE,
-  EDIT_MODE,
-  MIN_SCALE,
   LEFT, RIGHT, UP, DOWN,
   CONNECTION_URL, CONNECTION_PORT
 } from "../cfg";
 
 import Engine from "../Engine";
 import Input  from "../Engine/Input";
-import Editor from "../Engine/Editor";
-import MiniMap from "../Engine/MiniMap";
 import Connection from "../Engine/Connection";
 
 import * as Events from "./input.js";
@@ -37,8 +34,6 @@ export default class Game {
     this.scenes = scenes;
 
     this.engine = new Engine(this);
-
-    this.engine.camera.scale = MIN_SCALE;
 
     this.setup();
 
@@ -70,33 +65,18 @@ export default class Game {
         this.setup(stage);
       return void 0;
       case 6:
-        if (EDIT_MODE) {
-          this.engine.editor = new Editor(this.engine);
-        }
-        this.setup(stage);
-      return void 0;
-      case 7:
-        this.engine.mini = new MiniMap(this.engine);
-        this.setup(stage);
-      return void 0;
-      case 8:
         window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
-      case 9:
+      case 7:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
-      case 10:
-        this.engine.renderer.glRenderer.init();
-        this.setup(stage);
-      return void 0;
-      case 11:
+      case 8:
         if (!OFFLINE_MODE) {
           this.engine.connection = new Connection(
             this,
-            `${CONNECTION_URL}:${CONNECTION_PORT}`,
-            null
+            `${CONNECTION_URL}:${CONNECTION_PORT}`
           );
         }
       return void 0;

@@ -57,6 +57,18 @@ export default class Entity extends DisplayObject {
     this.socket = null;
 
     /**
+     * Renderable
+     * @type {Boolean}
+     */
+    this.renderable = false;
+
+    /**
+     * Jumpable
+     * @type {Boolean}
+     */
+    this.jumpable = obj.jumpable === void 0 ? true : obj.jumpable;
+
+    /**
      * Life time
      * @type {Number}
      */
@@ -392,9 +404,6 @@ export default class Entity extends DisplayObject {
         this.shadow = new Shadow(this);
         this.shadow.position.set(this.shadowX, this.shadowY);
       }
-      if (WGL_SUPPORT === true) {
-        this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
-      }
       if (
         this.onLoad !== null &&
         this.onLoad instanceof Function
@@ -429,6 +438,8 @@ export default class Entity extends DisplayObject {
    * Jump
    */
   jump(resolve) {
+
+    if (this.jumpable === false) return void 0;
 
     this.refreshState();
 

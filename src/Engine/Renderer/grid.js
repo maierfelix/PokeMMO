@@ -18,6 +18,8 @@ export function drawGrid(ctx, x, y, width, height, dim, scale, ln, color) {
   var xx = x % ww;
   var yy = y % hh;
 
+  ctx.beginPath();
+
   for (; xx < width; xx += ww) {
     ctx.moveTo(xx - ln, 0);
     ctx.lineTo(xx - ln, height);

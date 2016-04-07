@@ -944,20 +944,28 @@ export default class Keyboard {
       };
     }
 
-    /** Key loop */
-    this.keyLoop = setInterval(this:: function() {
-      this.fireKeys();
-    }, this.rate);
+    this.loop();
 
     this.fireKeys();
 
-    window.addEventListener('keydown', this:: function(e) {
+    window.addEventListener('keydown', this::function(e) {
       this.switchKey(this.hash, e.keyCode, 1, e);
     });
 
-    window.addEventListener('keyup', this:: function(e) {
+    window.addEventListener('keyup', this::function(e) {
       this.switchKey(this.hash, e.keyCode, 0, e);
     });
+
+  }
+
+  /**
+   * Key loop
+   */
+  loop() {
+
+    this.fireKeys();
+
+    setTimeout(() => this.loop(), this.rate);
 
   }
 
