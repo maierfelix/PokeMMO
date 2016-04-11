@@ -109,9 +109,9 @@ export default class Texture {
    */
   fromImage(url, resolve) {
 
-    var img = null;
+    let img = null;
 
-    var texture = TextureCache[url];
+    let texture = TextureCache[url];
 
     if (
       texture !== void 0 &&

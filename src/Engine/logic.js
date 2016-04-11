@@ -1,7 +1,13 @@
+import {
+  DIMENSION
+} from "../cfg";
+
 /**
  * Logic loop
  */
 export function logic() {
+
+  if (this.currentMap === null) return void 0;
 
   let ii = 0;
   let length = 0;

@@ -1,7 +1,4 @@
 import { Howler } from "./libs/Howler";
-import "./libs/Pixi";
-
-PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 
 window.rAF = (function() {
   return (
@@ -35,7 +32,7 @@ CanvasRenderingContext2D.prototype.setImageSmoothing = function(value) {
 CanvasRenderingContext2D.prototype.clear = function (color) {
 
   if (color) {
-    var original = this.fillStyle;
+    let original = this.fillStyle;
     this.fillStyle = color;
     this.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.fillStyle = original;

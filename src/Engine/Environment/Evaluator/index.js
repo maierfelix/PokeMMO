@@ -45,7 +45,11 @@ export default class Evaluator {
        * Dynamic trigger scope ref
        * @type {Object}
        */
-      trigger: null
+      trigger: null,
+
+      console: window.console,
+
+      alert: window.alert
 
     };
 
@@ -166,7 +170,8 @@ export default class Evaluator {
       ast.type === NODE_TYPES.BinaryExpression ||
       ast.type === NODE_TYPES.UnaryExpression ||
       this.isLiteral(ast) === true ||
-      this.isIdentifier(ast) === true
+      this.isIdentifier(ast) === true ||
+      this.isMemberExpression(ast) === true
     );
   }
 
@@ -231,13 +236,7 @@ export default class Evaluator {
     }
 
     if (this.isAssignmentExpression(ast) === true) {
-      let parent = this.evalExpression(ast.left);
-      let result = this.evalExpression(ast.right);
-      if (result.link !== void 0) {
-        parent.link[parent.property] = result.link[result.property];
-      } else {
-        parent.link[parent.property] = result.value;
-      }
+      return resolve(this.evalAssignExpression(ast));
     }
 
     if (this.isCallExpression(ast) === true) {
@@ -254,18 +253,66 @@ export default class Evaluator {
   }
 
   /**
+   * Eval assignment expression
+   * Assignments auto return its result
+   * @param {Object} ast
+   * @return {*}
+   */
+  evalAssignExpression(ast) {
+
+    let result = null;
+
+    let left = this.evalExpression(ast.left);
+    let right = this.evalExpression(ast.right);
+
+    result = right.link !== void 0 ? right.link[right.property] : right.value;
+
+    if (ast.operator === "ASSIGN") {
+      return (left.link[left.property] = result);
+    }
+
+    if (ast.operator === "ADDSET") {
+      return (left.link[left.property] += result);
+    }
+
+    if (ast.operator === "SUBSET") {
+      return (left.link[left.property] -= result);
+    }
+
+    if (ast.operator === "MULSET") {
+      return (left.link[left.property] *= result);
+    }
+
+    if (ast.operator === "DIVSET") {
+      return (left.link[left.property] /= result);
+    }
+
+    if (ast.operator === "MODSET") {
+      return (left.link[left.property] %= result);
+    }
+
+    return (0);
+
+  }
+
+  /**
    * Eval call expression
    * @param {Object} ast
    */
   evalCallExpression(ast, resolve) {
 
     let callee = this.evalExpression(ast.callee);
-    let cmd = callee.link[callee.property];
+    let cmd = null;
+
+    if (callee.link === void 0) {
+      cmd = this.context[ast.callee.name];
+    } else {
+      cmd = callee.link[callee.property];
+    }
 
     this.evalArguments(ast.arguments, function(args) {
 
       if (args.length >= 1) {
-        args.push((result) => resolve(result));
         cmd.apply(callee.link, args);
       } else {
         cmd.bind(callee.link)((result) => resolve(result));
@@ -298,13 +345,12 @@ export default class Evaluator {
           index++;
           eArgs.push(result);
           if (index >= length) {
-            resolve(eArgs);
+            return resolve(eArgs);
           }
         });
       };
     } else {
-      resolve(eArgs);
-      return void 0;
+      return resolve(eArgs);
     }
 
   }

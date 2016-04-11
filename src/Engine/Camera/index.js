@@ -174,7 +174,7 @@ export default class Camera extends DisplayObject {
 
     let delta = e.deltaY === -0 ? e.deltaX : e.deltaY;
 
-    let amount = (delta ? -delta : delta);
+    let amount = (delta > 0 ? -100 : 100);
 
     amount = amount / 2 / (math.hypot(this.size.x, this.size.y) / Math.PI) * math.zoomScale(this.scale);
 

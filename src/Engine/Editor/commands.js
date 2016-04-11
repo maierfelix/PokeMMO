@@ -78,7 +78,6 @@ export let commands = [
   {
     action: "paste",
     onUndo: function (entity, paste) {
-      console.log(paste);
       this.instance.removeEntity(paste);
     },
     onRedo: function(entity, paste) {
@@ -90,6 +89,11 @@ export let commands = [
       let tmp = null;
 
       let pushEntity = null;
+
+      if (paste !== null && paste !== void 0) {
+        map.entities.push(paste);
+        return void 0;
+      }
 
       if (entity instanceof entities.Player) {
         tmp = new entities.Player({
@@ -128,11 +132,10 @@ export let commands = [
         pushEntity = tmp;
       }
 
+      /** Fuck that */
+      this.instance.editor.commander.stack[this.instance.editor.commander.position].data[1] = pushEntity;
+
       map.entities.push(pushEntity);
-
-      this.entityCopy = pushEntity;
-
-      this.entityPaste = pushEntity;
 
     }
   }

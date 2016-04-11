@@ -249,7 +249,6 @@ export default class MiniMap {
 
     for (; ii < length; ++ii) {
       entity = entities[ii];
-      //if ((entity instanceof Player) === false) continue;
       scaling = entity.scale + (-entity.z / this.resolution) / ((entity.width + entity.height) / 2);
       if (entity.texture === null) continue;
       x = ((camX + entity.x + entity.xMargin + ((entity.z / (entity.width / 2)) / 2)) * this.resolution) << 0;

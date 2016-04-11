@@ -62,15 +62,15 @@ export function draw() {
   let gl = RENDER_MODE === WGL;
 
   if (gl === false) {
+    this.renderEntities(1);
     this.renderMap();
+    this.renderEntities(0);
   } else {
     if (this.glRenderer.ready === true) {
       this.glRenderer.draw();
     }
     return void 0;
   }
-
-  this.renderEntities();
 
   if (DEBUG_MODE === true) {
     drawGrid(
@@ -114,7 +114,7 @@ export function renderMap() {
 
   /** Render background layer */
   this.context.drawImage(
-    map.buffers[1].canvas,
+    map.mainBuffer.canvas,
     0, 0,
     /** Scale */
     map.size.x * dim, map.size.y * dim,
@@ -182,8 +182,9 @@ export function updateEntitySpriteFrame(entity) {
 
 /**
  * Render entities
+ * @param {Number} lowest Render entities below map
  */
-export function renderEntities() {
+export function renderEntities(lowest) {
 
   let entity = null;
   let entities = this.instance.currentMap.entities;
@@ -200,6 +201,7 @@ export function renderEntities() {
 
   for (; ii < length; ++ii) {
     entity = entities[ii];
+    if (lowest === 0 && entity.zIndex <= 0) continue;
     scaling = entity.scale + (-entity.z / resolution) / ((entity.size.x + entity.size.y) / 2);
     if (entity.renderable === false) continue;
     this.updateEntitySpriteFrame(entity);

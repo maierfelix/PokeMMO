@@ -226,10 +226,8 @@ export default class Renderer {
       this.node.height = this.height;
     }
     this.clear();
-    if (redraw === true) {
-      this.instance.mini.resize();
-      this.draw();
-    }
+    this.instance.mini.resize();
+    this.draw();
   }
 
 }

@@ -54,9 +54,15 @@ export default class Map extends DisplayObject {
 
     /**
      * Map buffers
+     * @type {Array}
+     */
+    this.buffers = [];
+
+    /**
+     * Main map buffer
      * @type {Object}
      */
-    this.buffers = {};
+    this.mainBuffer = null;
 
     /** Map size */
     this.width = obj.width;
@@ -280,8 +286,28 @@ export default class Map extends DisplayObject {
         width, height
       );
       this.renderLayer(buffer, layer.data);
-      this.buffers[layer.index] = buffer;
+      this.buffers.push(buffer);
       buffer = null;
+    };
+
+    this.mainBuffer = this.buffers[0];
+
+    this.joinLayers();
+
+    return void 0;
+
+  }
+
+  /**
+   * Join layer buffers
+   */
+  joinLayers() {
+
+    for (let ii = 1; ii < this.buffers.length; ++ii) {
+      this.mainBuffer.drawImage(
+        this.buffers[ii].canvas,
+        0, 0
+      );
     };
 
     return void 0;

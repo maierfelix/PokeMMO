@@ -122,6 +122,62 @@ export function renderDebugScene() {
   );
 
   this.drawPixelText(
+    `C: JUMP`,
+    15, this.height - 60,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `X: RUN`,
+    90, this.height - 60,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `Z: ACTION`,
+    155, this.height - 60,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `CTRL+Z: UNDO`,
+    15, this.height - 35,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `CTRL+Y: REDO`,
+    140, this.height - 35,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `CTRL+C: COPY`,
+    265, this.height - 35,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `CTRL+V: PASTE`,
+    390, this.height - 35,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `CTRL+X: CUT`,
+    525, this.height - 35,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
     `F1: DEBUG MODE`,
     15, this.height - 10,
     20, 1.5,
@@ -152,6 +208,27 @@ export function renderDebugScene() {
   this.drawPixelText(
     `SPACE: PLAYER FOCUS`,
     575, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `WHEEL: ZOOM`,
+    770, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `R-MOUSE: DRAG MAP`,
+    890, this.height - 10,
+    20, 1.5,
+    color
+  );
+
+  this.drawPixelText(
+    `DBLCLICK: FOCUS ENTITY`,
+    1065, this.height - 10,
     20, 1.5,
     color
   );

@@ -6,6 +6,7 @@ import {
 } from "../cfg";
 
 import Engine from "../Engine";
+import Renderer from "../Engine/Renderer";
 import Input  from "../Engine/Input";
 import Connection from "../Engine/Connection";
 
@@ -56,23 +57,27 @@ export default class Game {
         this.addEntities(() => this.setup(stage));
       return void 0;
       case 4:
-        this.animateNPC();
+        this.engine.renderer = new Renderer(this.engine);
         this.setup(stage);
       return void 0;
       case 5:
+        this.animateNPC();
+        this.setup(stage);
+      return void 0;
+      case 6:
         /** Instant focus local player */
         this.engine.camera.focus(this.engine.getEntityByProperty("Felix", "name"), true);
         this.setup(stage);
       return void 0;
-      case 6:
+      case 7:
         window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
-      case 7:
+      case 8:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
-      case 8:
+      case 9:
         if (!OFFLINE_MODE) {
           this.engine.connection = new Connection(
             this,

@@ -29,7 +29,8 @@ export default class Environment {
      * @type {Object}
      */
     this.FLAGS = {
-      GOT_STARTER_PKMN: 2
+      GOT_STARTER_PKMN: false,
+      COUNTER: 0
     };
 
     /**

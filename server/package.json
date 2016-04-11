@@ -1,7 +1,7 @@
 {
-  "name": "Ogar",
-  "version": "1.0.0",
-  "description": "Open source Agar.io server",
+  "name": "pokiengine",
+  "version": "0.0.1",
+  "description": "Pokémon Engine Server",
   "main": "src/index.js",
   "dependencies": {
     "fast-json-patch": "Starcounter-Jack/JSON-Patch",
@@ -29,15 +29,5 @@
   },
   "scripts": {
     "start": "nodemon src/index.js --exec babel-node --presets es2015,stage-0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OgarProject/Ogar"
-  },
-  "author": "Devin Ryan <devin@forairan.com> (http://devin.codes/)",
-  "license": "Apache License 2.0",
-  "bugs": {
-    "url": "https://github.com/OgarProject/Ogar/issues"
-  },
-  "homepage": "https://github.com/OgarProject/Ogar"
+  }
 }

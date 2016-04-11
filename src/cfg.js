@@ -168,7 +168,7 @@ export const PIXEL_SCALE = .125;
  * @constant
  * @type {Number}
  */
-export const MIN_SCALE = 5.0;
+export const MIN_SCALE = 2.0;
 
 /**
  * @constant

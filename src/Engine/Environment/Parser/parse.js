@@ -44,6 +44,21 @@ export function parseAsyncStatement() {
 }
 
 /**
+ * Is assignment or assignset
+ * @return {Boolean}
+ */
+export function isSet() {
+  return (
+    this.accept("ASSIGN") === true ||
+    this.accept("ADDSET") === true ||
+    this.accept("SUBSET") === true ||
+    this.accept("MULSET") === true ||
+    this.accept("DIVSET") === true ||
+    this.accept("MODSET") === true
+  );
+}
+
+/**
  * Parse identifier route
  * Identifier () | = | . | ; 
  * @return {Object}
@@ -55,15 +70,19 @@ export function parseIdentifierRoute() {
   let tmp = this.parseExpression(0);
 
   /** Call expression */
-  if (this.accept("LPAREN")) {
+  if (this.accept("LPAREN") === true) {
     ast = this.parseCallExpression();
     ast.callee = tmp;
   }
 
   /** Assignment expression */
-  if (this.accept("ASSIGN")) {
+  if (this.isSet() === true) {
     ast = this.parseAssignmentExpression();
     ast.left = tmp;
+  }
+
+  if (ast === null) {
+    return (tmp);
   }
 
   return (ast);
@@ -99,10 +118,13 @@ export function parseAssignmentExpression() {
 
   ast = new NODE_LIST.AssignmentExpression();
   ast.left = this.parseExpression(0);
-  ast.operator = this.node.value;
-  this.expect("ASSIGN");
-  ast.right = this.parseExpression(0);
+  ast.operator = this.node.name;
   this.next();
+  ast.right = this.parseExpression(0);
+
+  if (this.accept("SEMICOLON") === true) {
+    this.next();
+  }
 
   return (ast);
 
@@ -123,7 +145,7 @@ export function parseIfStatement() {
   ast.condition = this.parseParentheseExpression();
   ast.consequent = this.parseBraceBody();
 
-  if (this.accept("LBRACE")) {
+  if (this.accept("LBRACE") === true) {
     ast.alternate = this.parseBraceBody();
   }
 
@@ -190,8 +212,6 @@ export function parseBlockStatement() {
  */
 export function parseArguments() {
 
-  let ast = null;
-
   let args = [];
 
   let tmp = null;
@@ -224,7 +244,7 @@ export function parseArguments() {
     }
   };
 
-  if (args.length <= 1 && this.accept("RPAREN")) {
+  if (args.length <= 1 && this.accept("RPAREN") === true) {
     this.next();
   }
 

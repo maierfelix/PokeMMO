@@ -1,7 +1,4 @@
-/**
- * Code inspired by gles.js webgl renderer
- */
-
+/** Inspired by gles.js web demo */
 import { canvasToImage } from "../../utils";
 
 import * as shaders from "./shaders";
@@ -25,23 +22,36 @@ export default class WGL_Renderer {
      */
     this.instance = instance;
 
-    let options = {
-      antialiasing: false,
-      transparent: false,
-      resolution: 1,
-      view: this.instance.glNode
-    };
+    /**
+     * Shader program
+     * @type {Object}
+     */
+    this.shaderProgram = null;
 
-    this.renderer = new PIXI.WebGLRenderer(
-      this.instance.width, this.instance.height,
-      options
-    );
+    /**
+     * Shaders
+     * @type {Object}
+     */
+    this.vshader = null;
+    this.fshader = null;
 
-    this.entities = [];
+    /**
+     * Gl context ref
+     * @type {Object}
+     */
+    this.gl = instance.gl;
 
-    this.containers = {};
+    /**
+     * Sprite position buffer
+     * @type {Array}
+     */
+    this.spritepos = null;
 
-    this.stage = new PIXI.Container();
+    /**
+     * Position buffer
+     * @type {Object}
+     */
+    this.posbuffer = null;
 
     this.ready = false;
 
@@ -52,62 +62,46 @@ export default class WGL_Renderer {
    */
   init() {
 
-    this.renderer.view.style["transform"] = "translatez(0)";
+    let gl = this.gl;
 
-    this.ready = true;
+    let entities = this.instance.instance.currentMap.entities;
 
-  }
+    let length = entities.length;
 
-  addEntity(entity) {
+    this.spritepos = new Float32Array(length * 12);
+    this.spriteidx = new Float32Array(length * 6);
 
-    let texture = this.containers[entity.name];
+    this.vshaderid = gl.createShader(gl.VERTEX_SHADER);
+    this.fshaderid = gl.createShader(gl.FRAGMENT_SHADER);
 
-    let sprite = new PIXI.Sprite(texture);
+    this.compileShader(0, this.vshaderid, shaders.spritevs);
+    this.compileShader(1, this.fshaderid, shaders.spritefs);
 
-    sprite.position = entity.position;
+    this.shaderProgram = gl.createProgram();
 
-    this.entities.push(entity);
+    gl.attachShader(this.shaderProgram, this.vshaderid);
+    gl.attachShader(this.shaderProgram, this.fshaderid);
+    gl.linkProgram(this.shaderProgram);
 
-    if (this.containers[entity.name] === void 0) {
-      this.buildContainer(entity);
-    }
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+    gl.disable(gl.BLEND);
 
-    this.containers[entity.name].addChild(sprite);
+    this.posbuffer = gl.createBuffer();
+    this.idxbuffer = gl.createBuffer();
 
-  }
-
-  buildContainer(entity) {
-
-    let texture = null;
-
-    this.containers[entity.name] = new PIXI.ParticleContainer(200000, [false, true, false, false, false]);
-    this.stage.addChild(this.containers[entity.name]);
-    for (var jj = 0; jj < entity.texture.effect_sprites.length; ++jj) {
-      texture = new PIXI.Sprite(
-        new PIXI.Texture.fromCanvas(entity.texture.effect_sprites[jj].canvas)
-      );
-      this.containers[entity.name].addChild(texture);
+    for (var i = 0; i < length; i++) {
+      this.spriteidx[6 * i + 0] = 0;
+      this.spriteidx[6 * i + 1] = 1;
+      this.spriteidx[6 * i + 2] = 2;
+      this.spriteidx[6 * i + 3] = 1;
+      this.spriteidx[6 * i + 4] = 2;
+      this.spriteidx[6 * i + 5] = 3;
     };
 
-  }
+    this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
 
-  /**
-   * Build batched textures
-   */
-  buildTextures() {
-
-    let map = this.instance.instance.currentMap;
-
-    let ii = 0;
-    let length = 0;
-
-    let texture = null;
-    let entity = null;
-    let entities = map.entities;
-
-    length = entities.length;
-
-    return void 0;
+    this.ready = true;
 
   }
 
@@ -116,56 +110,143 @@ export default class WGL_Renderer {
    */
   draw() {
 
+    let gl = this.gl;
+
+    let loc = null;
     let entity = null;
+
+    let x = 0;
+    let y = 0;
+
+    let width  = 0;
+    let height = 0;
+
     let entities = this.instance.instance.currentMap.entities;
 
-    let resolution = this.instance.camera.resolution;
-
-    let camX = this.instance.camera.position.x;
-    let camY = this.instance.camera.position.y;
-
-    let ii = 0;
     let length = entities.length;
 
-    let scaling = .0;
+    let ii = 0;
+    let jj = 0;
+
+    let camera = this.instance.camera;
+
+    let resolution = camera.resolution;
+
+    let camX = camera.position.x;
+    let camY = camera.position.y;
+
+    gl.useProgram(this.shaderProgram);
+
+    loc = gl.getUniformLocation(this.shaderProgram, "uScale");
+    gl.uniform2f(loc, this.instance.width, this.instance.height);
+
+    loc = gl.getUniformLocation(this.shaderProgram, "uObjScale");
 
     for (; ii < length; ++ii) {
+
       entity = entities[ii];
-      scaling = entity.scale + (-entity.z / resolution) / ((entity.size.x + entity.size.y) / 2);
-      if (entity.renderable === false) continue;
-      this.renderEntity(
-        entity,
-        /** Position */
-        (camX + (entity.position.x + entity.xMargin + ((entity.z / (entity.size.x / 2)) / 2)) * resolution) << 0,
-        (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
-        /** Size */
-        (entity.size.x * resolution) * scaling << 0, (entity.size.y * resolution) * scaling << 0,
-        /** Scale */
-        ((entity.size.x /scaling) * 2) * scaling << 0, ((entity.size.y / scaling) * 2) * scaling << 0
+
+      x = (camX + (entity.position.x + entity.xMargin) * resolution) << 0;
+      y = (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
+
+      width  = (entity.size.x * resolution) << 0;
+      height = (entity.size.y * resolution) << 0;
+
+      for (jj = 0; jj < 6; ++jj) {
+        this.spritepos[12 * ii + 2 * jj] = x + (width / 2);
+        this.spritepos[12 * ii + 2 * jj + 1] = y + (height / 2);
+      };
+
+      gl.uniform2f(
+        loc,
+        width, height
       );
+
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, entity.glTexture);
+
     };
 
-    this.renderer.render(this.stage);
+    this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
+
+    this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1);
+
+    gl.drawArrays(gl.TRIANGLES, 0, length * 6);
 
     return void 0;
 
   }
 
   /**
-   * Render a single entity
-   * @param {Object} entity
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} width
-   * @param {Number} height
-   * @param {Number} eWidth
-   * @param {Number} eHeight
+   * Buffer a 2d texture
+   * @param  {Object} canvas
+   * @return {Object}
    */
-  renderEntity(entity, x, y, width, height, eWidth, eHeight) {
+  bufferTexture(canvas) {
 
-    let texture = this.containers[entity.name];
+    let gl = this.gl;
 
-    return void 0;
+    let texture = gl.createTexture();
+
+    let image = canvasToImage(canvas);
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    return (texture);
+
+  }
+
+  /**
+   * Compile a shader
+   * @param {Number} type
+   * @param {Object} shader
+   * @param {String} shader_src
+   */
+  compileShader(type, shader, shader_src) {
+
+    let gl = this.gl;
+
+    gl.shaderSource(shader, shader_src);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      throw "shader " + type + " compile error: " + gl.getShaderInfoLog(shader);
+    }
+
+  }
+
+  /**
+   * Compile shaders
+   */
+  compileShaders() {
+
+    let gl = this.gl;
+
+    let entities = this.instance.instance.currentMap.entities;
+
+    let length = entities.length;
+
+    this.vshader = gl.createShader(gl.VERTEX_SHADER);
+    this.fshader = gl.createShader(gl.FRAGMENT_SHADER);
+
+    this.compileShader(0, this.vshader, shaders.spritevs);
+    this.compileShader(1, this.fshader, shaders.spritefs);
+
+    this.shaderProgram = gl.createProgram();
+
+    gl.attachShader(this.shaderProgram, shaders.vshader);
+    gl.attachShader(this.shaderProgram, shaders.fshader);
+    gl.linkProgram(this.shaderProgram);
+
+    this.posbuffer = gl.createBuffer();
+
+    this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
 
   }
 
@@ -176,7 +257,7 @@ export default class WGL_Renderer {
    */
   resize(width, height) {
 
-    this.renderer.resize(width, height);
+    this.gl.viewport(0, 0, width, height);
 
   }
 
@@ -184,6 +265,34 @@ export default class WGL_Renderer {
    * Clear
    */
   clear() {
+    this.gl.clearColor(0, 0, 0, 0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    return void 0;
+  }
+
+  /**
+   * Gl attribute set
+   * @param {Object} program
+   * @param {[type]} buffer
+   * @param {[type]} varname
+   * @param {[type]} numitems
+   * @param {[type]} itemsize
+   * @param {[type]} values
+   */
+  setAttribute(program, buffer, varname, numitems, itemsize, values) {
+
+    let gl = this.gl;
+
+    var attribute = gl.getAttribLocation(program, varname);
+
+    gl.enableVertexAttribArray(attribute);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+    if (values) {
+      gl.bufferData(gl.ARRAY_BUFFER, values, gl.DYNAMIC_DRAW);
+    }
+
+    gl.vertexAttribPointer(attribute, itemsize, gl.FLOAT, false, 0, 0);
 
   }
 

@@ -405,9 +405,7 @@ export default class Editor {
    */
   pasteEntity() {
 
-    this.entityPaste = this.entityCopy;
-
-    this.commander.push("paste", this, [this.entityCopy, this.entityPaste]);
+    this.commander.push("paste", this, [this.entitySelection, this.pastedEntity]);
 
   }
 

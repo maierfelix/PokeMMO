@@ -22,7 +22,6 @@ import * as entity from "./Entity/functions";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
 import Environment from "./Environment";
-import Renderer from "./Renderer";
 import DisplayObject from "./DisplayObject";
 import Camera from "./Camera";
 
@@ -133,7 +132,7 @@ export default class Engine extends DisplayObject {
      * Renderer instance
      * @type {Object}
      */
-    this.renderer = new Renderer(this);
+    this.renderer = null;
 
     /**
      * Editor instance

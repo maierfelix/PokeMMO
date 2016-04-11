@@ -28,6 +28,11 @@ export const TOKENS = {
   "/": "DIV",
   "%": "MOD",
   "^": "POW",
+  "+=": "ADDSET",
+  "-=": "SUBSET",
+  "*=": "MULSET",
+  "/=": "DIVSET",
+  "%=": "MODSET",
   /** Compare operators */
   "<": "LT",
   "<=": "LE",

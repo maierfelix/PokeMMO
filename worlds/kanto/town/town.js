@@ -52,6 +52,13 @@ return (function() {
     type: "ping"
   });
 
+  MAP.entities.push({
+    x: 208, y: 168,
+    type: "ping",
+    opacity: .0,
+    collidable: true
+  });
+
   /*MAP.entities.push({
     x: 144, y: 40,
     type: "cloud",
@@ -59,22 +66,94 @@ return (function() {
     scale: .1
   });*/
 
+  MAP.entities.push(
+    {
+      x: 176,
+      y: 104,
+      type: "tree",
+      collisionBox: [
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 1, 1, 0
+      ]
+    }
+  );
+
   MAP.entities.push({
-    x: 168, y: 136,
-    type: "water1",
-    collidable: false,
-    shadow: false
+    x: 160 + 16, y: 128,
+    type: "treestub",
+    onCollide: {
+      /*JavaScript: function(entity) {
+        if (entity.facing === 2) {
+          entity.jump();
+        }
+      },*/
+      EngelScript: `
+        if (trigger.facing == 2) {
+          @ this.jump();
+          @ this.jump();
+          @ this.fadeOut(1, false);
+          @ this.fadeIn(1);
+          @ trigger.fadeOut(1, false);
+          @ trigger.fadeIn(1);
+          trigger.jump();
+          @ trigger.move(0);
+          @ trigger.move(0);
+          @ trigger.move(2);
+          @ trigger.move(2);
+          @ trigger.move(2);
+          @ trigger.move(1);
+          @ trigger.move(1);
+          @ trigger.move(1);
+          trigger.jump();
+          @ trigger.move(3);
+          @ trigger.move(3);
+          @ trigger.move(3);
+          @ trigger.move(0);
+          @ trigger.move(0);
+          @ trigger.move(2);
+          @ trigger.move(2);
+        }
+      `
+    }
   });
 
   MAP.entities.push({
     x: 160, y: 128,
     type: "treestub",
     onCollide: {
-      JavaScript: function(entity) {
-        if (entity.facing === 2) {
-          entity.jump();
+      EngelScript: `
+        if (trigger.facing == 2) {
+          if (FLAGS.GOT_STARTER_PKMN == false) {
+            FLAGS.GOT_STARTER_PKMN = true;
+            trigger.jump();
+          }
         }
-      }
+      `
+    }
+  });
+
+  MAP.entities.push({
+    x: 168, y: 160,
+    type: "treestub",
+    onCollide: {
+      EngelScript: `
+        if (trigger.facing == 2) {
+          if (FLAGS.GOT_STARTER_PKMN == false) {
+            console.log("You didnt got your starter pokemon yet!");
+          } {
+            console.log("You successfully received your starter pkmn!", 2 * 2, FLAGS.GOT_STARTER_PKMN);
+          }
+        }
+        if (trigger.facing == 1) {
+          FLAGS.COUNTER += 1;
+        }
+        if (trigger.facing == 0) {
+          FLAGS.COUNTER -= 1;
+        }
+        console.log(FLAGS.COUNTER);
+      `
     }
   });
 
@@ -168,6 +247,81 @@ return (function() {
   MAP.entities.push({
     x: 128, y: 120 + 8,
     type: "flower"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 216, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 232, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 248, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 264, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 216, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 232, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 248, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 264, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 216, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 232, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 248, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 264, y: 272,
+    type: "water1"
   });
 
   return (MAP);
