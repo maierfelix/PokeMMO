@@ -64,31 +64,27 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _Input = __webpack_require__(133);
+	var _Renderer = __webpack_require__(121);
+
+	var _Renderer2 = _interopRequireDefault(_Renderer);
+
+	var _Input = __webpack_require__(135);
 
 	var _Input2 = _interopRequireDefault(_Input);
 
-	var _Editor = __webpack_require__(136);
-
-	var _Editor2 = _interopRequireDefault(_Editor);
-
-	var _MiniMap = __webpack_require__(140);
-
-	var _MiniMap2 = _interopRequireDefault(_MiniMap);
-
-	var _Connection = __webpack_require__(141);
+	var _Connection = __webpack_require__(138);
 
 	var _Connection2 = _interopRequireDefault(_Connection);
 
-	var _input = __webpack_require__(151);
+	var _input = __webpack_require__(148);
 
 	var Events = _interopRequireWildcard(_input);
 
-	var _entities = __webpack_require__(152);
+	var _entities = __webpack_require__(149);
 
 	var entities = _interopRequireWildcard(_entities);
 
-	var _scenes = __webpack_require__(157);
+	var _scenes = __webpack_require__(154);
 
 	var scenes = _interopRequireWildcard(_scenes);
 
@@ -120,8 +116,6 @@
 	    this.scenes = scenes;
 
 	    this.engine = new _Engine2.default(this);
-
-	    this.engine.camera.scale = _cfg.MIN_SCALE;
 
 	    this.setup();
 	  }
@@ -155,41 +149,31 @@
 	          });
 	          return void 0;
 	        case 4:
-	          this.animateNPC();
+	          this.engine.renderer = new _Renderer2.default(this.engine);
 	          this.setup(stage);
 	          return void 0;
 	        case 5:
+	          this.animateNPC();
+	          this.setup(stage);
+	          return void 0;
+	        case 6:
 	          /** Instant focus local player */
 	          this.engine.camera.focus(this.engine.getEntityByProperty("Felix", "name"), true);
 	          this.setup(stage);
 	          return void 0;
-	        case 6:
-	          if (_cfg.EDIT_MODE) {
-	            this.engine.editor = new _Editor2.default(this.engine);
-	          }
-	          this.setup(stage);
-	          return void 0;
 	        case 7:
-	          this.engine.mini = new _MiniMap2.default(this.engine);
-	          this.setup(stage);
-	          return void 0;
-	        case 8:
 	          window.rAF(function () {
 	            return _this.engine.renderer.render();
 	          });
 	          this.setup(stage);
 	          return void 0;
-	        case 9:
+	        case 8:
 	          this.input = new _Input2.default(Events, this);
 	          this.setup(stage);
 	          return void 0;
-	        case 10:
-	          this.engine.renderer.glRenderer.init();
-	          this.setup(stage);
-	          return void 0;
-	        case 11:
+	        case 9:
 	          if (!_cfg.OFFLINE_MODE) {
-	            this.engine.connection = new _Connection2.default(this, _cfg.CONNECTION_URL + ":" + _cfg.CONNECTION_PORT, null);
+	            this.engine.connection = new _Connection2.default(this, _cfg.CONNECTION_URL + ":" + _cfg.CONNECTION_PORT);
 	          }
 	          return void 0;
 	      };
@@ -242,9 +226,16 @@
 
 	      this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
 	        onCollide: {
-	          JavaScript: function JavaScript(entity) {
-	            this.facing = this.oppositFacing(entity.facing);
+	          JavaScript: function JavaScript(entity, engine) {
+	            this.faceEntity(entity);
+	            console.log(engine.instance.notify(this, "Stop!"));
 	          }
+	        }
+	      }));
+
+	      this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 176, y: 152, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+	        onAction: {
+	          EngelScript: "\n          if (trigger.facing == 2) {\n            kernel.notify(this, \"Ameno\");\n          }\n          this.faceEntity(trigger);\n        "
 	        }
 	      }));
 
@@ -350,7 +341,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.ColorPalette = exports.VOLUME = exports.GRAVITY = exports.DOWN = exports.RIGHT = exports.UP = exports.LEFT = exports.SHADOW_ALPHA = exports.SHADOW_Y = exports.SHADOW_X = exports.DISPLAY_SHADOWS = exports.MAX_SCALE = exports.MIN_SCALE = exports.PIXEL_SCALE = exports.DIMENSION = exports.Y_DEPTH_HACK = exports.BGS = exports.BGM = exports.DEBUG_FPS = exports.MINI_MAP = exports.DEBUG_MODE = exports.GOD_MODE = exports.FIX_CAMERA = exports.FREE_CAMERA = exports.EDIT_MODE = exports.RECORD_MODE = exports.WALK_BY_KEYBOARD = exports.WGL_SUPPORT = exports.VERSION = exports.__dirname = exports.CONNECTION_PORT = exports.CONNECTION_URL = exports.GRID_WIDTH = exports.RENDER_MODE = exports.WGL = exports.CANVAS = exports.OFFLINE_MODE = exports.IS_CLIENT = undefined;
+	exports.ColorPalette = exports.TYPES = exports.VOLUME = exports.BGS = exports.BGM = exports.GRAVITY = exports.DOWN = exports.RIGHT = exports.UP = exports.LEFT = exports.SHADOW_ALPHA = exports.SHADOW_Y = exports.SHADOW_X = exports.DISPLAY_SHADOWS = exports.MAX_SCALE = exports.MIN_SCALE = exports.PIXEL_SCALE = exports.DIMENSION = exports.Y_DEPTH_HACK = exports.DEBUG_FPS = exports.MINI_MAP = exports.DEBUG_MODE = exports.GOD_MODE = exports.EDIT_MODE = exports.RECORD_MODE = exports.OFFLINE_MODE = exports.EASING_CAMERA = exports.FREE_CAMERA = exports.WALK_BY_KEYBOARD = exports.WGL_SUPPORT = exports.VERSION = exports.__dirname = exports.CONNECTION_PORT = exports.CONNECTION_URL = exports.GRID_WIDTH = exports.RENDER_MODE = exports.WGL = exports.CANVAS = exports.IS_CLIENT = undefined;
 
 	var _utils = __webpack_require__(7);
 
@@ -359,12 +350,6 @@
 	 * @type {Boolean}
 	 */
 	var IS_CLIENT = exports.IS_CLIENT = true;
-
-	/**
-	 * Offline mode
-	 * @type {Boolean}
-	 */
-	var OFFLINE_MODE = exports.OFFLINE_MODE = true;
 
 	/**
 	 * Canvas rendering mode
@@ -425,7 +410,7 @@
 	 * @constant
 	 * @type {Boolean}
 	 */
-	var WGL_SUPPORT = exports.WGL_SUPPORT = (0, _utils.supportWGL)();
+	var WGL_SUPPORT = exports.WGL_SUPPORT = false;
 
 	/**
 	 * Walk by keyboard
@@ -433,6 +418,25 @@
 	 * @type {Boolean}
 	 */
 	var WALK_BY_KEYBOARD = exports.WALK_BY_KEYBOARD = true;
+
+	/**
+	 * Free camera
+	 * @type {Boolean}
+	 */
+	var FREE_CAMERA = exports.FREE_CAMERA = false;
+
+	/**
+	 * Easing camera
+	 * @type {Boolean}
+	 */
+	var EASING_CAMERA = exports.EASING_CAMERA = false;
+
+	/**
+	 * Offline mode
+	 * @constant
+	 * @type {Boolean}
+	 */
+	var OFFLINE_MODE = exports.OFFLINE_MODE = true;
 
 	/**
 	 * Record mode
@@ -445,18 +449,6 @@
 	 * @type {Boolean}
 	 */
 	var EDIT_MODE = exports.EDIT_MODE = true;
-
-	/**
-	 * Free camera
-	 * @type {Boolean}
-	 */
-	var FREE_CAMERA = exports.FREE_CAMERA = false;
-
-	/**
-	 * Fix camera
-	 * @type {Boolean}
-	 */
-	var FIX_CAMERA = exports.FIX_CAMERA = false;
 
 	/**
 	 * God mode
@@ -484,20 +476,6 @@
 	var DEBUG_FPS = exports.DEBUG_FPS = 60;
 
 	/**
-	 * Play bgm
-	 * @constant
-	 * @type {Number}
-	 */
-	var BGM = exports.BGM = false;
-
-	/**
-	 * Play bgs
-	 * @constant
-	 * @type {Number}
-	 */
-	var BGS = exports.BGS = true;
-
-	/**
 	 * Vertical depth sorting hack
 	 * @constant
 	 * @type {Number}
@@ -521,7 +499,7 @@
 	 * @constant
 	 * @type {Number}
 	 */
-	var MIN_SCALE = exports.MIN_SCALE = 5.0;
+	var MIN_SCALE = exports.MIN_SCALE = 3.0;
 
 	/**
 	 * @constant
@@ -592,12 +570,38 @@
 	var GRAVITY = exports.GRAVITY = -1;
 
 	/**
+	 * Play bgm
+	 * @constant
+	 * @type {Number}
+	 */
+	var BGM = exports.BGM = true;
+
+	/**
+	 * Play bgs
+	 * @constant
+	 * @type {Number}
+	 */
+	var BGS = exports.BGS = true;
+
+	/**
 	 * @constant
 	 * @type {Object}
 	 */
 	var VOLUME = exports.VOLUME = {
 	  LOCAL_PLAYER: 100,
-	  NETWORK_PLAYER: 10
+	  NETWORK_PLAYER: 10,
+	  MUSIC: 45
+	};
+
+	/**
+	 * @constant
+	 * @type {Object}
+	 */
+	var TYPES = exports.TYPES = {
+	  Notification: 0,
+	  MapEntity: 1,
+	  Player: 2,
+	  Ping: 3
 	};
 
 	/**
@@ -2444,33 +2448,45 @@
 
 	var _cfg = __webpack_require__(6);
 
-	var _functions = __webpack_require__(88);
+	var _utils = __webpack_require__(7);
+
+	var _logic = __webpack_require__(88);
+
+	var logic = _interopRequireWildcard(_logic);
+
+	var _functions = __webpack_require__(89);
 
 	var map = _interopRequireWildcard(_functions);
 
-	var _functions2 = __webpack_require__(105);
+	var _functions2 = __webpack_require__(102);
 
 	var entity = _interopRequireWildcard(_functions2);
 
-	var _Environment = __webpack_require__(106);
-
-	var _Environment2 = _interopRequireDefault(_Environment);
-
-	var _Renderer = __webpack_require__(117);
-
-	var _Renderer2 = _interopRequireDefault(_Renderer);
-
-	var _DisplayObject2 = __webpack_require__(99);
-
-	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
-
-	var _Camera = __webpack_require__(131);
+	var _Camera = __webpack_require__(108);
 
 	var _Camera2 = _interopRequireDefault(_Camera);
 
-	var _Language = __webpack_require__(132);
+	var _Editor = __webpack_require__(103);
 
-	var _utils = __webpack_require__(7);
+	var _Editor2 = _interopRequireDefault(_Editor);
+
+	var _MiniMap = __webpack_require__(107);
+
+	var _MiniMap2 = _interopRequireDefault(_MiniMap);
+
+	var _Environment = __webpack_require__(109);
+
+	var _Environment2 = _interopRequireDefault(_Environment);
+
+	var _Notification = __webpack_require__(161);
+
+	var _Notification2 = _interopRequireDefault(_Notification);
+
+	var _DisplayObject2 = __webpack_require__(96);
+
+	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
+
+	var _Language = __webpack_require__(120);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -2503,6 +2519,12 @@
 	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Engine).call(this, null));
 
 	        _this.instance = instance;
+
+	        /**
+	         * Current map
+	         * @type {Object}
+	         */
+	        _this.currentMap = null;
 
 	        /**
 	         * Active scene state
@@ -2580,19 +2602,19 @@
 	         * Renderer instance
 	         * @type {Object}
 	         */
-	        _this.renderer = new _Renderer2.default(_this);
+	        _this.renderer = null;
 
 	        /**
 	         * Editor instance
 	         * @type {Object}
 	         */
-	        _this.editor = null;
+	        _this.editor = new _Editor2.default(_this);
 
 	        /**
 	         * MiniMap instance
 	         * @type {Object}
 	         */
-	        _this.mini = null;
+	        _this.mini = new _MiniMap2.default(_this);
 
 	        /**
 	         * Environment instance
@@ -2606,16 +2628,29 @@
 	         */
 	        _this.connection = null;
 
-	        _this.initScenes();
+	        _this.init();
 
 	        return _this;
 	    }
 
 	    /**
-	     * Initialise scenes
+	     * Initialise
 	     */
 
 	    (0, _createClass3.default)(Engine, [{
+	        key: "init",
+	        value: function init() {
+
+	            this.initScenes();
+
+	            this.camera.scale = _cfg.MIN_SCALE;
+	        }
+
+	        /**
+	         * Initialise scenes
+	         */
+
+	    }, {
 	        key: "initScenes",
 	        value: function initScenes() {
 
@@ -2726,12 +2761,45 @@
 	            var pushEntity = map.addEntity(tpl);
 
 	            pushEntity.opacity = .0;
-
 	            pushEntity.fadeIn(2);
-
 	            pushEntity.lifeTime = this.renderer.now + 60;
 
+	            pushEntity.type = _cfg.TYPES.Ping;
+
 	            map.entities.push(pushEntity);
+	        }
+
+	        /**
+	         * Trigger a notification
+	         * @param {Object} entity
+	         * @param {String} msg
+	         */
+
+	    }, {
+	        key: "notify",
+	        value: function notify(entity, msg) {
+
+	            var offset = entity || this.instance.localEntity;
+
+	            var map = this.currentMap;
+
+	            var notification = new _Notification2.default({
+	                sprite: null,
+	                hasShadow: false,
+	                width: _Math2.default.roundTo(this.context.measureText(String(msg)).width, _cfg.DIMENSION),
+	                height: 16,
+	                msg: msg,
+	                follow: entity
+	            });
+
+	            notification.type = _cfg.TYPES.Notification;
+
+	            notification.opacity = .0;
+	            notification.fadeIn(2);
+	            notification.lifeTime = this.renderer.now + 60 * (msg.length * 4);
+	            notification.zIndex = 9999;
+
+	            map.entities.push(notification);
 	        }
 
 	        /**
@@ -2812,6 +2880,7 @@
 
 	(0, _utils.inherit)(Engine, map);
 	(0, _utils.inherit)(Engine, entity);
+	(0, _utils.inherit)(Engine, logic);
 
 /***/ },
 /* 65 */
@@ -3992,6 +4061,126 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.logic = logic;
+	exports.orbit = orbit;
+	exports.updateEntity = updateEntity;
+	exports.isRenderable = isRenderable;
+
+	var _cfg = __webpack_require__(6);
+
+	/**
+	 * Logic loop
+	 */
+	function logic() {
+
+	  if (this.currentMap === null) return void 0;
+
+	  var ii = 0;
+	  var length = 0;
+
+	  var entity = null;
+	  var entities = this.currentMap.entities;
+
+	  length = entities.length;
+
+	  for (; ii < length; ++ii) {
+	    entity = entities[ii];
+	    entity.idleTime++;
+	    entity.renderable = this.updateEntity(entity);
+	    if (entity.opacity < 0) {
+	      this.removeEntity(entity);
+	      --length;
+	      --ii;
+	      continue;
+	    }
+	  };
+	}
+
+	/**
+	 * Orbit animation
+	 * @param  {Object} entity
+	 */
+	function orbit(entity) {
+
+	  entity.orbitAngle += entity.velocity * 2 * Math.PI / 180;
+
+	  var target = entity.orbitTarget;
+
+	  var radius = (target.size.x * target.scale + target.size.y * target.scale) / _cfg.DIMENSION * 2;
+
+	  var xPadding = radius - _cfg.DIMENSION / 2;
+	  var yPadding = radius - _cfg.DIMENSION / 2;
+
+	  xPadding += target.xMargin;
+	  yPadding += target.yMargin / 2;
+
+	  entity.x = target.position.x + xPadding + radius * Math.cos(entity.orbitAngle);
+	  entity.y = target.position.y + yPadding + radius * Math.sin(entity.orbitAngle);
+
+	  /** Stop the orbit on a dimension friendly position */
+	  if (entity.stopOrbit === true && (entity.x << 0) % 8 === 0 && (entity.y << 0) % 8 === 0) {
+	    entity.x = math.roundTo(entity.x, _cfg.DIMENSION);
+	    entity.y = math.roundTo(entity.y, _cfg.DIMENSION);
+	    entity.orbitAround(null);
+	    entity.stopOrbit = false;
+	  }
+
+	  /*if (entity.orbitAngle > 360) {
+	    entity.orbitAngle = 0;
+	  }*/
+
+	  return void 0;
+	}
+
+	/**
+	 * Update entity
+	 * @param  {Object} entity
+	 * @return {Boolean} renderable
+	 */
+	function updateEntity(entity) {
+
+	  if (entity.lifeTime > 0) {
+	    if (this.renderer.now >= entity.lifeTime) {
+	      entity.lifeTime = 0;
+	      entity.fadeOut(1, true);
+	    }
+	  }
+
+	  entity.animate();
+
+	  if (entity.orbit === true) {
+	    this.orbit(entity);
+	  }
+
+	  if (this.camera.isInView(entity.position.x + entity.xMargin, entity.position.y + entity.yMargin, entity.size.x * entity.scale, entity.size.y * 2 * entity.scale + entity.shadowY) === false) {
+	    return false;
+	  }
+
+	  if (this.isRenderable(entity) === false) {
+	    return false;
+	  }
+
+	  return true;
+	}
+
+	/**
+	 * Entity is renderable
+	 * @param  {Object}  entity
+	 * @return {Boolean} renderable
+	 */
+	function isRenderable(entity) {
+	  return entity.texture !== null && entity.opacity !== .0;
+	}
+
+/***/ },
+/* 89 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.addMap = addMap;
 	exports.distance = distance;
 
@@ -4001,9 +4190,13 @@
 
 	var _Math2 = _interopRequireDefault(_Math);
 
+	var _Audio = __webpack_require__(152);
+
+	var _Audio2 = _interopRequireDefault(_Audio);
+
 	var _cfg = __webpack_require__(6);
 
-	var _Map = __webpack_require__(89);
+	var _Map = __webpack_require__(90);
 
 	var _Map2 = _interopRequireDefault(_Map);
 
@@ -4018,10 +4211,16 @@
 
 	  (0, _utils.ajax)(path).then(JSON.parse).then(function (data) {
 	    data.path = (0, _utils.getPath)(path);
-	    var map = new _Map2.default(data, function () {
+	    var map = new _Map2.default(this, data, function () {
 	      map.instance = this;
 	      this.maps[map.name] = map;
 	      this.currentMap = this.maps[map.name];
+	      if (this.editor !== null) {
+	        this.editor.map = this.currentMap;
+	      }
+	      if (map.settings.music && _cfg.BGM) {
+	        _Audio2.default.playSong(map.settings.music, _cfg.VOLUME.MUSIC);
+	      }
 	      return resolve();
 	    }.bind(this));
 	  }.bind(this));
@@ -4044,7 +4243,7 @@
 	}
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4053,7 +4252,7 @@
 	  value: true
 	});
 
-	var _getIterator2 = __webpack_require__(94);
+	var _getIterator2 = __webpack_require__(91);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -4085,11 +4284,11 @@
 
 	var _utils = __webpack_require__(7);
 
-	var _MapEntity = __webpack_require__(97);
+	var _MapEntity = __webpack_require__(94);
 
 	var _MapEntity2 = _interopRequireDefault(_MapEntity);
 
-	var _DisplayObject2 = __webpack_require__(99);
+	var _DisplayObject2 = __webpack_require__(96);
 
 	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
 
@@ -4097,15 +4296,15 @@
 
 	var _Texture2 = _interopRequireDefault(_Texture);
 
-	var _Path = __webpack_require__(101);
+	var _Path = __webpack_require__(98);
 
 	var _Path2 = _interopRequireDefault(_Path);
 
-	var _events = __webpack_require__(104);
+	var _events = __webpack_require__(101);
 
 	var events = _interopRequireWildcard(_events);
 
-	var _functions = __webpack_require__(88);
+	var _functions = __webpack_require__(89);
 
 	var functions = _interopRequireWildcard(_functions);
 
@@ -4123,21 +4322,28 @@
 	  (0, _inherits3.default)(Map, _DisplayObject);
 
 	  /**
+	   * @param {Object}   instance
 	   * @param {Object}   obj
 	   * @param {Function} resolve
 	   * @constructor
 	   */
 
-	  function Map(obj, resolve) {
+	  function Map(instance, obj, resolve) {
 	    (0, _classCallCheck3.default)(this, Map);
+
+	    /**
+	     * Instance
+	     * @type {Object}
+	     */
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Map).call(this, null));
+
+	    _this.instance = instance;
 
 	    /**
 	     * Tileset
 	     * @type {String}
 	     */
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Map).call(this, null));
-
 	    _this.tileset = obj.tileset;
 
 	    /**
@@ -4148,9 +4354,15 @@
 
 	    /**
 	     * Map buffers
+	     * @type {Array}
+	     */
+	    _this.buffers = [];
+
+	    /**
+	     * Main map buffer
 	     * @type {Object}
 	     */
-	    _this.buffers = {};
+	    _this.mainBuffer = null;
 
 	    /** Map size */
 	    _this.width = obj.width;
@@ -4210,6 +4422,12 @@
 	     */
 	    _this.collisionLayer = null;
 
+	    /**
+	     * Settings
+	     * @type {Object}
+	     */
+	    _this.settings = {};
+
 	    /** Load texture */
 	    (0, _utils.getSprite)(_this.tileset, -1, -1, function (texture) {
 	      this.texture = _utils.TextureCache[this.tileset];
@@ -4226,27 +4444,11 @@
 	  }
 
 	  /**
-	   * Load map settings
-	   * @param {Object} obj
+	   * Load map file
+	   * @param {Function} resolve
 	   */
 
 	  (0, _createClass3.default)(Map, [{
-	    key: "loadMapSettings",
-	    value: function loadMapSettings(obj) {
-
-	      for (var key in obj) {
-	        if (this[key] !== void 0) {
-	          this[key] = obj[key];
-	        }
-	      };
-	    }
-
-	    /**
-	     * Load map file
-	     * @param {Function} resolve
-	     */
-
-	  }, {
 	    key: "loadMapFile",
 	    value: function loadMapFile(resolve) {
 
@@ -4255,9 +4457,7 @@
 	      (0, _utils.ajax)(path).then(function (data) {
 	        var map = new Function(data)();
 	        this.entities = map.entities;
-	        if (map.settings !== void 0) {
-	          this.loadMapSettings(map.settings);
-	        }
+	        this.settings = map.settings;
 	        this.loadMapObjectTypes();
 	        this.loadMapObjects(function () {
 	          if (resolve instanceof Function) {
@@ -4361,6 +4561,14 @@
 	        this.entities[ii] = this.addEntity(this.inheritProperties(this.entities[ii], this.objects[this.entities[ii].type]));
 	      };
 	    }
+
+	    /**
+	     * Inherit properties
+	     * @param  {Object} entity
+	     * @param  {Object} parent
+	     * @return {Object}
+	     */
+
 	  }, {
 	    key: "inheritProperties",
 	    value: function inheritProperties(entity, parent) {
@@ -4411,8 +4619,27 @@
 	        }
 	        buffer = (0, _utils.createCanvasBuffer)(width, height);
 	        this.renderLayer(buffer, layer.data);
-	        this.buffers[layer.index] = buffer;
+	        this.buffers.push(buffer);
 	        buffer = null;
+	      };
+
+	      this.mainBuffer = this.buffers[0];
+
+	      this.joinLayers();
+
+	      return void 0;
+	    }
+
+	    /**
+	     * Join layer buffers
+	     */
+
+	  }, {
+	    key: "joinLayers",
+	    value: function joinLayers() {
+
+	      for (var ii = 1; ii < this.buffers.length; ++ii) {
+	        this.mainBuffer.drawImage(this.buffers[ii].canvas, 0, 0);
 	      };
 
 	      return void 0;
@@ -4463,25 +4690,21 @@
 	(0, _utils.inherit)(Map, functions);
 
 /***/ },
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(95), __esModule: true };
+	module.exports = { "default": __webpack_require__(92), __esModule: true };
 
 /***/ },
-/* 95 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(34);
 	__webpack_require__(11);
-	module.exports = __webpack_require__(96);
+	module.exports = __webpack_require__(93);
 
 /***/ },
-/* 96 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var anObject = __webpack_require__(44)
@@ -4493,7 +4716,7 @@
 	};
 
 /***/ },
-/* 97 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4524,7 +4747,7 @@
 
 	var _cfg = __webpack_require__(6);
 
-	var _Entity2 = __webpack_require__(98);
+	var _Entity2 = __webpack_require__(95);
 
 	var _Entity3 = _interopRequireDefault(_Entity2);
 
@@ -4591,7 +4814,7 @@
 	exports.default = MapEntity;
 
 /***/ },
-/* 98 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4628,15 +4851,19 @@
 
 	var _utils = __webpack_require__(7);
 
-	var _DisplayObject2 = __webpack_require__(99);
+	var _DisplayObject2 = __webpack_require__(96);
 
 	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
+
+	var _MapEntity = __webpack_require__(94);
+
+	var _MapEntity2 = _interopRequireDefault(_MapEntity);
 
 	var _Texture = __webpack_require__(62);
 
 	var _Texture2 = _interopRequireDefault(_Texture);
 
-	var _Shadow = __webpack_require__(100);
+	var _Shadow = __webpack_require__(97);
 
 	var _Shadow2 = _interopRequireDefault(_Shadow);
 
@@ -4657,7 +4884,7 @@
 	   */
 
 	  function Entity(obj) {
-	    var _ret;
+	    var _ret, _ret2;
 
 	    (0, _classCallCheck3.default)(this, Entity);
 
@@ -4691,6 +4918,18 @@
 	     * @type {Object}
 	     */
 	    _this.socket = null;
+
+	    /**
+	     * Renderable
+	     * @type {Boolean}
+	     */
+	    _this.renderable = false;
+
+	    /**
+	     * Jumpable
+	     * @type {Boolean}
+	     */
+	    _this.jumpable = obj.jumpable === void 0 ? true : obj.jumpable;
 
 	    /**
 	     * Life time
@@ -4856,12 +5095,7 @@
 	     */
 	    _this.x = 0;
 	    _this.y = 0;
-
-	    /**
-	     * Z axis position
-	     * @type {Number}
-	     */
-	    _this.z = .0;
+	    _this.z = 0;
 
 	    /**
 	     * Velocity
@@ -4922,6 +5156,12 @@
 	    _this.glTexture = null;
 
 	    /**
+	     * Action trigger
+	     * @type {Function}
+	     */
+	    _this.onAction = null;
+
+	    /**
 	     * Enter trigger
 	     * @type {Function}
 	     */
@@ -4951,6 +5191,9 @@
 	     */
 	    _this.onJump = null;
 
+	    if (obj.onAction !== void 0) {
+	      _this.onAction = obj.onAction;
+	    }
 	    if (obj.onLoad !== void 0) {
 	      _this.onLoad = obj.onLoad;
 	    }
@@ -4966,6 +5209,12 @@
 	    if (obj.onJump !== void 0) {
 	      _this.onJump = obj.onJump;
 	    }
+
+	    /**
+	     * Entity numeric type
+	     * @type {Number}
+	     */
+	    _this.type = _this.getEntityType();
 
 	    /**
 	     * X
@@ -5000,6 +5249,24 @@
 	    });
 
 	    /**
+	     * Z
+	     * @type {Number}
+	     * @getter
+	     * @setter
+	     * @overwrite
+	     */
+	    Object.defineProperty(_this, "z", {
+	      get: function get() {
+	        return this.position.z;
+	      },
+	      set: function set(value) {
+	        this.position.z = value;
+	      }
+	    });
+
+	    _this.position.z = 0;
+
+	    /**
 	     * Lock
 	     * @type {Number}
 	     * @getter
@@ -5016,6 +5283,7 @@
 	    });
 
 	    if (_cfg.IS_CLIENT === false) return _ret = void 0, (0, _possibleConstructorReturn3.default)(_this, _ret);
+	    if (_this.sprite === null) return _ret2 = void 0, (0, _possibleConstructorReturn3.default)(_this, _ret2);
 
 	    /** Load texture */
 	    (0, _utils.getSprite)(_this.sprite, _this.width, _this.height, function (texture) {
@@ -5036,11 +5304,25 @@
 	  }
 
 	  /**
-	   * Orbit around a entity
-	   * @param  {Object} target
+	   * Get entity type
+	   * @return {Number}
 	   */
 
 	  (0, _createClass3.default)(Entity, [{
+	    key: "getEntityType",
+	    value: function getEntityType() {
+	      if (this instanceof _MapEntity2.default) {
+	        return _cfg.TYPES.MapEntity;
+	      }
+	      return _cfg.TYPES.Player;
+	    }
+
+	    /**
+	     * Orbit around a entity
+	     * @param  {Object} target
+	     */
+
+	  }, {
 	    key: "orbitAround",
 	    value: function orbitAround(target) {
 	      if (target !== null) {
@@ -5068,6 +5350,8 @@
 	  }, {
 	    key: "jump",
 	    value: function jump(resolve) {
+
+	      if (this.jumpable === false) return void 0;
 
 	      this.refreshState();
 
@@ -5295,7 +5579,7 @@
 	exports.default = Entity;
 
 /***/ },
-/* 99 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -5428,7 +5712,7 @@
 	exports.default = DisplayObject;
 
 /***/ },
-/* 100 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -5463,7 +5747,7 @@
 
 	var _Math2 = _interopRequireDefault(_Math);
 
-	var _DisplayObject2 = __webpack_require__(99);
+	var _DisplayObject2 = __webpack_require__(96);
 
 	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
 
@@ -5612,7 +5896,7 @@
 	exports.default = Shadow;
 
 /***/ },
-/* 101 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -5631,7 +5915,7 @@
 
 	var _cfg = __webpack_require__(6);
 
-	var _astar = __webpack_require__(102);
+	var _astar = __webpack_require__(99);
 
 	var _astar2 = _interopRequireDefault(_astar);
 
@@ -5678,7 +5962,7 @@
 	exports.default = Path;
 
 /***/ },
-/* 102 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
@@ -6092,10 +6376,10 @@
 	    Graph: Graph
 	  };
 	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(103)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(100)(module)))
 
 /***/ },
-/* 103 */
+/* 100 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -6111,7 +6395,7 @@
 
 
 /***/ },
-/* 104 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6179,7 +6463,7 @@
 	    event = entities[ii];
 	    if (event.id === id) continue;
 	    if (event.x << 0 === x && event.y << 0 === y) {
-	      event.orbitAround(entity);
+	      this.triggerEvent(event, entity, "onAction");
 	    }
 	  };
 
@@ -6297,7 +6581,7 @@
 	}
 
 /***/ },
-/* 105 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6306,12 +6590,17 @@
 	  value: true
 	});
 	exports.addEntity = addEntity;
+	exports.cloneEntity = cloneEntity;
 	exports.getEntityByProperty = getEntityByProperty;
 	exports.removeEntity = removeEntity;
 	exports.getEntityById = getEntityById;
 	exports.removeEntityById = removeEntityById;
 
-	var _index = __webpack_require__(98);
+	var _MapEntity = __webpack_require__(94);
+
+	var _MapEntity2 = _interopRequireDefault(_MapEntity);
+
+	var _index = __webpack_require__(95);
 
 	var _index2 = _interopRequireDefault(_index);
 
@@ -6334,6 +6623,59 @@
 	  }
 
 	  this.currentMap.entities.push(entity);
+	}
+
+	/**
+	 * Clone a entity
+	 * @param  {Object} entity
+	 * @return {Object}
+	 */
+	function cloneEntity(entity) {
+
+	  var entities = this.instance.entities;
+
+	  var map = this.currentMap;
+
+	  var clone = null;
+	  var tmp = null;
+
+	  if (entity instanceof entities.Player) {
+	    tmp = new entities.Player({
+	      name: "undefined",
+	      map: entity.map,
+	      x: entity.x, y: entity.y,
+	      zIndex: entity.zIndex,
+	      sprite: entity.sprite,
+	      width: entity.width, height: entity.height,
+	      isLocalPlayer: false,
+	      collidable: entity.collidable,
+	      shadow: entity.hasShadow
+	    });
+	    if (entity.instance) {
+	      tmp.instance = entity.instance;
+	    }
+	    if (tmp.hasShadow) {
+	      tmp.shadow.x = entity.shadow.x;
+	      tmp.shadow.y = entity.shadow.y;
+	    }
+	    tmp.fadeIn(.75);
+	  } else if (entity instanceof _MapEntity2.default) {
+	    tmp = map.objectTemplates[entity.name.toLowerCase()];
+	  } else {
+	    return void 0;
+	  }
+
+	  tmp.x = entity.x;
+	  tmp.y = entity.y;
+	  tmp.z = entity.z;
+
+	  if (entity instanceof _MapEntity2.default) {
+	    clone = map.addEntity(tmp);
+	  } else {
+	    clone = tmp;
+	  }
+
+	  return clone;
 	}
 
 	/**
@@ -6410,7 +6752,957 @@
 	}
 
 /***/ },
+/* 103 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _getIterator2 = __webpack_require__(91);
+
+	var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _cfg = __webpack_require__(6);
+
+	var _utils = __webpack_require__(7);
+
+	var _render = __webpack_require__(104);
+
+	var render = _interopRequireWildcard(_render);
+
+	var _Math = __webpack_require__(85);
+
+	var _Math2 = _interopRequireDefault(_Math);
+
+	var _Commander = __webpack_require__(105);
+
+	var _Commander2 = _interopRequireDefault(_Commander);
+
+	var _commands = __webpack_require__(106);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Editor
+	 * @class Editor
+	 * @export
+	 */
+
+	var Editor = function () {
+
+	    /**
+	     * @constructor
+	     * @param {Object} instance
+	     */
+
+	    function Editor(instance) {
+	        (0, _classCallCheck3.default)(this, Editor);
+
+	        /**
+	         * Instance ref
+	         * @type {Object}
+	         */
+	        this.instance = instance;
+
+	        /**
+	         * Context ref
+	         * @type {Object}
+	         */
+	        this.context = instance.context;
+
+	        /**
+	         * Instance reference
+	         * @type {Object}
+	         */
+	        this.commander = new _Commander2.default();
+
+	        /**
+	         * Map reference
+	         * @type {Object}
+	         */
+	        this.map = null;
+
+	        /**
+	         * Camera reference
+	         * @type {Object}
+	         */
+	        this.camera = null;
+
+	        /**
+	         * Selected entity
+	         * @type {Object}
+	         */
+	        this.entitySelection = null;
+
+	        /**
+	         * Selection
+	         * @type {Object}
+	         */
+	        this.selection = {
+	            x1: 0,
+	            y1: 0,
+	            x2: 0,
+	            y2: 0
+	        };
+
+	        this.selectedEntities = [];
+
+	        /**
+	         * Copied entity
+	         * @type {Object}
+	         */
+	        this.entityCopy = null;
+
+	        /**
+	         * Pasted entity
+	         * @type {Object}
+	         */
+	        this.pastedEntity = null;
+
+	        /**
+	         * Editing states
+	         * @type {Object}
+	         */
+	        this.STATES = {
+	            DRAGGING: false,
+	            SELECTING: false
+	        };
+
+	        /**
+	         * Drag helper
+	         * @type {Object}
+	         */
+	        this.drag = new _Math2.default.Point(0, 0);
+
+	        /**
+	         * Dragging
+	         * @type {Boolean}
+	         * @getter
+	         * @setter
+	         */
+	        Object.defineProperty(this, "dragging", {
+	            get: function get() {
+	                return this.STATES.DRAGGING;
+	            },
+	            set: function set(value) {
+	                this.STATES.DRAGGING = value;
+	            }
+	        });
+
+	        this.inheritInstance(instance);
+
+	        this.init();
+	    }
+
+	    /**
+	     * Inherit instance
+	     * @param {Object} instance
+	     */
+
+	    (0, _createClass3.default)(Editor, [{
+	        key: "inheritInstance",
+	        value: function inheritInstance(instance) {
+
+	            this.map = instance.currentMap;
+
+	            this.camera = instance.camera;
+	        }
+
+	        /**
+	         * Initialise
+	         */
+
+	    }, {
+	        key: "init",
+	        value: function init() {
+
+	            /** Register all commands */
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = (0, _getIterator3.default)(_commands.commands), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var cmd = _step.value;
+
+	                    this.commander.newCommand(cmd);
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+
+	            ;
+	        }
+
+	        /**
+	         * Do a selection
+	         * @param {Number} x
+	         * @param {Number} y
+	         */
+
+	    }, {
+	        key: "selectFrom",
+	        value: function selectFrom(x, y) {
+
+	            var offset = this.camera.getGameMouseOffset(x, y);
+
+	            this.selection.x1 = offset.x;
+	            this.selection.y1 = offset.y;
+
+	            this.selection.x2 = 0;
+	            this.selection.y2 = 0;
+	        }
+
+	        /**
+	         * Do a selection
+	         * @param {Number} x
+	         * @param {Number} y
+	         */
+
+	    }, {
+	        key: "selectTo",
+	        value: function selectTo(x, y) {
+
+	            var offset = this.camera.getGameMouseOffset(x, y);
+
+	            this.selection.x2 = offset.x;
+	            this.selection.y2 = offset.y;
+
+	            this.getSelectionRange(this.selection.x1, this.selection.y1, this.selection.x2, this.selection.y2);
+	        }
+
+	        /**
+	         * Get selection out of a range
+	         * @param {Number} x1
+	         * @param {Number} y1
+	         * @param {Number} x2
+	         * @param {Number} y2
+	         */
+
+	    }, {
+	        key: "getSelectionRange",
+	        value: function getSelectionRange(x1, y1, x2, y2) {
+
+	            var entity = null;
+
+	            var entities = [];
+
+	            var ii = 0;
+	            var length = 0;
+
+	            var xx1 = x1 > x2 ? x2 : x1 - _cfg.DIMENSION;
+	            var yy1 = y1 > y2 ? y2 : y1;
+
+	            var width = Math.abs(x2 - x1);
+	            var height = Math.abs(y2 - y1);
+
+	            var eWidth = 0;
+	            var eHeight = 0;
+
+	            length = this.map.entities.length;
+
+	            for (; ii < length; ++ii) {
+	                entity = this.map.entities[ii];
+	                eWidth = entity.width * entity.scale + (x2 >= x1 ? -_cfg.DIMENSION : 0);
+	                eHeight = entity.height * entity.scale;
+	                if (_Math2.default.linearIntersect(xx1, yy1, width + eWidth - _cfg.DIMENSION, height + eHeight - _cfg.DIMENSION, entity.x + entity.xMargin + eWidth - _cfg.DIMENSION, entity.y + entity.yMargin + entity.z + _cfg.Y_DEPTH_HACK + eHeight - _cfg.DIMENSION, 1)) {
+	                    entities.push(entity.id);
+	                }
+	            };
+
+	            this.selectedEntities = entities;
+	        }
+
+	        /**
+	         * Get a entity by mouse offset
+	         * @param  {Number} x
+	         * @param  {Number} y
+	         * @param  {Object}
+	         * @return {Object}
+	         */
+
+	    }, {
+	        key: "getEntityByMouse",
+	        value: function getEntityByMouse(x, y) {
+
+	            var object = null;
+
+	            var entity = null;
+
+	            var offset = this.camera.getGameMouseOffset(x, y);
+
+	            var xx = offset.x << 0;
+	            var yy = offset.y << 0;
+
+	            var ii = 0;
+	            var length = this.map.entities.length;;
+
+	            var entities = [];
+
+	            for (; ii < length; ++ii) {
+	                entity = this.map.entities[ii];
+	                if (_Math2.default.linearIntersect(_Math2.default.roundTo(entity.position.x, _cfg.DIMENSION), _Math2.default.roundTo(entity.position.y, _cfg.DIMENSION) << 0, entity.size.x * entity.scale + entity.xMargin - _cfg.DIMENSION, entity.size.y * entity.scale + entity.yMargin - _cfg.DIMENSION, xx, yy, 1) === true) {
+	                    entities.push(entity);
+	                }
+	            };
+
+	            if (entities.length <= 0) return null;
+
+	            return entities[_Math2.default.get2DClosest(entities, xx, yy)];
+	        }
+
+	        /**
+	         * Drag a entity
+	         * @param {Number} x
+	         * @param {Number} y
+	         */
+
+	    }, {
+	        key: "dragEntity",
+	        value: function dragEntity(x, y) {
+
+	            var entity = null;
+	            var offset = null;
+
+	            var xx = 0;
+	            var yy = 0;
+
+	            if ((entity = this.entitySelection) === null) return void 0;
+
+	            /** Don't allow dragging of focused entity */
+	            if (_cfg.FREE_CAMERA === false && this.camera.objectFocus !== null && entity.id === this.camera.objectFocus.id) {
+	                return void 0;
+	            }
+
+	            offset = this.camera.getGameMouseOffset(x, y);
+
+	            /** Only fire drag if we got a new offset to drag to */
+	            if (offset.x === this.drag.x && offset.y === this.drag.y) return void 0;
+
+	            xx = offset.x - this.drag.x;
+	            yy = offset.y - this.drag.y;
+
+	            this.commander.push("drag", entity, [xx, yy]);
+
+	            this.drag.x = offset.x;
+	            this.drag.y = offset.y;
+	        }
+
+	        /**
+	         * Select a entity
+	         * @param {Number} x
+	         * @param {Number} y
+	         */
+
+	    }, {
+	        key: "selectEntity",
+	        value: function selectEntity(x, y) {
+
+	            var entity = this.getEntityByMouse(x, y);
+
+	            var offset = this.camera.getGameMouseOffset(x, y);
+
+	            if (entity !== null && entity.texture !== null) {
+	                if ((0, _utils.tileContainsImageData)(entity.texture.sprites[entity.sFrame], (offset.x - entity.x) / entity.scale << 0, (offset.y - entity.y) / entity.scale << 0, _cfg.DIMENSION, _cfg.DIMENSION) === false) {
+	                    entity = null;
+	                }
+	            }
+
+	            this.commander.push("select", this, [entity, this.entitySelection]);
+
+	            this.drag.x = offset.x;
+	            this.drag.y = offset.y;
+	        }
+
+	        /**
+	         * Edit a entity
+	         * @param {Number} x
+	         * @param {Number} y
+	         */
+
+	    }, {
+	        key: "editEntity",
+	        value: function editEntity(x, y) {
+
+	            var entity = this.getEntityByMouse(x, y);
+
+	            if (entity === null) return void 0;
+
+	            console.log(entity);
+	        }
+
+	        /**
+	         * Delete selected entity
+	         */
+
+	    }, {
+	        key: "deleteEntity",
+	        value: function deleteEntity() {
+
+	            if (this.entitySelection !== null) {
+	                this.commander.push("delete", this, [this.entitySelection]);
+	            }
+	        }
+
+	        /**
+	         * Cut out selected entity
+	         */
+
+	    }, {
+	        key: "cutEntity",
+	        value: function cutEntity() {
+
+	            if (this.entitySelection !== null) {
+	                this.commander.push("cut", this, [this.entitySelection]);
+	            }
+	        }
+
+	        /**
+	         * Copy selected entity
+	         */
+
+	    }, {
+	        key: "copyEntity",
+	        value: function copyEntity() {
+
+	            if (this.entitySelection !== null) {
+	                this.commander.push("copy", this, [this.entitySelection, this.entityCopy]);
+	            }
+	        }
+
+	        /**
+	         * Paste selected entity
+	         */
+
+	    }, {
+	        key: "pasteEntity",
+	        value: function pasteEntity() {
+
+	            this.commander.push("paste", this, [this.entitySelection, this.pastedEntity]);
+	        }
+	    }]);
+	    return Editor;
+	}();
+
+	exports.default = Editor;
+
+	(0, _utils.inherit)(Editor, render);
+
+/***/ },
+/* 104 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.renderEditorMode = renderEditorMode;
+	exports.renderSelectedEntities = renderSelectedEntities;
+	exports.renderSelection = renderSelection;
+	exports.renderEntitySelection = renderEntitySelection;
+	exports.renderEntityCollisionBox = renderEntityCollisionBox;
+	exports.renderSelectionText = renderSelectionText;
+
+	var _cfg = __webpack_require__(6);
+
+	var _Math = __webpack_require__(85);
+
+	var _Math2 = _interopRequireDefault(_Math);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Edit mode
+	 */
+	function renderEditorMode() {
+
+	  this.renderSelection();
+
+	  if (this.instance.editor.STATES.SELECTING === true) {
+	    //this.renderSelectedEntities();
+	  }
+
+	  this.renderEntitySelection();
+	}
+
+	/**
+	 * Render selected entities
+	 */
+	function renderSelectedEntities() {
+
+	  var ii = 0;
+	  var length = 0;
+
+	  var entity = null;
+	  var entities = this.instance.editor.selectedEntities;
+
+	  length = entities.length;
+
+	  var resolution = 0;
+
+	  var x = 0;
+	  var y = 0;
+
+	  var width = 0;
+	  var height = 0;
+
+	  for (; ii < length; ++ii) {
+
+	    entity = entities[ii];
+
+	    resolution = this.camera.resolution;
+
+	    x = this.camera.x + (entity.position.x + entity.xMargin) * resolution << 0;
+	    y = this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution << 0;
+
+	    width = entity.size.x * resolution << 0;
+	    height = entity.size.y * resolution << 0;
+
+	    this.context.beginPath();
+
+	    this.context.strokeStyle = "red";
+	    this.context.lineWidth = resolution / 2 << 0;
+	    this.context.strokeRect(x, y, width, height);
+	    this.context.stroke();
+
+	    this.context.closePath();
+	  };
+	}
+
+	/**
+	 * Render selection
+	 */
+	function renderSelection() {
+
+	  if (this.instance.editor.STATES.SELECTING === false) return void 0;
+
+	  var selection = this.instance.editor.selection;
+
+	  var resolution = this.camera.resolution;
+
+	  var x = this.camera.x + selection.x1 * resolution << 0;
+	  var y = this.camera.y + selection.y1 * resolution << 0;
+
+	  var width = (selection.x2 - selection.x1) * resolution << 0;
+	  var height = (selection.y2 - selection.y1) * resolution << 0;
+
+	  this.context.beginPath();
+
+	  this.context.strokeStyle = "red";
+	  this.context.lineWidth = resolution / 2 << 0;
+	  this.context.strokeRect(x, y, width, height);
+	  this.context.stroke();
+
+	  this.context.closePath();
+
+	  return void 0;
+	}
+
+	/**
+	 * Render entity selection
+	 */
+	function renderEntitySelection() {
+
+	  var entity = this.instance.editor.entitySelection;
+
+	  if (entity === null) return void 0;
+
+	  if (this.camera.isInView(entity.position.x, entity.position.y, entity.size.x * entity.scale, entity.size.y * entity.scale) === false) return void 0;
+	  if (entity.opacity === .0) return void 0;
+	  if (entity.texture === null) return void 0;
+
+	  var resolution = this.camera.resolution;
+
+	  var x = this.camera.x + (entity.position.x + entity.xMargin) * resolution << 0;
+	  var y = this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution << 0;
+
+	  var width = entity.size.x * entity.scale * resolution << 0;
+	  var height = entity.size.y * entity.scale * resolution << 0;
+
+	  this.context.beginPath();
+
+	  this.context.strokeStyle = "red";
+	  this.context.lineWidth = resolution / 2 << 0;
+	  this.context.strokeRect(x, y, width, height);
+	  this.context.stroke();
+
+	  this.context.closePath();
+
+	  this.renderSelectionText(entity, x, y);
+
+	  this.context.globalAlpha = .25;
+
+	  if (entity.collidable === true) {
+	    if (entity.collisionBox.length > 0) {
+	      this.renderEntityCollisionBox(entity, x, y);
+	    } else {
+	      this.context.fillStyle = "red";
+	      this.context.fillRect(x, y, width, height);
+	      this.context.fill();
+	    }
+	  }
+
+	  this.context.globalAlpha = 1.0;
+
+	  return void 0;
+	}
+
+	/**
+	 * Render entity collision box
+	 * @param {Object} entity
+	 * @param {Number} x
+	 * @param {Number} y
+	 */
+	function renderEntityCollisionBox(entity, x, y) {
+
+	  var collision = entity.collisionBox;
+
+	  var resolution = this.camera.resolution;
+
+	  var tile = 0;
+
+	  var ii = 0;
+
+	  var xx = 0;
+	  var yy = 0;
+
+	  var dim = _cfg.DIMENSION * entity.scale * resolution;
+
+	  var width = entity.width / _cfg.DIMENSION;
+	  var height = entity.height / _cfg.DIMENSION;
+
+	  var length = width * height;
+
+	  for (; ii < length; ++ii) {
+	    tile = collision[yy + xx];
+	    if (tile === 1) {
+	      this.context.fillStyle = "red";
+	      this.context.fillRect(x + xx * dim, y + yy / width * dim, dim, dim);
+	      this.context.fill();
+	    }
+	    ++xx;
+	    if (xx >= width) {
+	      yy += width;
+	      xx = 0;
+	    }
+	  };
+
+	  return void 0;
+	}
+
+	/**
+	 * Render entity selection text
+	 * @param {Object} entity
+	 * @param {Number} x
+	 * @param {Number} y
+	 */
+	function renderSelectionText(entity, x, y) {
+
+	  var resolution = this.camera.resolution;
+
+	  var color = "red";
+
+	  var ln = .5 * resolution;
+	  var size = 2.5 * resolution;
+
+	  var xx = x;
+	  var yy = y - ln * 1.25 - size;
+
+	  var decimals = 1;
+
+	  var txtX = "X: " + entity.position.x.toFixed(decimals);
+	  var txtY = "Y: " + entity.position.y.toFixed(decimals);
+
+	  this.instance.renderer.drawPixelText(txtX, xx, yy, size, ln, color);
+
+	  this.instance.renderer.drawPixelText(txtY, xx, yy += size, size, ln, color);
+
+	  return void 0;
+	}
+
+/***/ },
+/* 105 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Commander
+	 * @class Commander
+	 * @export
+	 */
+
+	var Commander = function () {
+
+	  /**
+	   * @constructor
+	   */
+
+	  function Commander() {
+	    (0, _classCallCheck3.default)(this, Commander);
+
+	    /**
+	     * Stack position
+	     * @type {Number}
+	     */
+	    this.position = -1;
+
+	    /**
+	     * Command templates
+	     * @type {Object}
+	     */
+	    this.commands = {};
+
+	    /**
+	     * Command stack
+	     * @type {Array}
+	     */
+	    this.stack = [];
+	  }
+
+	  /**
+	   * Register a new command
+	   * @param {Object} cmd
+	   */
+
+	  (0, _createClass3.default)(Commander, [{
+	    key: "newCommand",
+	    value: function newCommand(cmd) {
+	      this.commands[cmd.action] = cmd;
+	      cmd = null;
+	    }
+
+	    /**
+	     * Push a command
+	     * @param {String} action
+	     * @param {Object} scope
+	     * @param {Array} data
+	     */
+
+	  }, {
+	    key: "push",
+	    value: function push(action, scope, data) {
+
+	      var cmd = {
+	        action: action,
+	        data: data,
+	        scope: scope
+	      };
+
+	      this.stack.splice(this.position + 1, this.stack.length);
+
+	      this.stack.push(cmd);
+
+	      this.redo();
+	      this.undo();
+	      this.redo();
+	      this.undo();
+	      this.redo();
+	    }
+
+	    /**
+	     * Fire command
+	     * @param {Object} cmd
+	     * @param {String} action
+	     */
+
+	  }, {
+	    key: "fire",
+	    value: function fire(cmd, action) {
+	      var template = this.commands[cmd.action][action];
+	      template.bind(cmd.scope).apply(template, cmd.data);
+	    }
+
+	    /**
+	     * Get cmd from current stack index
+	     * @return {Object}
+	     */
+
+	  }, {
+	    key: "getCurrentCmd",
+	    value: function getCurrentCmd() {
+	      return this.stack[this.position];
+	    }
+
+	    /**
+	     * Undo
+	     */
+
+	  }, {
+	    key: "undo",
+	    value: function undo() {
+
+	      if (this.position >= 0) {
+	        this.fire(this.getCurrentCmd(), "onUndo");
+	        this.position--;
+	      }
+	    }
+
+	    /**
+	     * Redo
+	     */
+
+	  }, {
+	    key: "redo",
+	    value: function redo() {
+
+	      if (this.position < this.stack.length - 1) {
+	        this.position++;
+	        this.fire(this.getCurrentCmd(), "onRedo");
+	      }
+	    }
+	  }]);
+	  return Commander;
+	}();
+
+	exports.default = Commander;
+
+/***/ },
 /* 106 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.commands = undefined;
+
+	var _cfg = __webpack_require__(6);
+
+	var commands = exports.commands = [
+	/** Select command */
+	{
+	  action: "select",
+	  onUndo: function onUndo(entity, selection) {
+	    this.entitySelection = null;
+	    this.entitySelection = selection;
+	  },
+	  onRedo: function onRedo(entity, selection) {
+	    this.entitySelection = null;
+	    this.entitySelection = entity;
+	  }
+	},
+	/** Drag command */
+	{
+	  action: "drag",
+	  onUndo: function onUndo(x, y) {
+	    this.x -= x;
+	    this.y -= y;
+	    this.y <<= 0;
+	    this.y += _cfg.Y_DEPTH_HACK;
+	    this.last.x = this.x;
+	    this.last.y = this.y;
+	  },
+	  onRedo: function onRedo(x, y) {
+	    this.x += x;
+	    this.y += y;
+	    this.y <<= 0;
+	    this.y += _cfg.Y_DEPTH_HACK;
+	    this.last.x = this.x;
+	    this.last.y = this.y;
+	  }
+	},
+	/** Delete command */
+	{
+	  action: "delete",
+	  onUndo: function onUndo(entity) {
+	    this.instance.addEntity(entity);
+	    this.entitySelection = entity;
+	  },
+	  onRedo: function onRedo(entity) {
+	    this.instance.removeEntity(entity);
+	    this.entitySelection = null;
+	  }
+	},
+	/** Cut command */
+	{
+	  action: "cut",
+	  onUndo: function onUndo(entity) {
+	    this.instance.editor.pasteEntity();
+	  },
+	  onRedo: function onRedo(entity) {
+	    this.instance.editor.copyEntity();
+	    this.instance.editor.deleteEntity();
+	  }
+	},
+	/** Copy command */
+	{
+	  action: "copy",
+	  onUndo: function onUndo(entity, copy) {
+	    this.entityCopy = copy;
+	    this.entitySelection = copy;
+	  },
+	  onRedo: function onRedo(entity, copy) {
+	    this.entityCopy = entity;
+	    this.entitySelection = entity;
+	  }
+	},
+	/** Paste command */
+	{
+	  action: "paste",
+	  onUndo: function onUndo(entity, paste) {
+	    this.instance.removeEntity(paste);
+	  },
+	  onRedo: function onRedo(entity, paste) {
+
+	    var map = this.map;
+
+	    if (paste !== null && paste !== void 0) {
+	      map.entities.push(paste);
+	      return void 0;
+	    }
+
+	    var clone = this.instance.cloneEntity(entity);
+
+	    /** Fuck that */
+	    this.instance.editor.commander.stack[this.instance.editor.commander.position].data[1] = clone;
+
+	    map.entities.push(clone);
+	  }
+	}];
+
+/***/ },
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6427,23 +7719,766 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _tokens = __webpack_require__(107);
+	var _cfg = __webpack_require__(6);
+
+	var _utils = __webpack_require__(7);
+
+	var _Math = __webpack_require__(85);
+
+	var _Math2 = _interopRequireDefault(_Math);
+
+	var _MapEntity = __webpack_require__(94);
+
+	var _MapEntity2 = _interopRequireDefault(_MapEntity);
+
+	var _Camera = __webpack_require__(108);
+
+	var _Camera2 = _interopRequireDefault(_Camera);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * MiniMap
+	 * @class MiniMap
+	 * @export
+	 */
+
+	var MiniMap = function () {
+
+	    /**
+	     * @constructor
+	     * @param {Object} instance
+	     */
+
+	    function MiniMap(instance) {
+	        (0, _classCallCheck3.default)(this, MiniMap);
+
+	        /**
+	         * Game instance ref
+	         * @type {Object}
+	         */
+	        this.instance = instance;
+
+	        /**
+	         * Camera ref
+	         * @type {Object}
+	         */
+	        this.camera = new _Camera2.default(this);
+
+	        /**
+	         * Camera size ref
+	         * @type {Object}
+	         */
+	        this.camera.size = this.instance.camera.size;
+
+	        /**
+	         * Camera pos ref
+	         * @type {Object}
+	         */
+	        this.camera.position = this.instance.camera.position;
+
+	        /**
+	         * Width
+	         * @type {Number}
+	         */
+	        this.width = 300;
+
+	        /**
+	         * Height
+	         * @type {Number}
+	         */
+	        this.height = 200;
+
+	        /**
+	         * Minimap buffer
+	         * @type {Object}
+	         */
+	        this.buffer = null;
+
+	        /**
+	         * Minimap background buffer
+	         * @type {Object}
+	         */
+	        this.bgBuffer = null;
+
+	        /**
+	         * Minimap front buffer
+	         * @type {Object}
+	         */
+	        this.frBuffer = null;
+
+	        /**
+	         * Redraw state
+	         * @type {Boolean}
+	         */
+	        this.redraw = true;
+
+	        this.entities = {};
+
+	        this.resolution = 1.0;
+
+	        this.position = new _Math2.default.Point();
+
+	        this.init();
+	    }
+
+	    /**
+	     * Initialise
+	     */
+
+	    (0, _createClass3.default)(MiniMap, [{
+	        key: "init",
+	        value: function init() {
+
+	            this.buffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
+
+	            this.bgBuffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
+
+	            this.frBuffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
+
+	            this.createEntityBuffer("Player", "#DBB78A", "#905A23");
+	            this.createEntityBuffer("Entity", "#697a21", "#c9db8a");
+	            this.createEntityBuffer("LocalPlayer", "#119617", "#abf4c0");
+	            this.createEntityBuffer("Tree", "#697a21", "darkgreen");
+
+	            this.resize();
+
+	            this.draw();
+	        }
+
+	        /**
+	         * Resize
+	         */
+
+	    }, {
+	        key: "resize",
+	        value: function resize() {
+
+	            this.position.x = this.camera.width - this.width;
+	            this.position.y = this.camera.height - this.height;
+	        }
+
+	        /**
+	         * Mouse inside this map offset
+	         * @param  {Number} x
+	         * @param  {Number} y
+	         * @return {Boolean}
+	         */
+
+	    }, {
+	        key: "inside",
+	        value: function inside(x, y) {
+
+	            return _Math2.default.cubicCollision(x, y, 1, 1, this.position.x, this.position.y, this.width, this.height);
+	        }
+
+	        /**
+	         * Create a entity buffer
+	         * @param {String} type
+	         * @param {String} fillColor
+	         * @param {String} strokeColor
+	         */
+
+	    }, {
+	        key: "createEntityBuffer",
+	        value: function createEntityBuffer(type, fillColor, strokeColor) {
+
+	            var radius = 6;
+
+	            var width = 16;
+	            var height = 16;
+
+	            var link = null;
+
+	            this.entities[type] = (0, _utils.createCanvasBuffer)(width, height);
+
+	            link = this.entities[type];
+
+	            link.beginPath();
+	            link.arc(width / 2, height / 2, radius, 0, 2 * Math.PI, false);
+	            link.fillStyle = fillColor;
+	            link.fill();
+	            link.lineWidth = 1.5;
+	            link.strokeStyle = strokeColor;
+	            link.stroke();
+	        }
+
+	        /**
+	         * Draw mini map
+	         * @param {Number} mode
+	         * @param {Array}  entities
+	         */
+
+	    }, {
+	        key: "draw",
+	        value: function draw(mode, entities) {
+
+	            this.buffer.clear();
+	            this.bgBuffer.clear();
+	            this.frBuffer.clear();
+
+	            /** Redraw everything */
+	            if (mode === 0) {
+	                this.drawBackground();
+	                this.drawFront(entities);
+	                return void 0;
+	            }
+
+	            /** Redraw front only */
+	            if (mode === 1) {
+	                this.drawFront(entities);
+	                return void 0;
+	            }
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw a background
+	         */
+
+	    }, {
+	        key: "drawBackground",
+	        value: function drawBackground() {
+
+	            this.bgBuffer.strokeStyle = "red";
+	            this.bgBuffer.strokeRect(0, 0, this.width, this.height);
+	            this.bgBuffer.stroke();
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw the front layer
+	         * @param {Array} entities
+	         */
+
+	    }, {
+	        key: "drawFront",
+	        value: function drawFront(entities) {
+
+	            var entity = null;
+
+	            var ii = 0;
+	            var length = 0;
+
+	            length = entities.length;
+
+	            var resolution = this.instance.camera.resolution;
+	            var scaling = .0;
+
+	            var camX = this.width / 2 - (this.camera.size.x / 2 - this.camera.position.x) / resolution;
+	            var camY = this.height / 2 - (this.camera.size.y / 2 - this.camera.position.y) / resolution;
+
+	            var color = null;
+
+	            var x = 0;
+	            var y = 0;
+
+	            var width = 0;
+	            var height = 0;
+
+	            for (; ii < length; ++ii) {
+	                entity = entities[ii];
+	                scaling = entity.scale + -entity.z / this.resolution / ((entity.width + entity.height) / 2);
+	                if (entity.texture === null) continue;
+	                x = (camX + entity.x + entity.xMargin + entity.z / (entity.width / 2) / 2) * this.resolution << 0;
+	                y = (camY + entity.y + entity.yMargin + entity.z) * this.resolution << 0;
+	                width = entity.size.x * scaling << 0;
+	                height = entity.size.y * scaling << 0;
+	                this.drawEntity(entity, x, y, width, height);
+	            };
+
+	            this.drawCameraViewport(camX, camY);
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw a entity
+	         * @param  {Object} entity
+	         * @param  {Number} x
+	         * @param  {Number} y
+	         * @param  {Number} width
+	         * @param  {Number} height
+	         */
+
+	    }, {
+	        key: "drawEntity",
+	        value: function drawEntity(entity, x, y, width, height) {
+
+	            var tmpl = null;
+
+	            var Player = this.instance.instance.entities.Player;
+
+	            if (this.instance.localEntity !== null && entity.id === this.instance.localEntity.id) {
+	                tmpl = this.entities["LocalPlayer"];
+	            } else if (entity instanceof Player) {
+	                tmpl = this.entities["Player"];
+	            } else if (entity.name === "Tree") {
+	                tmpl = this.entities["Tree"];
+	            } else {
+	                tmpl = this.entities["Entity"];
+	            }
+
+	            this.bgBuffer.drawImage(tmpl.canvas, x, y);
+
+	            return void 0;
+	        }
+
+	        /**
+	         * Draw camera viewport
+	         */
+
+	    }, {
+	        key: "drawCameraViewport",
+	        value: function drawCameraViewport(x, y) {
+
+	            var resolution = this.instance.camera.resolution;
+
+	            this.bgBuffer.lineWidth = 1;
+	            this.bgBuffer.strokeStyle = "red";
+	            this.bgBuffer.strokeRect(x - this.camera.position.x / resolution, y - this.camera.position.y / resolution, this.camera.size.x / resolution, this.camera.size.y / resolution);
+	            this.bgBuffer.stroke();
+
+	            return void 0;
+	        }
+	    }]);
+	    return MiniMap;
+	}();
+
+	exports.default = MiniMap;
+
+/***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(65);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(70);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(79);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _cfg = __webpack_require__(6);
+
+	var _Math = __webpack_require__(85);
+
+	var _Math2 = _interopRequireDefault(_Math);
+
+	var _DisplayObject2 = __webpack_require__(96);
+
+	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Camera
+	 * @class Camera
+	 * @export
+	 */
+
+	var Camera = function (_DisplayObject) {
+	  (0, _inherits3.default)(Camera, _DisplayObject);
+
+	  /**
+	   * @constructor
+	   * @param {Object} instance
+	   */
+
+	  function Camera(instance) {
+	    (0, _classCallCheck3.default)(this, Camera);
+
+	    /**
+	     * Instance ref
+	     * @type {Object}
+	     */
+
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Camera).call(this, null));
+
+	    _this.instance = instance;
+
+	    /**
+	     * Camera size
+	     * @type {Number}
+	     */
+	    _this.width = instance.width;
+	    _this.height = instance.height;
+
+	    /**
+	     * Drag offset
+	     * @type {Object}
+	     */
+	    _this.drag = {
+	      px: 0,
+	      py: 0,
+	      pz: 0,
+	      sx: 0,
+	      sy: 0
+	    };
+
+	    /**
+	     * Dragging state
+	     * @type {Boolean}
+	     */
+	    _this.dragging = false;
+
+	    /** Camera size */
+	    _this.size.set(_this.width || 0, _this.height || 0);
+
+	    /**
+	     * Camera scaling
+	     * @type {Number}
+	     */
+	    _this.scaling = .0;
+
+	    /**
+	     * Camera calculated resolution
+	     * @type {Number}
+	     */
+	    _this.resolution = .0;
+
+	    /**
+	     * Base offset
+	     * @type {Object}
+	     */
+	    _this.base = new _Math2.default.Point(.0, .0);
+
+	    /**
+	     * Target offset
+	     * @type {Object}
+	     */
+	    _this.target = new _Math2.default.Point(.0, .0);
+
+	    /**
+	     * Object to focus
+	     * @type {Object}
+	     */
+	    _this.objectFocus = null;
+
+	    /**
+	     * Scale
+	     * @type {Number}
+	     * @getter
+	     * @setter
+	     */
+	    Object.defineProperty(_this, "scale", {
+	      get: function get() {
+	        return this.scaling;
+	      },
+	      set: function set(value) {
+	        this.scaling = value;
+	        this.refreshResolution();
+	      }
+	    });
+
+	    return _this;
+	  }
+
+	  /**
+	   * Get game relative mouse offset
+	   * @param  {Number} x clientX
+	   * @param  {Number} y clientY
+	   * @return {Object}
+	   */
+
+	  (0, _createClass3.default)(Camera, [{
+	    key: "getGameMouseOffset",
+	    value: function getGameMouseOffset(x, y) {
+
+	      var xx = (x - this.x) / this.resolution;
+	      var yy = (y - this.y) / this.resolution;
+
+	      return {
+	        x: Math.ceil(xx / _cfg.DIMENSION) * _cfg.DIMENSION - _cfg.DIMENSION,
+	        y: Math.ceil(yy / _cfg.DIMENSION) * _cfg.DIMENSION - _cfg.DIMENSION
+	      };
+	    }
+
+	    /**
+	     * Move
+	     * @param {Number} x
+	     * @param {Number} y
+	     */
+
+	  }, {
+	    key: "move",
+	    value: function move(x, y) {
+
+	      this.x += x - this.drag.px;
+	      this.y += y - this.drag.py;
+
+	      this.drag.px = x;
+	      this.drag.py = y;
+	    }
+
+	    /**
+	     * Click
+	     * @param {Number} x
+	     * @param {Number} y
+	     */
+
+	  }, {
+	    key: "click",
+	    value: function click(x, y) {
+
+	      this.drag.sx = (x - this.x) / this.resolution;
+	      this.drag.sy = (y - this.y) / this.resolution;
+
+	      this.drag.px = x;
+	      this.drag.py = y;
+	    }
+
+	    /**
+	     * Refresh the resolution
+	     */
+
+	  }, {
+	    key: "refreshResolution",
+	    value: function refreshResolution() {
+	      this.resolution = _Math2.default.roundTo(parseFloat(_Math2.default.zoomScale(this.scale)), _cfg.PIXEL_SCALE);
+	    }
+
+	    /**
+	     * Zoom
+	     * @param {Object} e
+	     */
+
+	  }, {
+	    key: "zoom",
+	    value: function zoom(e) {
+
+	      var delta = e.deltaY === -0 ? e.deltaX : e.deltaY;
+
+	      var amount = delta > 0 ? -100 : 100;
+
+	      amount = amount / 2 / (_Math2.default.hypot(this.size.x, this.size.y) / Math.PI) * _Math2.default.zoomScale(this.scale);
+
+	      this.drag.pz = this.resolution;
+
+	      this.scale += amount / 2;
+
+	      if (this.scale < _cfg.MIN_SCALE) this.scale = _cfg.MIN_SCALE;
+	      if (this.scale > _cfg.MAX_SCALE) this.scale = _cfg.MAX_SCALE;
+
+	      var focus = this.objectFocus;
+
+	      if (_cfg.FREE_CAMERA === true) {
+	        this.position.x -= this.drag.sx * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
+	        this.position.y -= this.drag.sy * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
+	      } else {
+	        if (focus !== null) {
+	          this.position.x -= (focus.position.x + focus.size.x * focus.scale / 2 + focus.xMargin) * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
+	          this.position.y -= (focus.position.y + (focus.size.y * focus.scale / 2 + focus.yMargin + focus.z)) * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
+	        }
+	      }
+	    }
+
+	    /**
+	     * Get x center position
+	     * @param  {Object} object
+	     * @return {Number}
+	     */
+
+	  }, {
+	    key: "getX",
+	    value: function getX(object) {
+	      return this.size.x / 2 - (object.position.x + object.size.x * object.scale / 2 + object.xMargin) * this.resolution;
+	    }
+
+	    /**
+	     * Get y center position
+	     * @param  {Object} object
+	     * @return {Number}
+	     */
+
+	  }, {
+	    key: "getY",
+	    value: function getY(object) {
+	      return this.size.y / 2 - (object.position.y + (object.size.y * object.scale / 2 + object.yMargin + object.z)) * this.resolution;
+	    }
+
+	    /**
+	     * Update object focus
+	     * @param  {Number} object
+	     */
+
+	  }, {
+	    key: "updateFocus",
+	    value: function updateFocus(object) {
+
+	      this.base = {
+	        x: this.position.x,
+	        y: this.position.y
+	      };
+
+	      this.target = {
+	        x: this.getX(object),
+	        y: this.getY(object)
+	      };
+
+	      this.deltaX = this.target.x - this.base.x;
+	      this.deltaY = this.target.y - this.base.y;
+
+	      return void 0;
+	    }
+
+	    /**
+	     * Play camera animations
+	     * @param {Object} object
+	     */
+
+	  }, {
+	    key: "animate",
+	    value: function animate(object) {
+
+	      if (_cfg.FREE_CAMERA === true) return void 0;
+
+	      this.updateFocus(object);
+
+	      var velocity = _cfg.EASING_CAMERA === true ? 0 : _Math2.default.ease(Math.atan(_cfg.DEBUG_FPS / 60 + .05));
+
+	      var x = this.target.x - (this.base.x + velocity * this.deltaX);
+	      var y = this.target.y - (this.base.y + velocity * this.deltaY);
+
+	      if (Math.abs(this.position.x + x - this.target.x) > Math.abs(this.position.x - this.target.x)) {
+	        this.position.x = this.target.x;
+	        this.base.x = this.target.x;
+	      } else {
+	        this.position.x += x;
+	      }
+
+	      if (Math.abs(this.position.y + y - this.target.y) > Math.abs(this.position.y - this.target.y)) {
+	        this.position.y = this.target.y;
+	        this.base.y = this.target.y;
+	      } else {
+	        this.position.y += y;
+	      }
+
+	      return void 0;
+	    }
+
+	    /**
+	     * Animate focus
+	     * @param {Object} object
+	     */
+
+	  }, {
+	    key: "animateFocus",
+	    value: function animateFocus(object) {
+	      this.updateFocus(object);
+	      this.objectFocus = object;
+	    }
+
+	    /**
+	     * Focus a object
+	     * @param {Object}  object
+	     * @param {Boolean} instant
+	     */
+
+	  }, {
+	    key: "focus",
+	    value: function focus(object, instant) {
+	      if (instant === true) {
+	        if (object === null || object === void 0) return void 0;
+	        this.objectFocus = object;
+	        this.position.x = this.getX(object);
+	        this.position.y = this.getY(object);
+	        return void 0;
+	      }
+	      this.animateFocus(object);
+	    }
+
+	    /**
+	     * Cubic in view
+	     * @param {Number} x
+	     * @param {Number} y
+	     * @param {Number} width
+	     * @param {Number} height
+	     * @return {Boolean}
+	     */
+
+	  }, {
+	    key: "inView",
+	    value: function inView(x, y, width, height) {
+
+	      return x + width >= 0 && x <= this.size.x && y + height >= 0 && y <= this.size.y;
+	    }
+
+	    /**
+	     * Is in view
+	     * @param {Number} x
+	     * @param {Number} y
+	     * @param {Number} width
+	     * @param {Number} height
+	     */
+
+	  }, {
+	    key: "isInView",
+	    value: function isInView(x, y, width, height) {
+
+	      return this.inView(x * this.resolution + this.position.x << 0, y * this.resolution + this.position.y << 0, width * this.resolution << 0, height * this.resolution << 0);
+	    }
+	  }]);
+	  return Camera;
+	}(_DisplayObject3.default);
+
+	exports.default = Camera;
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _tokens = __webpack_require__(110);
 
 	var tokens = _interopRequireWildcard(_tokens);
 
-	var _Tester = __webpack_require__(108);
+	var _Tester = __webpack_require__(111);
 
 	var _Tester2 = _interopRequireDefault(_Tester);
 
-	var _Tokenizer = __webpack_require__(111);
+	var _Tokenizer = __webpack_require__(114);
 
 	var _Tokenizer2 = _interopRequireDefault(_Tokenizer);
 
-	var _Parser = __webpack_require__(112);
+	var _Parser = __webpack_require__(115);
 
 	var _Parser2 = _interopRequireDefault(_Parser);
 
-	var _Evaluator = __webpack_require__(116);
+	var _Evaluator = __webpack_require__(119);
 
 	var _Evaluator2 = _interopRequireDefault(_Evaluator);
 
@@ -6478,7 +8513,8 @@
 	         * @type {Object}
 	         */
 	        this.FLAGS = {
-	            GOT_STARTER_PKMN: 2
+	            GOT_STARTER_PKMN: false,
+	            COUNTER: 0
 	        };
 
 	        /**
@@ -6537,7 +8573,7 @@
 	exports.default = Environment;
 
 /***/ },
-/* 107 */
+/* 110 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -6575,6 +8611,11 @@
 	  "/": "DIV",
 	  "%": "MOD",
 	  "^": "POW",
+	  "+=": "ADDSET",
+	  "-=": "SUBSET",
+	  "*=": "MULSET",
+	  "/=": "DIVSET",
+	  "%=": "MODSET",
 	  /** Compare operators */
 	  "<": "LT",
 	  "<=": "LE",
@@ -6617,7 +8658,7 @@
 	var IGNORE = exports.IGNORE = ["BLANK", "TAB", "NL", "X", "X1", "X2"];
 
 /***/ },
-/* 108 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6626,7 +8667,7 @@
 	  value: true
 	});
 
-	var _getIterator2 = __webpack_require__(94);
+	var _getIterator2 = __webpack_require__(91);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -6638,9 +8679,9 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _NodeList = __webpack_require__(109);
+	var _NodeList = __webpack_require__(112);
 
-	var _tests = __webpack_require__(110);
+	var _tests = __webpack_require__(113);
 
 	var tests = _interopRequireWildcard(_tests);
 
@@ -6770,7 +8811,7 @@
 	exports.default = Tester;
 
 /***/ },
-/* 109 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6957,7 +8998,7 @@
 	exports.default = NODE_LIST;
 
 /***/ },
-/* 110 */
+/* 113 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -7122,7 +9163,7 @@
 	}];
 
 /***/ },
-/* 111 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7447,7 +9488,7 @@
 	exports.default = Tokenizer;
 
 /***/ },
-/* 112 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7464,19 +9505,19 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _NodeList = __webpack_require__(109);
+	var _NodeList = __webpack_require__(112);
 
 	var _NodeList2 = _interopRequireDefault(_NodeList);
 
-	var _precedence = __webpack_require__(113);
+	var _precedence = __webpack_require__(116);
 
 	var pr = _interopRequireWildcard(_precedence);
 
-	var _parse = __webpack_require__(114);
+	var _parse = __webpack_require__(117);
 
 	var parse = _interopRequireWildcard(_parse);
 
-	var _expression = __webpack_require__(115);
+	var _expression = __webpack_require__(118);
 
 	var expression = _interopRequireWildcard(_expression);
 
@@ -7625,7 +9666,7 @@
 	(0, _utils.inherit)(Parser, expression);
 
 /***/ },
-/* 113 */
+/* 116 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -7636,7 +9677,7 @@
 	var precedence = exports.precedence = [["OR"], ["AND"], ["EQ", "NEQ"], ["LE", "LT", "GE", "GT"], ["ADD", "SUB"], ["MUL", "DIV", "MOD"]];
 
 /***/ },
-/* 114 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7646,6 +9687,7 @@
 	});
 	exports.parseBlock = parseBlock;
 	exports.parseAsyncStatement = parseAsyncStatement;
+	exports.isSet = isSet;
 	exports.parseIdentifierRoute = parseIdentifierRoute;
 	exports.parseCallExpression = parseCallExpression;
 	exports.parseAssignmentExpression = parseAssignmentExpression;
@@ -7657,7 +9699,7 @@
 	exports.parseBraceBody = parseBraceBody;
 	exports.parseParentheseExpression = parseParentheseExpression;
 
-	var _NodeList = __webpack_require__(109);
+	var _NodeList = __webpack_require__(112);
 
 	var _NodeList2 = _interopRequireDefault(_NodeList);
 
@@ -7705,6 +9747,14 @@
 	}
 
 	/**
+	 * Is assignment or assignset
+	 * @return {Boolean}
+	 */
+	function isSet() {
+	  return this.accept("ASSIGN") === true || this.accept("ADDSET") === true || this.accept("SUBSET") === true || this.accept("MULSET") === true || this.accept("DIVSET") === true || this.accept("MODSET") === true;
+	}
+
+	/**
 	 * Parse identifier route
 	 * Identifier () | = | . | ; 
 	 * @return {Object}
@@ -7716,15 +9766,19 @@
 	  var tmp = this.parseExpression(0);
 
 	  /** Call expression */
-	  if (this.accept("LPAREN")) {
+	  if (this.accept("LPAREN") === true) {
 	    ast = this.parseCallExpression();
 	    ast.callee = tmp;
 	  }
 
 	  /** Assignment expression */
-	  if (this.accept("ASSIGN")) {
+	  if (this.isSet() === true) {
 	    ast = this.parseAssignmentExpression();
 	    ast.left = tmp;
+	  }
+
+	  if (ast === null) {
+	    return tmp;
 	  }
 
 	  return ast;
@@ -7758,10 +9812,13 @@
 
 	  ast = new _NodeList2.default.AssignmentExpression();
 	  ast.left = this.parseExpression(0);
-	  ast.operator = this.node.value;
-	  this.expect("ASSIGN");
-	  ast.right = this.parseExpression(0);
+	  ast.operator = this.node.name;
 	  this.next();
+	  ast.right = this.parseExpression(0);
+
+	  if (this.accept("SEMICOLON") === true) {
+	    this.next();
+	  }
 
 	  return ast;
 	}
@@ -7781,7 +9838,7 @@
 	  ast.condition = this.parseParentheseExpression();
 	  ast.consequent = this.parseBraceBody();
 
-	  if (this.accept("LBRACE")) {
+	  if (this.accept("LBRACE") === true) {
 	    ast.alternate = this.parseBraceBody();
 	  }
 
@@ -7844,8 +9901,6 @@
 	 */
 	function parseArguments() {
 
-	  var ast = null;
-
 	  var args = [];
 
 	  var tmp = null;
@@ -7878,7 +9933,7 @@
 	    }
 	  };
 
-	  if (args.length <= 1 && this.accept("RPAREN")) {
+	  if (args.length <= 1 && this.accept("RPAREN") === true) {
 	    this.next();
 	  }
 
@@ -7917,7 +9972,7 @@
 	}
 
 /***/ },
-/* 115 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7930,7 +9985,7 @@
 	exports.parseUnary = parseUnary;
 	exports.parseBase = parseBase;
 
-	var _NodeList = __webpack_require__(109);
+	var _NodeList = __webpack_require__(112);
 
 	var _NodeList2 = _interopRequireDefault(_NodeList);
 
@@ -8084,7 +10139,7 @@
 	}
 
 /***/ },
-/* 116 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8101,7 +10156,7 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _NodeList = __webpack_require__(109);
+	var _NodeList = __webpack_require__(112);
 
 	var _utils = __webpack_require__(7);
 
@@ -8151,7 +10206,13 @@
 	       * Dynamic trigger scope ref
 	       * @type {Object}
 	       */
-	      trigger: null
+	      trigger: null,
+
+	      console: window.console,
+
+	      alert: window.alert,
+
+	      kernel: this.instance.instance
 
 	    };
 	  }
@@ -8283,7 +10344,7 @@
 	  }, {
 	    key: "isBinaryExpression",
 	    value: function isBinaryExpression(ast) {
-	      return ast.type === _NodeList.NODE_TYPES.BinaryExpression || ast.type === _NodeList.NODE_TYPES.UnaryExpression || this.isLiteral(ast) === true || this.isIdentifier(ast) === true;
+	      return ast.type === _NodeList.NODE_TYPES.BinaryExpression || ast.type === _NodeList.NODE_TYPES.UnaryExpression || this.isLiteral(ast) === true || this.isIdentifier(ast) === true || this.isMemberExpression(ast) === true;
 	    }
 
 	    /**
@@ -8358,13 +10419,7 @@
 	      }
 
 	      if (this.isAssignmentExpression(ast) === true) {
-	        var parent = this.evalExpression(ast.left);
-	        var result = this.evalExpression(ast.right);
-	        if (result.link !== void 0) {
-	          parent.link[parent.property] = result.link[result.property];
-	        } else {
-	          parent.link[parent.property] = result.value;
-	        }
+	        return resolve(this.evalAssignExpression(ast));
 	      }
 
 	      if (this.isCallExpression(ast) === true) {
@@ -8382,6 +10437,51 @@
 	    }
 
 	    /**
+	     * Eval assignment expression
+	     * Assignments auto return its result
+	     * @param {Object} ast
+	     * @return {*}
+	     */
+
+	  }, {
+	    key: "evalAssignExpression",
+	    value: function evalAssignExpression(ast) {
+
+	      var result = null;
+
+	      var left = this.evalExpression(ast.left);
+	      var right = this.evalExpression(ast.right);
+
+	      result = right.link !== void 0 ? right.link[right.property] : right.value;
+
+	      if (ast.operator === "ASSIGN") {
+	        return left.link[left.property] = result;
+	      }
+
+	      if (ast.operator === "ADDSET") {
+	        return left.link[left.property] += result;
+	      }
+
+	      if (ast.operator === "SUBSET") {
+	        return left.link[left.property] -= result;
+	      }
+
+	      if (ast.operator === "MULSET") {
+	        return left.link[left.property] *= result;
+	      }
+
+	      if (ast.operator === "DIVSET") {
+	        return left.link[left.property] /= result;
+	      }
+
+	      if (ast.operator === "MODSET") {
+	        return left.link[left.property] %= result;
+	      }
+
+	      return 0;
+	    }
+
+	    /**
 	     * Eval call expression
 	     * @param {Object} ast
 	     */
@@ -8391,14 +10491,17 @@
 	    value: function evalCallExpression(ast, resolve) {
 
 	      var callee = this.evalExpression(ast.callee);
-	      var cmd = callee.link[callee.property];
+	      var cmd = null;
+
+	      if (callee.link === void 0) {
+	        cmd = this.context[ast.callee.name];
+	      } else {
+	        cmd = callee.link[callee.property];
+	      }
 
 	      this.evalArguments(ast.arguments, function (args) {
 
 	        if (args.length >= 1) {
-	          args.push(function (result) {
-	            return resolve(result);
-	          });
 	          cmd.apply(callee.link, args);
 	        } else {
 	          cmd.bind(callee.link)(function (result) {
@@ -8434,13 +10537,12 @@
 	            index++;
 	            eArgs.push(result);
 	            if (index >= length) {
-	              resolve(eArgs);
+	              return resolve(eArgs);
 	            }
 	          });
 	        };
 	      } else {
-	        resolve(eArgs);
-	        return void 0;
+	        return resolve(eArgs);
 	      }
 	    }
 
@@ -8588,6 +10690,10 @@
 	        return !this.evalBinaryExpression(ast.init);
 	      }
 
+	      if (this.isIdentifier(ast) === true) {
+	        return this.context[ast.name];
+	      }
+
 	      return 0;
 	    }
 	  }]);
@@ -8597,7 +10703,83 @@
 	exports.default = Evaluator;
 
 /***/ },
-/* 117 */
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Language = undefined;
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Lang
+	 * @class Lang
+	 * @export
+	 */
+
+	var Lang = function () {
+
+	  /**
+	   * @constructor
+	   */
+
+	  function Lang() {
+	    (0, _classCallCheck3.default)(this, Lang);
+
+	    /**
+	     * Language packets
+	     * @type {Object}
+	     */
+	    this.packets = {};
+
+	    /**
+	     * Active packet ref
+	     * @type {Object}
+	     */
+	    this.activePacket = null;
+	  }
+
+	  /**
+	   * Get language dependant string
+	   * @param  {String} key
+	   * @return {String}
+	   */
+
+	  (0, _createClass3.default)(Lang, [{
+	    key: "get",
+	    value: function get(key) {
+	      return this.activePacket[key];
+	    }
+
+	    /**
+	     * Switch to another language packet
+	     * @param {String}   lang
+	     * @param {Function} resolve
+	     */
+
+	  }, {
+	    key: "switch",
+	    value: function _switch(lang, resolve) {}
+	  }]);
+	  return Lang;
+	}();
+
+	var Language = exports.Language = new Lang();
+
+/***/ },
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8614,7 +10796,7 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	__webpack_require__(118);
+	__webpack_require__(122);
 
 	var _Math = __webpack_require__(85);
 
@@ -8626,19 +10808,19 @@
 
 	var _utils = __webpack_require__(7);
 
-	var _functions = __webpack_require__(105);
+	var _functions = __webpack_require__(102);
 
 	var entity = _interopRequireWildcard(_functions);
 
-	var _render = __webpack_require__(123);
+	var _render = __webpack_require__(127);
 
 	var render = _interopRequireWildcard(_render);
 
-	var _debug = __webpack_require__(125);
+	var _debug = __webpack_require__(129);
 
 	var debug = _interopRequireWildcard(_debug);
 
-	var _webgl = __webpack_require__(129);
+	var _webgl = __webpack_require__(133);
 
 	var _webgl2 = _interopRequireDefault(_webgl);
 
@@ -8766,6 +10948,7 @@
 
 	        if (cfg.WGL_SUPPORT) {
 	            this.glRenderer = new _webgl2.default(this);
+	            this.glRenderer.init();
 	        }
 
 	        /**
@@ -8786,9 +10969,13 @@
 	        value: function switchRenderingMode(mode) {
 
 	            if (mode === cfg.WGL) {
-	                this.node.style.display = "none";
-	                this.glNode.style.display = "block";
-	                cfg.RENDER_MODE = mode;
+	                if (cfg.WGL_SUPPORT) {
+	                    this.node.style.display = "none";
+	                    this.glNode.style.display = "block";
+	                    cfg.RENDER_MODE = mode;
+	                } else {
+	                    mode = cfg.CANVAS;
+	                }
 	            }
 
 	            if (mode === cfg.CANVAS) {
@@ -8853,16 +11040,14 @@
 	            if (cfg.RENDER_MODE === cfg.WGL) {
 	                this.glNode.width = this.width;
 	                this.glNode.height = this.height;
-	                this.gl.viewport(0, 0, this.width, this.height);
+	                this.glRenderer.resize(this.width, this.height);
 	            } else {
 	                this.node.width = this.width;
 	                this.node.height = this.height;
 	            }
 	            this.clear();
-	            if (redraw === true) {
-	                this.instance.mini.resize();
-	                this.draw();
-	            }
+	            this.instance.mini.resize();
+	            this.draw();
 	        }
 	    }, {
 	        key: "imageSmoothingEnabled",
@@ -8886,12 +11071,12 @@
 	(0, _utils.inherit)(Renderer, webgl);
 
 /***/ },
-/* 118 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var _Howler = __webpack_require__(119);
+	var _Howler = __webpack_require__(123);
 
 	window.rAF = function () {
 	  return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -8994,7 +11179,7 @@
 	})(window, document);
 
 /***/ },
-/* 119 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -9003,7 +11188,7 @@
 
 	var _typeof3 = _interopRequireDefault(_typeof2);
 
-	var _getOwnPropertyNames = __webpack_require__(120);
+	var _getOwnPropertyNames = __webpack_require__(124);
 
 	var _getOwnPropertyNames2 = _interopRequireDefault(_getOwnPropertyNames);
 
@@ -10359,23 +12544,23 @@
 	})();
 
 /***/ },
-/* 120 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(121), __esModule: true };
+	module.exports = { "default": __webpack_require__(125), __esModule: true };
 
 /***/ },
-/* 121 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(5);
-	__webpack_require__(122);
+	__webpack_require__(126);
 	module.exports = function getOwnPropertyNames(it){
 	  return $.getNames(it);
 	};
 
 /***/ },
-/* 122 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.7 Object.getOwnPropertyNames(O)
@@ -10384,7 +12569,7 @@
 	});
 
 /***/ },
-/* 123 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -10396,10 +12581,8 @@
 	exports.clear = clear;
 	exports.draw = draw;
 	exports.renderMap = renderMap;
-	exports.getAnimationFrame = getAnimationFrame;
 	exports.entityInSelectionRange = entityInSelectionRange;
-	exports.orbit = orbit;
-	exports.updateEntity = updateEntity;
+	exports.getAnimationFrame = getAnimationFrame;
 	exports.updateEntitySpriteFrame = updateEntitySpriteFrame;
 	exports.renderEntities = renderEntities;
 	exports.renderEntity = renderEntity;
@@ -10412,7 +12595,7 @@
 
 	var _Math2 = _interopRequireDefault(_Math);
 
-	var _grid = __webpack_require__(124);
+	var _grid = __webpack_require__(128);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10427,6 +12610,8 @@
 	  this.instance.sort();
 
 	  this.update();
+
+	  this.instance.logic();
 
 	  this.draw();
 
@@ -10459,8 +12644,7 @@
 	    this.context.setImageSmoothing(this.imageSmoothing);
 	  }
 	  if (_cfg.RENDER_MODE === _cfg.WGL) {
-	    this.glRenderer.gl.clearColor(0, 0, 0, 0);
-	    this.glRenderer.gl.clear(this.glRenderer.gl.COLOR_BUFFER_BIT);
+	    this.glRenderer.clear();
 	  }
 	  return void 0;
 	}
@@ -10470,16 +12654,21 @@
 	 */
 	function draw() {
 
-	  if (_cfg.RENDER_MODE === _cfg.CANVAS) {
+	  var gl = _cfg.RENDER_MODE === _cfg.WGL;
+
+	  if (gl === false) {
+	    this.renderEntities(1);
 	    this.renderMap();
+	    this.renderEntities(0);
+	  } else {
+	    if (this.glRenderer.ready === true) {
+	      this.glRenderer.draw();
+	    }
+	    return void 0;
 	  }
 
-	  this.renderEntities();
-
 	  if (_cfg.DEBUG_MODE === true) {
-	    this.context.beginPath();
 	    (0, _grid.drawGrid)(this.context, this.camera.position.x, this.camera.position.y, this.width, this.height, this.dimension, this.camera.resolution * _cfg.GRID_WIDTH, .05, "#FFF");
-	    this.context.closePath();
 	    if (_cfg.EDIT_MODE === true) {
 	      this.instance.editor.renderEditorMode();
 	    }
@@ -10506,20 +12695,11 @@
 	  var dim = _cfg.DIMENSION;
 
 	  /** Render background layer */
-	  this.context.drawImage(map.buffers[1].canvas, 0, 0,
+	  this.context.drawImage(map.mainBuffer.canvas, 0, 0,
 	  /** Scale */
 	  map.size.x * dim, map.size.y * dim, this.camera.position.x << 0, this.camera.position.y << 0, map.size.x * dim / 2 * this.camera.resolution << 0, map.size.y * dim / 2 * this.camera.resolution << 0);
 
 	  return void 0;
-	}
-
-	/**
-	 * Get animation frame
-	 * @param  {Object} entity
-	 * @return {Number}
-	 */
-	function getAnimationFrame(entity) {
-	  return Math.floor((this.now - entity.animationStart) / entity.animationSpeed) % (entity.animationFrames - 1 + (entity.loop === true ? 1 : 0)) * (entity.size.x * 2 << 0 * entity.size.x / entity.frames);
 	}
 
 	/**
@@ -10544,74 +12724,12 @@
 	}
 
 	/**
-	 * Orbit animation
+	 * Get animation frame
 	 * @param  {Object} entity
+	 * @return {Number}
 	 */
-	function orbit(entity) {
-
-	  entity.orbitAngle += entity.velocity * 2 * Math.PI / 180;
-
-	  var target = entity.orbitTarget;
-
-	  var radius = (target.size.x * target.scale + target.size.y * target.scale) / _cfg.DIMENSION * 2;
-
-	  var xPadding = radius - _cfg.DIMENSION / 2;
-	  var yPadding = radius - _cfg.DIMENSION / 2;
-
-	  xPadding += target.xMargin;
-	  yPadding += target.yMargin / 2;
-
-	  entity.x = target.position.x + xPadding + radius * Math.cos(entity.orbitAngle);
-	  entity.y = target.position.y + yPadding + radius * Math.sin(entity.orbitAngle);
-
-	  /** Stop the orbit on a dimension friendly position */
-	  if (entity.stopOrbit === true && (entity.x << 0) % 8 === 0 && (entity.y << 0) % 8 === 0) {
-	    entity.x = _Math2.default.roundTo(entity.x, _cfg.DIMENSION);
-	    entity.y = _Math2.default.roundTo(entity.y, _cfg.DIMENSION);
-	    entity.orbitAround(null);
-	    entity.stopOrbit = false;
-	  }
-
-	  /*if (entity.orbitAngle > 360) {
-	    entity.orbitAngle = 0;
-	  }*/
-
-	  return void 0;
-	}
-
-	/**
-	 * Update entity
-	 * @param  {Object} entity
-	 * @return {Boolean} renderable
-	 */
-	function updateEntity(entity) {
-
-	  if (entity.lifeTime > 0) {
-	    if (this.now >= entity.lifeTime) {
-	      entity.lifeTime = 0;
-	      entity.fadeOut(1, true);
-	    }
-	  }
-
-	  entity.animate();
-
-	  if (entity.orbit === true) {
-	    this.orbit(entity);
-	  }
-
-	  if (this.instance.camera.isInView(entity.position.x + entity.xMargin, entity.position.y + entity.yMargin, entity.size.x * entity.scale, entity.size.y * 2 * entity.scale + entity.shadowY) === false) {
-	    return false;
-	  }
-
-	  if (entity.opacity === .0) {
-	    return false;
-	  }
-
-	  if (entity.texture === null) {
-	    return false;
-	  }
-
-	  return true;
+	function getAnimationFrame(entity) {
+	  return Math.floor((this.now - entity.animationStart) / entity.animationSpeed) % (entity.animationFrames - 1 + (entity.loop === true ? 1 : 0)) * (entity.size.x * 2 << 0 * entity.size.x / entity.frames);
 	}
 
 	/**
@@ -10631,14 +12749,12 @@
 
 	/**
 	 * Render entities
+	 * @param {Number} lowest Render entities below map
 	 */
-	function renderEntities() {
-
-	  var gl = _cfg.RENDER_MODE === _cfg.WGL;
-
-	  var entities = this.instance.currentMap.entities;
+	function renderEntities(lowest) {
 
 	  var entity = null;
+	  var entities = this.instance.currentMap.entities;
 
 	  var resolution = this.camera.resolution;
 
@@ -10652,29 +12768,18 @@
 
 	  for (; ii < length; ++ii) {
 	    entity = entities[ii];
-	    entity.idleTime++;
-	    if (this.updateEntity(entity) === false) continue;
-	    if (entity.opacity < 0) {
-	      this.instance.removeEntity(entity);
-	      --length;
-	      --ii;
-	      continue;
-	    }
+	    if (lowest === 0 && entity.zIndex <= 0) continue;
+	    scaling = entity.scale + -entity.position.z / resolution / ((entity.size.x + entity.size.y) / 2);
+	    if (entity.renderable === false) continue;
 	    this.updateEntitySpriteFrame(entity);
-	    if (gl === true) continue;
-	    scaling = entity.scale + -entity.z / resolution / ((entity.size.x + entity.size.y) / 2);
 	    this.renderEntity(entity,
 	    /** Position */
-	    camX + (entity.position.x + entity.xMargin + entity.z / (entity.size.x / 2) / 2) * resolution << 0, camY + (entity.position.y + entity.yMargin + entity.z) * resolution << 0,
+	    camX + (entity.position.x + entity.xMargin + entity.position.z / (entity.size.x / 2) / 2) * resolution << 0, camY + (entity.position.y + entity.yMargin + entity.position.z) * resolution << 0,
 	    /** Size */
 	    entity.size.x * resolution * scaling << 0, entity.size.y * resolution * scaling << 0,
 	    /** Scale */
 	    entity.size.x / scaling * 2 * scaling << 0, entity.size.y / scaling * 2 * scaling << 0);
 	  };
-
-	  if (gl === true && this.glRenderer.ready === true) {
-	    this.glRenderer.draw();
-	  }
 
 	  return void 0;
 	}
@@ -10711,9 +12816,16 @@
 	    }
 	  }
 
-	  this.context.drawImage(entity.texture.effect_sprites[entity.sFrame].canvas, 0, 0,
-	  /** Scale */
-	  eWidth, eHeight, x, y, width, height);
+	  if (entity.type === _cfg.TYPES.Notification) {
+	    var padding = (Math.max(entity.follow.width, entity.width / 2) / 2 - entity.follow.width / 2 - entity.follow.xMargin - (entity.size.x === entity.follow.size.x ? _cfg.DIMENSION : 0)) * resolution;
+	    this.context.drawImage(entity.texture.canvas, 0, 0,
+	    /** Scale */
+	    eWidth, eHeight, x - padding, y - entity.size.y * resolution, width, height);
+	  } else {
+	    this.context.drawImage(entity.texture.effect_sprites[entity.sFrame].canvas, 0, 0,
+	    /** Scale */
+	    eWidth, eHeight, x, y, width, height);
+	  }
 
 	  /** Reset ctx opacity */
 	  if (cOpacity === true) {
@@ -10779,7 +12891,7 @@
 	}
 
 /***/ },
-/* 124 */
+/* 128 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -10808,6 +12920,8 @@
 	  var xx = x % ww;
 	  var yy = y % hh;
 
+	  ctx.beginPath();
+
 	  for (; xx < width; xx += ww) {
 	    ctx.moveTo(xx - ln, 0);
 	    ctx.lineTo(xx - ln, height);
@@ -10829,7 +12943,7 @@
 	}
 
 /***/ },
-/* 125 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -10839,7 +12953,7 @@
 	});
 	exports.renderDebugScene = renderDebugScene;
 
-	var _keys = __webpack_require__(126);
+	var _keys = __webpack_require__(130);
 
 	var _keys2 = _interopRequireDefault(_keys);
 
@@ -10896,23 +13010,55 @@
 	  this.drawPixelText("FREE CAMERA: " + (_cfg.FREE_CAMERA === true ? "enabled" : "disabled"), 15, 360, 20, 1.5, color);
 
 	  this.drawPixelText("EDIT MODE: " + (_cfg.EDIT_MODE === true ? "enabled" : "disabled"), 15, 390, 20, 1.5, color);
+
+	  this.drawPixelText("C: JUMP", 15, this.height - 60, 20, 1.5, color);
+
+	  this.drawPixelText("X: RUN", 90, this.height - 60, 20, 1.5, color);
+
+	  this.drawPixelText("Z: ACTION", 155, this.height - 60, 20, 1.5, color);
+
+	  this.drawPixelText("CTRL+Z: UNDO", 15, this.height - 35, 20, 1.5, color);
+
+	  this.drawPixelText("CTRL+Y: REDO", 140, this.height - 35, 20, 1.5, color);
+
+	  this.drawPixelText("CTRL+C: COPY", 265, this.height - 35, 20, 1.5, color);
+
+	  this.drawPixelText("CTRL+V: PASTE", 390, this.height - 35, 20, 1.5, color);
+
+	  this.drawPixelText("CTRL+X: CUT", 525, this.height - 35, 20, 1.5, color);
+
+	  this.drawPixelText("F1: DEBUG MODE", 15, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("F2: EDIT MODE", 155, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("F3: FREE CAMERA", 290, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("F4: GOD MODE", 450, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("SPACE: PLAYER FOCUS", 575, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("WHEEL: ZOOM", 770, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("R-MOUSE: DRAG MAP", 890, this.height - 10, 20, 1.5, color);
+
+	  this.drawPixelText("DBLCLICK: FOCUS ENTITY", 1065, this.height - 10, 20, 1.5, color);
 	}
 
 /***/ },
-/* 126 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(127), __esModule: true };
+	module.exports = { "default": __webpack_require__(131), __esModule: true };
 
 /***/ },
-/* 127 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(128);
+	__webpack_require__(132);
 	module.exports = __webpack_require__(19).Object.keys;
 
 /***/ },
-/* 128 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.14 Object.keys(O)
@@ -10925,7 +13071,7 @@
 	});
 
 /***/ },
-/* 129 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -10944,7 +13090,7 @@
 
 	var _utils = __webpack_require__(7);
 
-	var _shaders = __webpack_require__(130);
+	var _shaders = __webpack_require__(134);
 
 	var shaders = _interopRequireWildcard(_shaders);
 
@@ -10957,9 +13103,7 @@
 	 * @class WGL_Renderer
 	 * @export
 	 */
-	/**
-	 * Code inspired by gles.js webgl renderer
-	 */
+	/** Inspired by gles.js web demo */
 
 	var WGL_Renderer = function () {
 
@@ -11011,6 +13155,10 @@
 	        this.ready = false;
 	    }
 
+	    /**
+	     * Initialise
+	     */
+
 	    (0, _createClass3.default)(WGL_Renderer, [{
 	        key: "init",
 	        value: function init() {
@@ -11054,20 +13202,7 @@
 
 	            this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
 
-	            this.initLighting();
-
 	            this.ready = true;
-	        }
-	    }, {
-	        key: "initLighting",
-	        value: function initLighting() {
-
-	            this.lightZ = 0.075, this.lightSize = 256;
-
-	            this.ambientColor = new Float32Array([0.8, 0.8, 0.8, 0.3]);
-	            this.lightColor = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-	            this.falloff = new Float32Array([0.4, 7.0, 30.0]);
-	            this.lightPos = new Float32Array([0, 0, this.lightZ]);
 	        }
 
 	        /**
@@ -11226,10 +13361,22 @@
 	         */
 
 	    }, {
-	        key: "resizeGL",
-	        value: function resizeGL(width, height) {
+	        key: "resize",
+	        value: function resize(width, height) {
 
 	            this.gl.viewport(0, 0, width, height);
+	        }
+
+	        /**
+	         * Clear
+	         */
+
+	    }, {
+	        key: "clear",
+	        value: function clear() {
+	            this.gl.clearColor(0, 0, 0, 0);
+	            this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+	            return void 0;
 	        }
 
 	        /**
@@ -11266,7 +13413,7 @@
 	exports.default = WGL_Renderer;
 
 /***/ },
-/* 130 */
+/* 134 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -11274,16 +13421,12 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	/**
-	 * Shaders taken from gles.js webgl renderer
-	 */
-
 	var spritevs = exports.spritevs = "\n  precision lowp float;\n  uniform vec2 uScale;\n  uniform vec2 uObjScale;\n  attribute vec2 aObjCen;\n  attribute float aObjRot;\n  attribute float aIdx;\n  varying vec2 uv;\n  void main(void) {\n    if (aIdx == 0.0) {\n      uv = vec2(0.0,0.0);\n    } else if (aIdx == 1.0) {\n      uv = vec2(1.0,0.0);\n    } else if (aIdx == 2.0) {\n      uv = vec2(0.0,1.0);\n    } else {\n      uv = vec2(1.0,1.0);\n    }\n    vec2 pos = vec2(\n      aObjCen.x + sin(aObjRot)*uObjScale.y*(-0.5 + uv.y)\n      + cos(aObjRot)*uObjScale.x*(-0.5 + uv.x),\n      aObjCen.y + cos(aObjRot)*uObjScale.y*(-0.5 + uv.y)\n      - sin(aObjRot)*uObjScale.x*(-0.5 + uv.x)\n    );\n    gl_Position = vec4(\n      -1.0 + 2.0*pos.x/uScale.x,\n      1.0 - 2.0*pos.y/uScale.y,\n      0.0, 1.0\n    );\n  }\n";
 
 	var spritefs = exports.spritefs = "\n  precision lowp float;\n  uniform sampler2D uSampler;\n  varying vec2 uv;\n  void main(void) {\n    gl_FragColor = texture2D(uSampler, uv);\n    if (gl_FragColor.a < 0.5) discard;\n  }\n";
 
 /***/ },
-/* 131 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -11292,476 +13435,7 @@
 	  value: true
 	});
 
-	var _getPrototypeOf = __webpack_require__(65);
-
-	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
-
-	var _classCallCheck2 = __webpack_require__(1);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(2);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _possibleConstructorReturn2 = __webpack_require__(70);
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
-	var _inherits2 = __webpack_require__(79);
-
-	var _inherits3 = _interopRequireDefault(_inherits2);
-
-	var _cfg = __webpack_require__(6);
-
-	var _Math = __webpack_require__(85);
-
-	var _Math2 = _interopRequireDefault(_Math);
-
-	var _DisplayObject2 = __webpack_require__(99);
-
-	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Camera
-	 * @class Camera
-	 * @export
-	 */
-
-	var Camera = function (_DisplayObject) {
-	  (0, _inherits3.default)(Camera, _DisplayObject);
-
-	  /**
-	   * @constructor
-	   * @param {Object} instance
-	   */
-
-	  function Camera(instance) {
-	    (0, _classCallCheck3.default)(this, Camera);
-
-	    /**
-	     * Instance ref
-	     * @type {Object}
-	     */
-
-	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Camera).call(this, null));
-
-	    _this.instance = instance;
-
-	    /**
-	     * Camera size
-	     * @type {Number}
-	     */
-	    _this.width = instance.width;
-	    _this.height = instance.height;
-
-	    /**
-	     * Drag offset
-	     * @type {Object}
-	     */
-	    _this.drag = {
-	      px: 0,
-	      py: 0,
-	      pz: 0,
-	      sx: 0,
-	      sy: 0
-	    };
-
-	    /**
-	     * Dragging state
-	     * @type {Boolean}
-	     */
-	    _this.dragging = false;
-
-	    /** Camera size */
-	    _this.size.set(_this.width || 0, _this.height || 0);
-
-	    /**
-	     * Camera scaling
-	     * @type {Number}
-	     */
-	    _this.scaling = .0;
-
-	    /**
-	     * Camera calculated resolution
-	     * @type {Number}
-	     */
-	    _this.resolution = .0;
-
-	    /**
-	     * Base offset
-	     * @type {Object}
-	     */
-	    _this.base = new _Math2.default.Point(.0, .0);
-
-	    /**
-	     * Target offset
-	     * @type {Object}
-	     */
-	    _this.target = new _Math2.default.Point(.0, .0);
-
-	    /**
-	     * Object to focus
-	     * @type {Object}
-	     */
-	    _this.objectFocus = null;
-
-	    /**
-	     * Scale
-	     * @type {Number}
-	     * @getter
-	     * @setter
-	     */
-	    Object.defineProperty(_this, "scale", {
-	      get: function get() {
-	        return this.scaling;
-	      },
-	      set: function set(value) {
-	        this.scaling = value;
-	        this.refreshResolution();
-	      }
-	    });
-
-	    return _this;
-	  }
-
-	  /**
-	   * Get game relative mouse offset
-	   * @param  {Number} x clientX
-	   * @param  {Number} y clientY
-	   * @return {Object}
-	   */
-
-	  (0, _createClass3.default)(Camera, [{
-	    key: "getGameMouseOffset",
-	    value: function getGameMouseOffset(x, y) {
-
-	      var xx = (x - this.x) / this.resolution;
-	      var yy = (y - this.y) / this.resolution;
-
-	      return {
-	        x: Math.ceil(xx / _cfg.DIMENSION) * _cfg.DIMENSION - _cfg.DIMENSION,
-	        y: Math.ceil(yy / _cfg.DIMENSION) * _cfg.DIMENSION - _cfg.DIMENSION
-	      };
-	    }
-
-	    /**
-	     * Move
-	     * @param {Number} x
-	     * @param {Number} y
-	     */
-
-	  }, {
-	    key: "move",
-	    value: function move(x, y) {
-
-	      this.x += x - this.drag.px;
-	      this.y += y - this.drag.py;
-
-	      this.drag.px = x;
-	      this.drag.py = y;
-	    }
-
-	    /**
-	     * Click
-	     * @param {Number} x
-	     * @param {Number} y
-	     */
-
-	  }, {
-	    key: "click",
-	    value: function click(x, y) {
-
-	      this.drag.sx = (x - this.x) / this.resolution;
-	      this.drag.sy = (y - this.y) / this.resolution;
-
-	      this.drag.px = x;
-	      this.drag.py = y;
-	    }
-
-	    /**
-	     * Refresh the resolution
-	     */
-
-	  }, {
-	    key: "refreshResolution",
-	    value: function refreshResolution() {
-	      this.resolution = _Math2.default.roundTo(parseFloat(_Math2.default.zoomScale(this.scale)), _cfg.PIXEL_SCALE);
-	    }
-
-	    /**
-	     * Zoom
-	     * @param {Object} e
-	     */
-
-	  }, {
-	    key: "zoom",
-	    value: function zoom(e) {
-
-	      var delta = e.deltaY === -0 ? e.deltaX : e.deltaY;
-
-	      var amount = delta ? -delta : delta;
-
-	      amount = amount / 2 / (_Math2.default.hypot(this.size.x, this.size.y) / Math.PI) * _Math2.default.zoomScale(this.scale);
-
-	      this.drag.pz = this.resolution;
-
-	      this.scale += amount / 2;
-
-	      if (this.scale < _cfg.MIN_SCALE) this.scale = _cfg.MIN_SCALE;
-	      if (this.scale > _cfg.MAX_SCALE) this.scale = _cfg.MAX_SCALE;
-
-	      if (_cfg.FREE_CAMERA === true) {
-	        this.position.x -= this.drag.sx * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
-	        this.position.y -= this.drag.sy * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
-	      } else {
-	        if (this.objectFocus !== null) {
-	          this.position.x -= this.objectFocus.x * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
-	          this.position.y -= this.objectFocus.y * (_Math2.default.zoomScale(this.resolution) - _Math2.default.zoomScale(this.drag.pz));
-	        }
-	      }
-	    }
-
-	    /**
-	     * Get x center position
-	     * @param  {Number} x
-	     * @return {Number}
-	     */
-
-	  }, {
-	    key: "getX",
-	    value: function getX(x) {
-	      return this.size.x / 2 - x * this.resolution;
-	    }
-
-	    /**
-	     * Get y center position
-	     * @param  {Number} y
-	     * @return {Number}
-	     */
-
-	  }, {
-	    key: "getY",
-	    value: function getY(y) {
-	      return this.size.y / 2 - y * this.resolution;
-	    }
-
-	    /**
-	     * Update object focus
-	     * @param  {Number} object
-	     */
-
-	  }, {
-	    key: "updateFocus",
-	    value: function updateFocus(object) {
-
-	      this.base = {
-	        x: this.position.x,
-	        y: this.position.y
-	      };
-
-	      this.target = {
-	        x: this.getX(object.position.x),
-	        y: this.getY(object.position.y + object.z)
-	      };
-
-	      this.deltaX = this.target.x - this.base.x;
-	      this.deltaY = this.target.y - this.base.y;
-
-	      return void 0;
-	    }
-
-	    /**
-	     * Play camera animations
-	     * @param {Object} object
-	     */
-
-	  }, {
-	    key: "animate",
-	    value: function animate(object) {
-
-	      if (_cfg.FREE_CAMERA === true) return void 0;
-
-	      this.updateFocus(object);
-
-	      var velocity = _cfg.FIX_CAMERA === true ? 0 : _Math2.default.ease(Math.atan(1.05));
-
-	      var x = this.target.x - (this.base.x + velocity * this.deltaX);
-	      var y = this.target.y - (this.base.y + velocity * this.deltaY);
-
-	      if (Math.abs(this.position.x + x - this.target.x) > Math.abs(this.position.x - this.target.x)) {
-	        this.position.x = this.target.x;
-	        this.base.x = this.target.x;
-	      } else {
-	        this.position.x += x;
-	      }
-
-	      if (Math.abs(this.position.y + y - this.target.y) > Math.abs(this.position.y - this.target.y)) {
-	        this.position.y = this.target.y;
-	        this.base.y = this.target.y;
-	      } else {
-	        this.position.y += y;
-	      }
-
-	      return void 0;
-	    }
-
-	    /**
-	     * Animate focus
-	     * @param {Object} object
-	     */
-
-	  }, {
-	    key: "animateFocus",
-	    value: function animateFocus(object) {
-	      this.updateFocus(object);
-	      this.objectFocus = object;
-	    }
-
-	    /**
-	     * Focus a object
-	     * @param {Object}  object
-	     * @param {Boolean} instant
-	     */
-
-	  }, {
-	    key: "focus",
-	    value: function focus(object, instant) {
-	      if (instant === true) {
-	        if (object === null || object === void 0) return void 0;
-	        this.objectFocus = object;
-	        this.position.x = this.getX(object.position.x);
-	        this.position.y = this.getY(object.position.y);
-	        return void 0;
-	      }
-	      this.animateFocus(object);
-	    }
-
-	    /**
-	     * Cubic in view
-	     * @param {Number} x
-	     * @param {Number} y
-	     * @param {Number} width
-	     * @param {Number} height
-	     * @return {Boolean}
-	     */
-
-	  }, {
-	    key: "inView",
-	    value: function inView(x, y, width, height) {
-
-	      return x + width >= 0 && x <= this.size.x && y + height >= 0 && y <= this.size.y;
-	    }
-
-	    /**
-	     * Is in view
-	     * @param {Number} x
-	     * @param {Number} y
-	     * @param {Number} width
-	     * @param {Number} height
-	     */
-
-	  }, {
-	    key: "isInView",
-	    value: function isInView(x, y, width, height) {
-
-	      return this.inView(x * this.resolution + this.position.x << 0, y * this.resolution + this.position.y << 0, width * this.resolution << 0, height * this.resolution << 0);
-	    }
-	  }]);
-	  return Camera;
-	}(_DisplayObject3.default);
-
-	exports.default = Camera;
-
-/***/ },
-/* 132 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Language = undefined;
-
-	var _classCallCheck2 = __webpack_require__(1);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(2);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Lang
-	 * @class Lang
-	 * @export
-	 */
-
-	var Lang = function () {
-
-	  /**
-	   * @constructor
-	   */
-
-	  function Lang() {
-	    (0, _classCallCheck3.default)(this, Lang);
-
-	    /**
-	     * Language packets
-	     * @type {Object}
-	     */
-	    this.packets = {};
-
-	    /**
-	     * Active packet ref
-	     * @type {Object}
-	     */
-	    this.activePacket = null;
-	  }
-
-	  /**
-	   * Get language dependant string
-	   * @param  {String} key
-	   * @return {String}
-	   */
-
-	  (0, _createClass3.default)(Lang, [{
-	    key: "get",
-	    value: function get(key) {
-	      return this.activePacket[key];
-	    }
-
-	    /**
-	     * Switch to another language packet
-	     * @param {String}   lang
-	     * @param {Function} resolve
-	     */
-
-	  }, {
-	    key: "switch",
-	    value: function _switch(lang, resolve) {}
-	  }]);
-	  return Lang;
-	}();
-
-	var Language = exports.Language = new Lang();
-
-/***/ },
-/* 133 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _getIterator2 = __webpack_require__(94);
+	var _getIterator2 = __webpack_require__(91);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -11773,11 +13447,11 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _Keyboard = __webpack_require__(134);
+	var _Keyboard = __webpack_require__(136);
 
 	var _Keyboard2 = _interopRequireDefault(_Keyboard);
 
-	var _Mouse = __webpack_require__(135);
+	var _Mouse = __webpack_require__(137);
 
 	var _Mouse2 = _interopRequireDefault(_Mouse);
 
@@ -11945,7 +13619,7 @@
 	exports.default = Input;
 
 /***/ },
-/* 134 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -11954,11 +13628,11 @@
 	    value: true
 	});
 
-	var _getIterator2 = __webpack_require__(94);
+	var _getIterator2 = __webpack_require__(91);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
-	var _keys = __webpack_require__(126);
+	var _keys = __webpack_require__(130);
 
 	var _keys2 = _interopRequireDefault(_keys);
 
@@ -12914,10 +14588,7 @@
 	                };
 	            }
 
-	            /** Key loop */
-	            this.keyLoop = setInterval(function () {
-	                this.fireKeys();
-	            }.bind(this), this.rate);
+	            this.loop();
 
 	            this.fireKeys();
 
@@ -12928,6 +14599,22 @@
 	            window.addEventListener('keyup', function (e) {
 	                this.switchKey(this.hash, e.keyCode, 0, e);
 	            }.bind(this));
+	        }
+
+	        /**
+	         * Key loop
+	         */
+
+	    }, {
+	        key: "loop",
+	        value: function loop() {
+	            var _this = this;
+
+	            this.fireKeys();
+
+	            setTimeout(function () {
+	                return _this.loop();
+	            }, this.rate);
 	        }
 
 	        /**
@@ -13256,7 +14943,7 @@
 	exports.default = Keyboard;
 
 /***/ },
-/* 135 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -13265,7 +14952,7 @@
 	  value: true
 	});
 
-	var _getIterator2 = __webpack_require__(94);
+	var _getIterator2 = __webpack_require__(91);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -13355,702 +15042,6 @@
 	exports.default = Mouse;
 
 /***/ },
-/* 136 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _getIterator2 = __webpack_require__(94);
-
-	var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-	var _classCallCheck2 = __webpack_require__(1);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(2);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _cfg = __webpack_require__(6);
-
-	var _utils = __webpack_require__(7);
-
-	var _render = __webpack_require__(137);
-
-	var render = _interopRequireWildcard(_render);
-
-	var _Math = __webpack_require__(85);
-
-	var _Math2 = _interopRequireDefault(_Math);
-
-	var _Commander = __webpack_require__(138);
-
-	var _Commander2 = _interopRequireDefault(_Commander);
-
-	var _commands = __webpack_require__(139);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Editor
-	 * @class Editor
-	 * @export
-	 */
-
-	var Editor = function () {
-
-	    /**
-	     * @constructor
-	     * @param {Object} instance
-	     */
-
-	    function Editor(instance) {
-	        (0, _classCallCheck3.default)(this, Editor);
-
-	        /**
-	         * Instance ref
-	         * @type {Object}
-	         */
-	        this.instance = instance;
-
-	        /**
-	         * Context ref
-	         * @type {Object}
-	         */
-	        this.context = instance.context;
-
-	        /**
-	         * Instance reference
-	         * @type {Object}
-	         */
-	        this.commander = new _Commander2.default();
-
-	        /**
-	         * Map reference
-	         * @type {Object}
-	         */
-	        this.map = null;
-
-	        /**
-	         * Camera reference
-	         * @type {Object}
-	         */
-	        this.camera = null;
-
-	        /**
-	         * Selected entity
-	         * @type {Object}
-	         */
-	        this.entitySelection = null;
-
-	        /**
-	         * Selection
-	         * @type {Object}
-	         */
-	        this.selection = {
-	            x1: 0,
-	            y1: 0,
-	            x2: 0,
-	            y2: 0
-	        };
-
-	        this.selectedEntities = [];
-
-	        /**
-	         * Copied entity
-	         * @type {Object}
-	         */
-	        this.entityCopy = null;
-
-	        /**
-	         * Pasted entity
-	         * @type {Object}
-	         */
-	        this.pastedEntity = null;
-
-	        /**
-	         * Editing states
-	         * @type {Object}
-	         */
-	        this.STATES = {
-	            DRAGGING: false,
-	            SELECTING: false
-	        };
-
-	        /**
-	         * Drag helper
-	         * @type {Object}
-	         */
-	        this.drag = new _Math2.default.Point(0, 0);
-
-	        /**
-	         * Dragging
-	         * @type {Boolean}
-	         * @getter
-	         * @setter
-	         */
-	        Object.defineProperty(this, "dragging", {
-	            get: function get() {
-	                return this.STATES.DRAGGING;
-	            },
-	            set: function set(value) {
-	                this.STATES.DRAGGING = value;
-	            }
-	        });
-
-	        this.inheritInstance(instance);
-
-	        this.init();
-	    }
-
-	    /**
-	     * Inherit instance
-	     * @param {Object} instance
-	     */
-
-	    (0, _createClass3.default)(Editor, [{
-	        key: "inheritInstance",
-	        value: function inheritInstance(instance) {
-
-	            this.map = instance.currentMap;
-
-	            this.camera = instance.camera;
-	        }
-
-	        /**
-	         * Initialise
-	         */
-
-	    }, {
-	        key: "init",
-	        value: function init() {
-
-	            /** Register all commands */
-	            var _iteratorNormalCompletion = true;
-	            var _didIteratorError = false;
-	            var _iteratorError = undefined;
-
-	            try {
-	                for (var _iterator = (0, _getIterator3.default)(_commands.commands), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                    var cmd = _step.value;
-
-	                    this.commander.newCommand(cmd);
-	                }
-	            } catch (err) {
-	                _didIteratorError = true;
-	                _iteratorError = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion && _iterator.return) {
-	                        _iterator.return();
-	                    }
-	                } finally {
-	                    if (_didIteratorError) {
-	                        throw _iteratorError;
-	                    }
-	                }
-	            }
-
-	            ;
-	        }
-
-	        /**
-	         * Do a selection
-	         * @param {Number} x
-	         * @param {Number} y
-	         */
-
-	    }, {
-	        key: "selectFrom",
-	        value: function selectFrom(x, y) {
-
-	            var offset = this.camera.getGameMouseOffset(x, y);
-
-	            this.selection.x1 = offset.x;
-	            this.selection.y1 = offset.y;
-
-	            this.selection.x2 = 0;
-	            this.selection.y2 = 0;
-	        }
-
-	        /**
-	         * Do a selection
-	         * @param {Number} x
-	         * @param {Number} y
-	         */
-
-	    }, {
-	        key: "selectTo",
-	        value: function selectTo(x, y) {
-
-	            var offset = this.camera.getGameMouseOffset(x, y);
-
-	            this.selection.x2 = offset.x;
-	            this.selection.y2 = offset.y;
-
-	            this.getSelectionRange(this.selection.x1, this.selection.y1, this.selection.x2, this.selection.y2);
-	        }
-
-	        /**
-	         * Get selection out of a range
-	         * @param {Number} x1
-	         * @param {Number} y1
-	         * @param {Number} x2
-	         * @param {Number} y2
-	         */
-
-	    }, {
-	        key: "getSelectionRange",
-	        value: function getSelectionRange(x1, y1, x2, y2) {
-
-	            var entity = null;
-
-	            var entities = [];
-
-	            var ii = 0;
-	            var length = 0;
-
-	            var xx1 = x1 > x2 ? x2 : x1 - _cfg.DIMENSION;
-	            var yy1 = y1 > y2 ? y2 : y1;
-
-	            var width = Math.abs(x2 - x1);
-	            var height = Math.abs(y2 - y1);
-
-	            var eWidth = 0;
-	            var eHeight = 0;
-
-	            length = this.map.entities.length;
-
-	            for (; ii < length; ++ii) {
-	                entity = this.map.entities[ii];
-	                eWidth = entity.width * entity.scale + (x2 >= x1 ? -_cfg.DIMENSION : 0);
-	                eHeight = entity.height * entity.scale;
-	                if (_Math2.default.linearIntersect(xx1, yy1, width + eWidth - _cfg.DIMENSION, height + eHeight - _cfg.DIMENSION, entity.x + entity.xMargin + eWidth - _cfg.DIMENSION, entity.y + entity.yMargin + entity.z + _cfg.Y_DEPTH_HACK + eHeight - _cfg.DIMENSION, 1)) {
-	                    entities.push(entity.id);
-	                }
-	            };
-
-	            this.selectedEntities = entities;
-	        }
-
-	        /**
-	         * Get a entity by mouse offset
-	         * @param  {Number} x
-	         * @param  {Number} y
-	         * @param  {Object}
-	         * @return {Object}
-	         */
-
-	    }, {
-	        key: "getEntityByMouse",
-	        value: function getEntityByMouse(x, y) {
-
-	            var object = null;
-
-	            var entity = null;
-
-	            var offset = this.camera.getGameMouseOffset(x, y);
-
-	            var xx = offset.x << 0;
-	            var yy = offset.y << 0;
-
-	            var ii = 0;
-	            var length = this.map.entities.length;;
-
-	            var entities = [];
-
-	            for (; ii < length; ++ii) {
-	                entity = this.map.entities[ii];
-	                if (_Math2.default.linearIntersect(_Math2.default.roundTo(entity.position.x, _cfg.DIMENSION), _Math2.default.roundTo(entity.position.y, _cfg.DIMENSION) << 0, entity.size.x * entity.scale + entity.xMargin - _cfg.DIMENSION, entity.size.y * entity.scale + entity.yMargin - _cfg.DIMENSION, xx, yy, 1) === true) {
-	                    entities.push(entity);
-	                }
-	            };
-
-	            if (entities.length <= 0) return null;
-
-	            return entities[_Math2.default.get2DClosest(entities, xx, yy)];
-	        }
-
-	        /**
-	         * Drag a entity
-	         * @param {Number} x
-	         * @param {Number} y
-	         */
-
-	    }, {
-	        key: "dragEntity",
-	        value: function dragEntity(x, y) {
-
-	            var entity = null;
-	            var offset = null;
-
-	            var xx = 0;
-	            var yy = 0;
-
-	            if ((entity = this.entitySelection) === null) return void 0;
-
-	            /** Don't allow dragging of focused entity */
-	            if (_cfg.FREE_CAMERA === false && this.camera.objectFocus !== null && entity.id === this.camera.objectFocus.id) {
-	                return void 0;
-	            }
-
-	            offset = this.camera.getGameMouseOffset(x, y);
-
-	            /** Only fire drag if we got a new offset to drag to */
-	            if (offset.x === this.drag.x && offset.y === this.drag.y) return void 0;
-
-	            xx = offset.x - this.drag.x;
-	            yy = offset.y - this.drag.y;
-
-	            this.commander.push("drag", entity, [xx, yy]);
-
-	            this.drag.x = offset.x;
-	            this.drag.y = offset.y;
-	        }
-
-	        /**
-	         * Select a entity
-	         * @param {Number} x
-	         * @param {Number} y
-	         */
-
-	    }, {
-	        key: "selectEntity",
-	        value: function selectEntity(x, y) {
-
-	            var entity = this.getEntityByMouse(x, y);
-
-	            var offset = this.camera.getGameMouseOffset(x, y);
-
-	            if (entity !== null) {
-	                if ((0, _utils.tileContainsImageData)(entity.texture.sprites[entity.sFrame], (offset.x - entity.x) / entity.scale << 0, (offset.y - entity.y) / entity.scale << 0, _cfg.DIMENSION, _cfg.DIMENSION) === false) {
-	                    entity = null;
-	                }
-	            }
-
-	            this.commander.push("select", this, [entity, this.entitySelection]);
-
-	            this.drag.x = offset.x;
-	            this.drag.y = offset.y;
-	        }
-
-	        /**
-	         * Edit a entity
-	         * @param {Number} x
-	         * @param {Number} y
-	         */
-
-	    }, {
-	        key: "editEntity",
-	        value: function editEntity(x, y) {
-
-	            var entity = this.getEntityByMouse(x, y);
-
-	            if (entity === null) return void 0;
-
-	            console.log(entity);
-	        }
-
-	        /**
-	         * Delete selected entity
-	         */
-
-	    }, {
-	        key: "deleteEntity",
-	        value: function deleteEntity() {
-
-	            if (this.entitySelection !== null) {
-	                this.commander.push("delete", this, [this.entitySelection]);
-	            }
-	        }
-
-	        /**
-	         * Cut out selected entity
-	         */
-
-	    }, {
-	        key: "cutEntity",
-	        value: function cutEntity() {
-
-	            if (this.entitySelection !== null) {
-	                this.commander.push("cut", this, [this.entitySelection]);
-	            }
-	        }
-
-	        /**
-	         * Copy selected entity
-	         */
-
-	    }, {
-	        key: "copyEntity",
-	        value: function copyEntity() {
-
-	            if (this.entitySelection !== null) {
-	                this.commander.push("copy", this, [this.entitySelection, this.entityCopy]);
-	            }
-	        }
-
-	        /**
-	         * Paste selected entity
-	         */
-
-	    }, {
-	        key: "pasteEntity",
-	        value: function pasteEntity() {
-
-	            this.entityPaste = this.entityCopy;
-
-	            this.commander.push("paste", this, [this.entityCopy, this.entityPaste]);
-	        }
-	    }]);
-	    return Editor;
-	}();
-
-	exports.default = Editor;
-
-	(0, _utils.inherit)(Editor, render);
-
-/***/ },
-/* 137 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.renderEditorMode = renderEditorMode;
-	exports.renderSelectedEntities = renderSelectedEntities;
-	exports.renderSelection = renderSelection;
-	exports.renderEntitySelection = renderEntitySelection;
-	exports.renderEntityCollisionBox = renderEntityCollisionBox;
-	exports.renderSelectionText = renderSelectionText;
-
-	var _cfg = __webpack_require__(6);
-
-	var _Math = __webpack_require__(85);
-
-	var _Math2 = _interopRequireDefault(_Math);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Edit mode
-	 */
-	function renderEditorMode() {
-
-	  this.renderSelection();
-
-	  if (this.instance.editor.STATES.SELECTING === true) {
-	    //this.renderSelectedEntities();
-	  }
-
-	  this.renderEntitySelection();
-	}
-
-	/**
-	 * Render selected entities
-	 */
-	function renderSelectedEntities() {
-
-	  var ii = 0;
-	  var length = 0;
-
-	  var entity = null;
-	  var entities = this.instance.editor.selectedEntities;
-
-	  length = entities.length;
-
-	  var resolution = 0;
-
-	  var x = 0;
-	  var y = 0;
-
-	  var width = 0;
-	  var height = 0;
-
-	  for (; ii < length; ++ii) {
-
-	    entity = entities[ii];
-
-	    resolution = this.camera.resolution;
-
-	    x = this.camera.x + (entity.position.x + entity.xMargin) * resolution << 0;
-	    y = this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution << 0;
-
-	    width = entity.size.x * resolution << 0;
-	    height = entity.size.y * resolution << 0;
-
-	    this.context.beginPath();
-
-	    this.context.strokeStyle = "red";
-	    this.context.lineWidth = resolution / 2 << 0;
-	    this.context.strokeRect(x, y, width, height);
-	    this.context.stroke();
-
-	    this.context.closePath();
-	  };
-	}
-
-	/**
-	 * Render selection
-	 */
-	function renderSelection() {
-
-	  if (this.instance.editor.STATES.SELECTING === false) return void 0;
-
-	  var selection = this.instance.editor.selection;
-
-	  var resolution = this.camera.resolution;
-
-	  var x = this.camera.x + selection.x1 * resolution << 0;
-	  var y = this.camera.y + selection.y1 * resolution << 0;
-
-	  var width = (selection.x2 - selection.x1) * resolution << 0;
-	  var height = (selection.y2 - selection.y1) * resolution << 0;
-
-	  this.context.beginPath();
-
-	  this.context.strokeStyle = "red";
-	  this.context.lineWidth = resolution / 2 << 0;
-	  this.context.strokeRect(x, y, width, height);
-	  this.context.stroke();
-
-	  this.context.closePath();
-
-	  return void 0;
-	}
-
-	/**
-	 * Render entity selection
-	 */
-	function renderEntitySelection() {
-
-	  var entity = this.instance.editor.entitySelection;
-
-	  if (entity === null) return void 0;
-
-	  if (this.camera.isInView(entity.position.x, entity.position.y, entity.size.x * entity.scale, entity.size.y * entity.scale) === false) return void 0;
-	  if (entity.opacity === .0) return void 0;
-	  if (entity.texture === null) return void 0;
-
-	  var resolution = this.camera.resolution;
-
-	  var x = this.camera.x + (entity.position.x + entity.xMargin) * resolution << 0;
-	  var y = this.camera.y + (entity.position.y + entity.yMargin + entity.z) * resolution << 0;
-
-	  var width = entity.size.x * entity.scale * resolution << 0;
-	  var height = entity.size.y * entity.scale * resolution << 0;
-
-	  this.context.beginPath();
-
-	  this.context.strokeStyle = "red";
-	  this.context.lineWidth = resolution / 2 << 0;
-	  this.context.strokeRect(x, y, width, height);
-	  this.context.stroke();
-
-	  this.context.closePath();
-
-	  this.renderSelectionText(entity, x, y);
-
-	  this.context.globalAlpha = .25;
-
-	  if (entity.collidable === true) {
-	    if (entity.collisionBox.length > 0) {
-	      this.renderEntityCollisionBox(entity, x, y);
-	    } else {
-	      this.context.fillStyle = "red";
-	      this.context.fillRect(x, y, width, height);
-	      this.context.fill();
-	    }
-	  }
-
-	  this.context.globalAlpha = 1.0;
-
-	  return void 0;
-	}
-
-	/**
-	 * Render entity collision box
-	 * @param {Object} entity
-	 * @param {Number} x
-	 * @param {Number} y
-	 */
-	function renderEntityCollisionBox(entity, x, y) {
-
-	  var collision = entity.collisionBox;
-
-	  var resolution = this.camera.resolution;
-
-	  var tile = 0;
-
-	  var ii = 0;
-
-	  var xx = 0;
-	  var yy = 0;
-
-	  var dim = _cfg.DIMENSION * entity.scale * resolution;
-
-	  var width = entity.width / _cfg.DIMENSION;
-	  var height = entity.height / _cfg.DIMENSION;
-
-	  var length = width * height;
-
-	  for (; ii < length; ++ii) {
-	    tile = collision[yy + xx];
-	    if (tile === 1) {
-	      this.context.fillStyle = "red";
-	      this.context.fillRect(x + xx * dim, y + yy / width * dim, dim, dim);
-	      this.context.fill();
-	    }
-	    ++xx;
-	    if (xx >= width) {
-	      yy += width;
-	      xx = 0;
-	    }
-	  };
-
-	  return void 0;
-	}
-
-	/**
-	 * Render entity selection text
-	 * @param {Object} entity
-	 * @param {Number} x
-	 * @param {Number} y
-	 */
-	function renderSelectionText(entity, x, y) {
-
-	  var resolution = this.camera.resolution;
-
-	  var color = "red";
-
-	  var ln = .5 * resolution;
-	  var size = 2.5 * resolution;
-
-	  var xx = x;
-	  var yy = y - ln * 1.25 - size;
-
-	  var decimals = 1;
-
-	  var txtX = "X: " + entity.position.x.toFixed(decimals);
-	  var txtY = "Y: " + entity.position.y.toFixed(decimals);
-
-	  this.instance.renderer.drawPixelText(txtX, xx, yy, size, ln, color);
-
-	  this.instance.renderer.drawPixelText(txtY, xx, yy += size, size, ln, color);
-
-	  return void 0;
-	}
-
-/***/ },
 /* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -14060,646 +15051,7 @@
 	  value: true
 	});
 
-	var _classCallCheck2 = __webpack_require__(1);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(2);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Commander
-	 * @class Commander
-	 * @export
-	 */
-
-	var Commander = function () {
-
-	  /**
-	   * @constructor
-	   */
-
-	  function Commander() {
-	    (0, _classCallCheck3.default)(this, Commander);
-
-	    /**
-	     * Stack position
-	     * @type {Number}
-	     */
-	    this.position = -1;
-
-	    /**
-	     * Command templates
-	     * @type {Object}
-	     */
-	    this.commands = {};
-
-	    /**
-	     * Command stack
-	     * @type {Array}
-	     */
-	    this.stack = [];
-	  }
-
-	  /**
-	   * Register a new command
-	   * @param {Object} cmd
-	   */
-
-	  (0, _createClass3.default)(Commander, [{
-	    key: "newCommand",
-	    value: function newCommand(cmd) {
-	      this.commands[cmd.action] = cmd;
-	      cmd = null;
-	    }
-
-	    /**
-	     * Push a command
-	     * @param {String} action
-	     * @param {Object} scope
-	     * @param {Array} data
-	     */
-
-	  }, {
-	    key: "push",
-	    value: function push(action, scope, data) {
-
-	      var cmd = {
-	        action: action,
-	        data: data,
-	        scope: scope
-	      };
-
-	      this.stack.splice(this.position + 1, this.stack.length);
-
-	      this.stack.push(cmd);
-
-	      this.redo();
-	      this.undo();
-	      this.redo();
-	      this.undo();
-	      this.redo();
-	    }
-
-	    /**
-	     * Fire command
-	     * @param {Object} cmd
-	     * @param {String} action
-	     */
-
-	  }, {
-	    key: "fire",
-	    value: function fire(cmd, action) {
-	      var template = this.commands[cmd.action][action];
-	      template.bind(cmd.scope).apply(template, cmd.data);
-	    }
-
-	    /**
-	     * Get cmd from current stack index
-	     * @return {Object}
-	     */
-
-	  }, {
-	    key: "getCurrentCmd",
-	    value: function getCurrentCmd() {
-	      return this.stack[this.position];
-	    }
-
-	    /**
-	     * Undo
-	     */
-
-	  }, {
-	    key: "undo",
-	    value: function undo() {
-
-	      if (this.position >= 0) {
-	        this.fire(this.getCurrentCmd(), "onUndo");
-	        this.position--;
-	      }
-	    }
-
-	    /**
-	     * Redo
-	     */
-
-	  }, {
-	    key: "redo",
-	    value: function redo() {
-
-	      if (this.position < this.stack.length - 1) {
-	        this.position++;
-	        this.fire(this.getCurrentCmd(), "onRedo");
-	      }
-	    }
-	  }]);
-	  return Commander;
-	}();
-
-	exports.default = Commander;
-
-/***/ },
-/* 139 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.commands = undefined;
-
-	var _cfg = __webpack_require__(6);
-
-	var _MapEntity = __webpack_require__(97);
-
-	var _MapEntity2 = _interopRequireDefault(_MapEntity);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var commands = exports.commands = [
-	/** Select command */
-	{
-	  action: "select",
-	  onUndo: function onUndo(entity, selection) {
-	    this.entitySelection = null;
-	    this.entitySelection = selection;
-	  },
-	  onRedo: function onRedo(entity, selection) {
-	    this.entitySelection = null;
-	    this.entitySelection = entity;
-	  }
-	},
-	/** Drag command */
-	{
-	  action: "drag",
-	  onUndo: function onUndo(x, y) {
-	    this.x -= x;
-	    this.y -= y;
-	    this.y <<= 0;
-	    this.y += _cfg.Y_DEPTH_HACK;
-	    this.last.x = this.x;
-	    this.last.y = this.y;
-	  },
-	  onRedo: function onRedo(x, y) {
-	    this.x += x;
-	    this.y += y;
-	    this.y <<= 0;
-	    this.y += _cfg.Y_DEPTH_HACK;
-	    this.last.x = this.x;
-	    this.last.y = this.y;
-	  }
-	},
-	/** Delete command */
-	{
-	  action: "delete",
-	  onUndo: function onUndo(entity) {
-	    this.instance.addEntity(entity);
-	    this.entitySelection = entity;
-	  },
-	  onRedo: function onRedo(entity) {
-	    this.instance.removeEntity(entity);
-	    this.entitySelection = null;
-	  }
-	},
-	/** Cut command */
-	{
-	  action: "cut",
-	  onUndo: function onUndo(entity) {
-	    this.instance.addEntity(entity);
-	    this.entitySelection = entity;
-	  },
-	  onRedo: function onRedo(entity) {
-	    this.entityCopy = entity;
-	    this.instance.removeEntity(entity);
-	  }
-	},
-	/** Copy command */
-	{
-	  action: "copy",
-	  onUndo: function onUndo(entity, copy) {
-	    this.entityCopy = copy;
-	    this.entitySelection = copy;
-	  },
-	  onRedo: function onRedo(entity, copy) {
-	    this.entityCopy = entity;
-	    this.entitySelection = entity;
-	  }
-	},
-	/** Paste command */
-	{
-	  action: "paste",
-	  onUndo: function onUndo(entity, paste) {
-	    console.log(paste);
-	    this.instance.removeEntity(paste);
-	  },
-	  onRedo: function onRedo(entity, paste) {
-
-	    var entities = this.instance.instance.entities;
-
-	    var map = this.map;
-
-	    var tmp = null;
-
-	    var pushEntity = null;
-
-	    if (entity instanceof entities.Player) {
-	      tmp = new entities.Player({
-	        name: "undefined",
-	        map: entity.map,
-	        x: entity.x, y: entity.y,
-	        zIndex: entity.zIndex,
-	        sprite: entity.sprite,
-	        width: entity.width, height: entity.height,
-	        isLocalPlayer: false,
-	        collidable: entity.collidable,
-	        shadow: entity.hasShadow
-	      });
-	      if (entity.instance) {
-	        tmp.instance = entity.instance;
-	      }
-	      if (tmp.hasShadow) {
-	        tmp.shadow.x = entity.shadow.x;
-	        tmp.shadow.y = entity.shadow.y;
-	      }
-	      tmp.fadeIn(.75);
-	    } else if (entity instanceof _MapEntity2.default) {
-	      tmp = map.objectTemplates[entity.name.toLowerCase()];
-	    } else {
-	      return void 0;
-	    }
-
-	    tmp.x = entity.x;
-	    tmp.y = entity.y;
-	    tmp.z = entity.z;
-
-	    if (entity instanceof _MapEntity2.default) {
-	      pushEntity = map.addEntity(tmp);
-	    } else {
-	      pushEntity = tmp;
-	    }
-
-	    map.entities.push(pushEntity);
-
-	    this.entityCopy = pushEntity;
-
-	    this.entityPaste = pushEntity;
-	  }
-	}];
-
-/***/ },
-/* 140 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _classCallCheck2 = __webpack_require__(1);
-
-	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
-
-	var _createClass2 = __webpack_require__(2);
-
-	var _createClass3 = _interopRequireDefault(_createClass2);
-
-	var _cfg = __webpack_require__(6);
-
-	var _utils = __webpack_require__(7);
-
-	var _Math = __webpack_require__(85);
-
-	var _Math2 = _interopRequireDefault(_Math);
-
-	var _MapEntity = __webpack_require__(97);
-
-	var _MapEntity2 = _interopRequireDefault(_MapEntity);
-
-	var _Camera = __webpack_require__(131);
-
-	var _Camera2 = _interopRequireDefault(_Camera);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * MiniMap
-	 * @class MiniMap
-	 * @export
-	 */
-
-	var MiniMap = function () {
-
-	    /**
-	     * @constructor
-	     * @param {Object} instance
-	     */
-
-	    function MiniMap(instance) {
-	        (0, _classCallCheck3.default)(this, MiniMap);
-
-	        /**
-	         * Game instance ref
-	         * @type {Object}
-	         */
-	        this.instance = instance;
-
-	        /**
-	         * Camera ref
-	         * @type {Object}
-	         */
-	        this.camera = new _Camera2.default(this);
-
-	        /**
-	         * Camera size ref
-	         * @type {Object}
-	         */
-	        this.camera.size = this.instance.camera.size;
-
-	        /**
-	         * Camera pos ref
-	         * @type {Object}
-	         */
-	        this.camera.position = this.instance.camera.position;
-
-	        /**
-	         * Width
-	         * @type {Number}
-	         */
-	        this.width = 300;
-
-	        /**
-	         * Height
-	         * @type {Number}
-	         */
-	        this.height = 200;
-
-	        /**
-	         * Minimap buffer
-	         * @type {Object}
-	         */
-	        this.buffer = null;
-
-	        /**
-	         * Minimap background buffer
-	         * @type {Object}
-	         */
-	        this.bgBuffer = null;
-
-	        /**
-	         * Minimap front buffer
-	         * @type {Object}
-	         */
-	        this.frBuffer = null;
-
-	        /**
-	         * Redraw state
-	         * @type {Boolean}
-	         */
-	        this.redraw = true;
-
-	        this.entities = {};
-
-	        this.resolution = 1.0;
-
-	        this.position = new _Math2.default.Point();
-
-	        this.init();
-	    }
-
-	    /**
-	     * Initialise
-	     */
-
-	    (0, _createClass3.default)(MiniMap, [{
-	        key: "init",
-	        value: function init() {
-
-	            this.buffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
-
-	            this.bgBuffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
-
-	            this.frBuffer = (0, _utils.createCanvasBuffer)(this.width, this.height);
-
-	            this.createEntityBuffer("Player", "#DBB78A", "#905A23");
-	            this.createEntityBuffer("Entity", "#697a21", "#c9db8a");
-	            this.createEntityBuffer("LocalPlayer", "#119617", "#abf4c0");
-	            this.createEntityBuffer("Tree", "#697a21", "darkgreen");
-
-	            this.resize();
-
-	            this.draw();
-	        }
-
-	        /**
-	         * Resize
-	         */
-
-	    }, {
-	        key: "resize",
-	        value: function resize() {
-
-	            this.position.x = this.camera.width - this.width;
-	            this.position.y = this.camera.height - this.height;
-	        }
-
-	        /**
-	         * Mouse inside this map offset
-	         * @param  {Number} x
-	         * @param  {Number} y
-	         * @return {Boolean}
-	         */
-
-	    }, {
-	        key: "inside",
-	        value: function inside(x, y) {
-
-	            return _Math2.default.cubicCollision(x, y, 1, 1, this.position.x, this.position.y, this.width, this.height);
-	        }
-
-	        /**
-	         * Create a entity buffer
-	         * @param {String} type
-	         * @param {String} fillColor
-	         * @param {String} strokeColor
-	         */
-
-	    }, {
-	        key: "createEntityBuffer",
-	        value: function createEntityBuffer(type, fillColor, strokeColor) {
-
-	            var radius = 6;
-
-	            var width = 16;
-	            var height = 16;
-
-	            var link = null;
-
-	            this.entities[type] = (0, _utils.createCanvasBuffer)(width, height);
-
-	            link = this.entities[type];
-
-	            link.beginPath();
-	            link.arc(width / 2, height / 2, radius, 0, 2 * Math.PI, false);
-	            link.fillStyle = fillColor;
-	            link.fill();
-	            link.lineWidth = 1.5;
-	            link.strokeStyle = strokeColor;
-	            link.stroke();
-	        }
-
-	        /**
-	         * Draw mini map
-	         * @param {Number} mode
-	         * @param {Array}  entities
-	         */
-
-	    }, {
-	        key: "draw",
-	        value: function draw(mode, entities) {
-
-	            this.buffer.clear();
-	            this.bgBuffer.clear();
-	            this.frBuffer.clear();
-
-	            /** Redraw everything */
-	            if (mode === 0) {
-	                this.drawBackground();
-	                this.drawFront(entities);
-	                return void 0;
-	            }
-
-	            /** Redraw front only */
-	            if (mode === 1) {
-	                this.drawFront(entities);
-	                return void 0;
-	            }
-
-	            return void 0;
-	        }
-
-	        /**
-	         * Draw a background
-	         */
-
-	    }, {
-	        key: "drawBackground",
-	        value: function drawBackground() {
-
-	            this.bgBuffer.strokeStyle = "red";
-	            this.bgBuffer.strokeRect(0, 0, this.width, this.height);
-	            this.bgBuffer.stroke();
-
-	            return void 0;
-	        }
-
-	        /**
-	         * Draw the front layer
-	         * @param {Array} entities
-	         */
-
-	    }, {
-	        key: "drawFront",
-	        value: function drawFront(entities) {
-
-	            var entity = null;
-
-	            var ii = 0;
-	            var length = 0;
-
-	            length = entities.length;
-
-	            var resolution = this.instance.camera.resolution;
-	            var scaling = .0;
-
-	            var camX = this.width / 2 - (this.camera.size.x / 2 - this.camera.position.x) / resolution;
-	            var camY = this.height / 2 - (this.camera.size.y / 2 - this.camera.position.y) / resolution;
-
-	            var color = null;
-
-	            var x = 0;
-	            var y = 0;
-
-	            var width = 0;
-	            var height = 0;
-
-	            for (; ii < length; ++ii) {
-	                entity = entities[ii];
-	                //if ((entity instanceof Player) === false) continue;
-	                scaling = entity.scale + -entity.z / this.resolution / ((entity.width + entity.height) / 2);
-	                if (entity.texture === null) continue;
-	                x = (camX + entity.x + entity.xMargin + entity.z / (entity.width / 2) / 2) * this.resolution << 0;
-	                y = (camY + entity.y + entity.yMargin + entity.z) * this.resolution << 0;
-	                width = entity.size.x * scaling << 0;
-	                height = entity.size.y * scaling << 0;
-	                this.drawEntity(entity, x, y, width, height);
-	            };
-
-	            this.drawCameraViewport(camX, camY);
-
-	            return void 0;
-	        }
-	    }, {
-	        key: "drawEntity",
-	        value: function drawEntity(entity, x, y, width, height) {
-
-	            var tmpl = null;
-
-	            var Player = this.instance.instance.entities.Player;
-
-	            if (entity.id === this.instance.localEntity.id) {
-	                tmpl = this.entities["LocalPlayer"];
-	            } else if (entity instanceof Player) {
-	                tmpl = this.entities["Player"];
-	            } else if (entity.name === "Tree") {
-	                tmpl = this.entities["Tree"];
-	            } else {
-	                tmpl = this.entities["Entity"];
-	            }
-
-	            this.bgBuffer.drawImage(tmpl.canvas, x, y);
-
-	            return void 0;
-	        }
-
-	        /**
-	         * Draw camera viewport
-	         */
-
-	    }, {
-	        key: "drawCameraViewport",
-	        value: function drawCameraViewport(x, y) {
-
-	            var resolution = this.instance.camera.resolution;
-
-	            this.bgBuffer.lineWidth = 1;
-	            this.bgBuffer.strokeStyle = "red";
-	            this.bgBuffer.strokeRect(x - this.camera.position.x / resolution, y - this.camera.position.y / resolution, this.camera.size.x / resolution, this.camera.size.y / resolution);
-	            this.bgBuffer.stroke();
-
-	            return void 0;
-	        }
-	    }]);
-	    return MiniMap;
-	}();
-
-	exports.default = MiniMap;
-
-/***/ },
-/* 141 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _toConsumableArray2 = __webpack_require__(142);
+	var _toConsumableArray2 = __webpack_require__(139);
 
 	var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
@@ -14711,7 +15063,7 @@
 
 	var _createClass3 = _interopRequireDefault(_createClass2);
 
-	var _Packets = __webpack_require__(146);
+	var _Packets = __webpack_require__(143);
 
 	var Packet = _interopRequireWildcard(_Packets);
 
@@ -14729,12 +15081,11 @@
 
 	  /**
 	   * @constructor
-	   * @param {Object}   instance
-	   * @param {String}   url
-	   * @param {Function} handler
+	   * @param {Object} instance
+	   * @param {String} url
 	   */
 
-	  function Connection(instance, url, handler) {
+	  function Connection(instance, url) {
 	    (0, _classCallCheck3.default)(this, Connection);
 
 	    /**
@@ -14754,10 +15105,6 @@
 	     * @type {Boolean}
 	     */
 	    this.open = false;
-
-	    if (handler !== void 0 && handler instanceof Function) {
-	      this.handleMessage = handler;
-	    }
 
 	    this.init(url);
 	  }
@@ -15041,14 +15388,14 @@
 	exports.default = Connection;
 
 /***/ },
-/* 142 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	exports.__esModule = true;
 
-	var _from = __webpack_require__(143);
+	var _from = __webpack_require__(140);
 
 	var _from2 = _interopRequireDefault(_from);
 
@@ -15067,21 +15414,21 @@
 	};
 
 /***/ },
-/* 143 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(144), __esModule: true };
+	module.exports = { "default": __webpack_require__(141), __esModule: true };
 
 /***/ },
-/* 144 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(11);
-	__webpack_require__(145);
+	__webpack_require__(142);
 	module.exports = __webpack_require__(19).Array.from;
 
 /***/ },
-/* 145 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15123,7 +15470,7 @@
 
 
 /***/ },
-/* 146 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15132,7 +15479,7 @@
 	  value: true
 	});
 
-	var _Facing = __webpack_require__(147);
+	var _Facing = __webpack_require__(144);
 
 	Object.defineProperty(exports, "Facing", {
 	  enumerable: true,
@@ -15141,7 +15488,7 @@
 	  }
 	});
 
-	var _Jumping = __webpack_require__(148);
+	var _Jumping = __webpack_require__(145);
 
 	Object.defineProperty(exports, "Jumping", {
 	  enumerable: true,
@@ -15150,7 +15497,7 @@
 	  }
 	});
 
-	var _Position = __webpack_require__(149);
+	var _Position = __webpack_require__(146);
 
 	Object.defineProperty(exports, "Position", {
 	  enumerable: true,
@@ -15159,7 +15506,7 @@
 	  }
 	});
 
-	var _Velocity = __webpack_require__(150);
+	var _Velocity = __webpack_require__(147);
 
 	Object.defineProperty(exports, "Velocity", {
 	  enumerable: true,
@@ -15169,7 +15516,7 @@
 	});
 
 /***/ },
-/* 147 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15247,7 +15594,7 @@
 	}();
 
 /***/ },
-/* 148 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15318,7 +15665,7 @@
 	}();
 
 /***/ },
-/* 149 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15410,7 +15757,7 @@
 	}();
 
 /***/ },
-/* 150 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15486,7 +15833,7 @@
 	}();
 
 /***/ },
-/* 151 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15568,6 +15915,7 @@
 	    cfg.DEBUG_MODE = cfg.DEBUG_MODE ? false : true;
 	    if (!cfg.DEBUG_MODE) {
 	      cfg.FREE_CAMERA = false;
+	      this.engine.camera.focus(this.engine.localEntity, false);
 	    }
 	    this.engine.renderer.switchRenderingMode(cfg.DEBUG_MODE ? 0 : 1);
 	    this.engine.renderer.resize(true);
@@ -15606,12 +15954,6 @@
 	{
 	  name: "Y",
 	  fire: function fire() {}
-	}, {
-	  name: "Z",
-	  fire: function fire() {
-	    var local = this.engine.localEntity;
-	    local.action();
-	  }
 	},
 	/** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
 	{
@@ -15636,6 +15978,19 @@
 	    } else {
 	      this.engine.scenes.Pause.show();
 	    }
+	  }
+	}, {
+	  name: "B",
+	  spam: false,
+	  fire: function fire() {
+	    this.engine.notify(this.engine.localEntity, "Hello World");
+	  }
+	}, {
+	  name: "Z",
+	  spam: false,
+	  fire: function fire() {
+	    var local = this.engine.localEntity;
+	    local.action();
 	  }
 	}, {
 	  name: "X",
@@ -15751,8 +16106,11 @@
 	}, {
 	  name: "mousedown|touchstart",
 	  fire: function fire(e) {
-	    var x = e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
-	    var y = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
+	    if (e.target.id !== this.engine.node.id) {
+	      return void 0;
+	    }
+	    var x = e.touches ? e.touches[0].clientX : e.clientX;
+	    var y = e.touches ? e.touches[0].clientY : e.clientY;
 	    e.preventDefault();
 	    if (this.input.KeyBoard.isKeyPressed("G")) {
 	      this.engine.ping(x, y, "notify");
@@ -15765,14 +16123,14 @@
 	      this.engine.editor.selectTo(x, y);
 	      return void 0;
 	    }
-	    if (e.which !== 1) {
+	    if (e.which !== 1 && !this.input.KeyBoard.isKeyPressed("SPACE")) {
 	      cfg.FREE_CAMERA = true;
 	    }
-	    if (cfg.FREE_CAMERA && (e instanceof TouchEvent || e.which !== 1)) {
+	    if (cfg.FREE_CAMERA && (e.touches || e.which !== 1)) {
 	      this.engine.camera.dragging = true;
 	      this.engine.camera.click(x, y);
 	    }
-	    if (cfg.EDIT_MODE && (e instanceof TouchEvent || e.which === 1)) {
+	    if (cfg.EDIT_MODE && (e.touches || e.which === 1)) {
 	      this.engine.editor.dragging = true;
 	      this.engine.editor.selectEntity(x, y);
 	    }
@@ -15786,7 +16144,7 @@
 	      this.engine.camera.dragging = false;
 	    }
 	    if (cfg.EDIT_MODE) {
-	      if (e instanceof TouchEvent || e.which === 1) {
+	      if (e.touches || e.which === 1) {
 	        this.engine.editor.dragging = false;
 	        this.engine.editor.STATES.SELECTING = false;
 	        this.engine.editor.selectedEntities = [];
@@ -15796,11 +16154,11 @@
 	}, {
 	  name: "mousemove|touchmove",
 	  fire: function fire(e) {
-	    var x = e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
-	    var y = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
+	    var x = e.touches ? e.touches[0].clientX : e.clientX;
+	    var y = e.touches ? e.touches[0].clientY : e.clientY;
 	    e.preventDefault();
 	    if (!cfg.DEBUG_MODE) return void 0;
-	    if (cfg.FREE_CAMERA && this.engine.camera.dragging) {
+	    if (cfg.FREE_CAMERA && this.engine.camera.dragging && !this.input.KeyBoard.isKeyPressed("SPACE")) {
 	      this.engine.camera.move(x, y);
 	    }
 	    if (this.input.KeyBoard.isKeyPressed("SHIFT") && this.engine.editor.STATES.SELECTING) {
@@ -15835,7 +16193,7 @@
 	}];
 
 /***/ },
-/* 152 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15844,7 +16202,7 @@
 	  value: true
 	});
 
-	var _Player = __webpack_require__(153);
+	var _Player = __webpack_require__(150);
 
 	Object.defineProperty(exports, "Player", {
 	  enumerable: true,
@@ -15853,7 +16211,7 @@
 	  }
 	});
 
-	var _Monster = __webpack_require__(156);
+	var _Monster = __webpack_require__(153);
 
 	Object.defineProperty(exports, "Monster", {
 	  enumerable: true,
@@ -15863,7 +16221,7 @@
 	});
 
 /***/ },
-/* 153 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15901,11 +16259,11 @@
 
 	var _utils = __webpack_require__(7);
 
-	var _Entity2 = __webpack_require__(98);
+	var _Entity2 = __webpack_require__(95);
 
 	var _Entity3 = _interopRequireDefault(_Entity2);
 
-	var _movement = __webpack_require__(154);
+	var _movement = __webpack_require__(151);
 
 	var movement = _interopRequireWildcard(_movement);
 
@@ -15965,8 +16323,8 @@
 	     * Shadow offsets
 	     * @type {Number}
 	     */
-	    _this.shadowX = 0;
-	    _this.shadowY = -1.75;
+	    _this.shadowX = obj.shadowX === void 0 ? 0 : obj.shadowX;
+	    _this.shadowY = obj.shadowY === void 0 ? -1.75 : obj.shadowY;
 
 	    /**
 	     * Local player check
@@ -16135,6 +16493,20 @@
 	      var position = _Math2.default.getTilePosition(this.x << 0, this.y << 0, this.facing);
 	      _utils.Maps[this.map].actionTrigger(position, this);
 	    }
+
+	    /**
+	     * Face a entity
+	     * @param {Object} entity
+	     */
+
+	  }, {
+	    key: "faceEntity",
+	    value: function faceEntity(entity) {
+	      var facing = this.oppositFacing(entity.facing);
+	      if (this.facing !== facing) {
+	        this.changeFacing(facing);
+	      }
+	    }
 	  }, {
 	    key: "velocity",
 	    get: function get() {
@@ -16183,7 +16555,7 @@
 	(0, _utils.inherit)(Player, movement);
 
 /***/ },
-/* 154 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16203,7 +16575,7 @@
 	exports.startMoving = startMoving;
 	exports.stopMoving = stopMoving;
 
-	var _getIterator2 = __webpack_require__(94);
+	var _getIterator2 = __webpack_require__(91);
 
 	var _getIterator3 = _interopRequireDefault(_getIterator2);
 
@@ -16215,7 +16587,7 @@
 
 	var _Math2 = _interopRequireDefault(_Math);
 
-	var _Audio = __webpack_require__(155);
+	var _Audio = __webpack_require__(152);
 
 	var _Audio2 = _interopRequireDefault(_Audio);
 
@@ -16225,6 +16597,8 @@
 	 * Jump
 	 */
 	function jump() {
+
+	  if (this.jumpable === false) return void 0;
 
 	  this.refreshState();
 
@@ -16381,7 +16755,7 @@
 	 */
 	function changeFacing(dir) {
 
-	  if (this.STATES.LOCK === true) return void 0;
+	  if (this.STATES.LOCK === true || this.moving === true) return void 0;
 
 	  this.idleTime = 0;
 
@@ -16621,7 +16995,7 @@
 	}
 
 /***/ },
-/* 155 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16654,6 +17028,12 @@
 
 	  function Audio() {
 	    (0, _classCallCheck3.default)(this, Audio);
+
+	    /**
+	     * Audio res path
+	     * @type {String}
+	     */
+	    this.path = "assets/audio/";
 	  }
 
 	  /**
@@ -16667,12 +17047,30 @@
 	  (0, _createClass3.default)(Audio, [{
 	    key: "playSound",
 	    value: function playSound(name, vol, x, y) {
-	      var path = "assets/audio/" + name + ".ogg";
+	      var path = this.path + (name + ".ogg");
 	      var sound = new Howl({
 	        urls: [path],
 	        autoplay: true,
 	        loop: false,
 	        pos3d: [x, y, vol / 1e3]
+	      });
+	    }
+
+	    /**
+	     * Play a song
+	     * @param {String} name
+	     * @param {Number} vol
+	     */
+
+	  }, {
+	    key: "playSong",
+	    value: function playSong(name, vol) {
+	      var path = this.path + (name + ".ogg");
+	      var song = new Howl({
+	        urls: [path],
+	        autoplay: true,
+	        loop: true,
+	        volume: vol / 1e2
 	      });
 	    }
 	  }]);
@@ -16682,7 +17080,7 @@
 	exports.default = Audio = new Audio();
 
 /***/ },
-/* 156 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16712,7 +17110,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Entity2 = __webpack_require__(98);
+	var _Entity2 = __webpack_require__(95);
 
 	var _Entity3 = _interopRequireDefault(_Entity2);
 
@@ -16745,7 +17143,7 @@
 	}(_Entity3.default);
 
 /***/ },
-/* 157 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16754,7 +17152,7 @@
 	  value: true
 	});
 
-	var _Pause = __webpack_require__(158);
+	var _Pause = __webpack_require__(155);
 
 	Object.defineProperty(exports, "Pause", {
 	  enumerable: true,
@@ -16764,7 +17162,7 @@
 	});
 
 /***/ },
-/* 158 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -16796,15 +17194,15 @@
 
 	var _cfg = __webpack_require__(6);
 
-	var _Element2 = __webpack_require__(159);
+	var _Element2 = __webpack_require__(156);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
-	var _UI = __webpack_require__(160);
+	var _UI = __webpack_require__(157);
 
 	var elements = _interopRequireWildcard(_UI);
 
-	var _Input = __webpack_require__(133);
+	var _Input = __webpack_require__(135);
 
 	var _Input2 = _interopRequireDefault(_Input);
 
@@ -16993,6 +17391,7 @@
 	    value: function show() {
 	      this.active = true;
 	      this.instance.activeScene = true;
+	      this.drawContext.canvas.style.display = "block";
 	      this.updatePositions();
 	      this.render();
 	      this.draw();
@@ -17007,6 +17406,7 @@
 	    value: function hide() {
 	      this.active = false;
 	      this.instance.activeScene = false;
+	      this.drawContext.canvas.style.display = "none";
 	      this.drawContext.canvas.width = this.width;
 	    }
 	  }]);
@@ -17014,7 +17414,7 @@
 	}(_Element3.default);
 
 /***/ },
-/* 159 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17043,7 +17443,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _DisplayObject2 = __webpack_require__(99);
+	var _DisplayObject2 = __webpack_require__(96);
 
 	var _DisplayObject3 = _interopRequireDefault(_DisplayObject2);
 
@@ -17257,7 +17657,7 @@
 	exports.default = Element;
 
 /***/ },
-/* 160 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17266,7 +17666,7 @@
 	  value: true
 	});
 
-	var _Label = __webpack_require__(161);
+	var _Label = __webpack_require__(158);
 
 	Object.defineProperty(exports, "Label", {
 	  enumerable: true,
@@ -17275,7 +17675,7 @@
 	  }
 	});
 
-	var _Button = __webpack_require__(162);
+	var _Button = __webpack_require__(159);
 
 	Object.defineProperty(exports, "Button", {
 	  enumerable: true,
@@ -17284,7 +17684,7 @@
 	  }
 	});
 
-	var _Background = __webpack_require__(163);
+	var _Background = __webpack_require__(160);
 
 	Object.defineProperty(exports, "Background", {
 	  enumerable: true,
@@ -17294,7 +17694,7 @@
 	});
 
 /***/ },
-/* 161 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17324,7 +17724,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Element2 = __webpack_require__(159);
+	var _Element2 = __webpack_require__(156);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
@@ -17407,7 +17807,7 @@
 	}(_Element3.default);
 
 /***/ },
-/* 162 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17437,7 +17837,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Element2 = __webpack_require__(159);
+	var _Element2 = __webpack_require__(156);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
@@ -17527,7 +17927,7 @@
 	}(_Element3.default);
 
 /***/ },
-/* 163 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17557,7 +17957,7 @@
 
 	var _inherits3 = _interopRequireDefault(_inherits2);
 
-	var _Element2 = __webpack_require__(159);
+	var _Element2 = __webpack_require__(156);
 
 	var _Element3 = _interopRequireDefault(_Element2);
 
@@ -17629,6 +18029,248 @@
 	    }]);
 	    return Background;
 	}(_Element3.default);
+
+/***/ },
+/* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _getPrototypeOf = __webpack_require__(65);
+
+	var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+	var _classCallCheck2 = __webpack_require__(1);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(2);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
+	var _possibleConstructorReturn2 = __webpack_require__(70);
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+	var _inherits2 = __webpack_require__(79);
+
+	var _inherits3 = _interopRequireDefault(_inherits2);
+
+	var _cfg = __webpack_require__(6);
+
+	var _Math = __webpack_require__(85);
+
+	var _Math2 = _interopRequireDefault(_Math);
+
+	var _utils = __webpack_require__(7);
+
+	var _Entity2 = __webpack_require__(95);
+
+	var _Entity3 = _interopRequireDefault(_Entity2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Notification
+	 * @class Notification
+	 * @export
+	 */
+
+	var Notification = function (_Entity) {
+	    (0, _inherits3.default)(Notification, _Entity);
+
+	    /**
+	     * @param {Object} obj
+	     * @constructor
+	     */
+
+	    function Notification(obj) {
+	        (0, _classCallCheck3.default)(this, Notification);
+
+	        /**
+	         * Entity to follow
+	         * @type {Object}
+	         */
+
+	        var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(Notification).call(this, obj));
+
+	        _this.follow = obj.follow || null;
+
+	        if (_this.follow !== null) {
+	            _this.position = _this.follow.position;
+	        }
+
+	        /**
+	         * Has shadow
+	         * @type {Boolean}
+	         */
+	        _this.hasShadow = false;
+
+	        /**
+	         * Attach type
+	         * @type {Number}
+	         */
+	        _this.type = _cfg.TYPES.Notification;
+
+	        /**
+	         * Message
+	         * @type {String}
+	         */
+	        _this.msg = obj.msg || "undefined";
+
+	        /**
+	         * Top left texture
+	         * @type {String}
+	         */
+	        _this.topLeft = "assets/img/chat/tleft.png";
+
+	        /**
+	         * Top right texture
+	         * @type {String}
+	         */
+	        _this.topRight = "assets/img/chat/tright.png";
+
+	        /**
+	         * Bottom left texture
+	         * @type {String}
+	         */
+	        _this.bottomLeft = "assets/img/chat/bleft.png";
+
+	        /**
+	         * Bottom right texture
+	         * @type {String}
+	         */
+	        _this.bottomRight = "assets/img/chat/bright.png";
+
+	        /**
+	         * Pointer texture
+	         * @type {String}
+	         */
+	        _this.pointer = "assets/img/chat/point.png";
+
+	        /**
+	         * Fill texture
+	         * @type {String}
+	         */
+	        _this.fill = "assets/img/chat/fill.png";
+
+	        /**
+	         * Texture
+	         * @type {Object}
+	         */
+	        _this.texture = null;
+
+	        _this.sprite = null;
+
+	        _this.padding = 3;
+
+	        _this.msgMaxWidth = 100;
+
+	        _this.heightOfMessage = 20;
+
+	        _this.loadTexture();
+
+	        return _this;
+	    }
+
+	    /**
+	     * Get frame index
+	     * @return {Number}
+	     */
+
+	    (0, _createClass3.default)(Notification, [{
+	        key: "getFrameIndex",
+	        value: function getFrameIndex() {
+	            return 0;
+	        }
+
+	        /**
+	         * Load texture
+	         */
+
+	    }, {
+	        key: "loadTexture",
+	        value: function loadTexture() {
+	            var _this2 = this;
+
+	            var self = this;
+
+	            function load(sprite, resolve) {
+	                (0, _utils.getSprite)(self[sprite], self.width, self.height, function (texture) {
+	                    this[sprite] = texture;
+	                    resolve();
+	                }.bind(self));
+	            }
+
+	            load("topLeft", function () {
+	                return load("topRight", function () {
+	                    return load("bottomLeft", function () {
+	                        return load("bottomRight", function () {
+	                            return load("pointer", function () {
+	                                return load("fill", function () {
+	                                    this.draw();
+	                                }.bind(_this2));
+	                            });
+	                        });
+	                    });
+	                });
+	            });
+	        }
+
+	        /**
+	         * Draw
+	         */
+
+	    }, {
+	        key: "draw",
+	        value: function draw() {
+
+	            this.texture = (0, _utils.createCanvasBuffer)(this.width, this.height + this.pointer.height);
+
+	            var ctx = this.texture;
+
+	            var cornerWidth = this.topLeft.width;
+	            var cornerHeight = this.topLeft.height;
+
+	            ctx.drawImage(this.fill.texture.canvas, this.padding, this.padding, this.width - this.padding * 2, this.height - this.padding * 2);
+
+	            ctx.drawImage(this.fill.texture.canvas, 0, this.padding, this.padding, this.height - this.padding * 2);
+	            ctx.drawImage(this.fill.texture.canvas, this.width - this.padding, this.padding, this.padding, this.height - this.padding * 2);
+
+	            ctx.drawImage(this.fill.texture.canvas, this.padding, 0, this.width - this.padding * 2, this.padding);
+	            ctx.drawImage(this.fill.texture.canvas, this.padding, this.height - this.padding, this.width - this.padding * 2, this.padding);
+
+	            ctx.drawImage(this.topLeft.texture.canvas, 0, 0);
+	            ctx.drawImage(this.topRight.texture.canvas, this.width - this.topRight.width, 0);
+	            ctx.drawImage(this.bottomLeft.texture.canvas, 0, this.height - this.bottomLeft.height);
+	            ctx.drawImage(this.bottomRight.texture.canvas, this.width - this.topRight.width, this.height - this.bottomLeft.height);
+
+	            ctx.drawImage(this.pointer.texture.canvas, this.width / 2, this.height);
+
+	            var txt = (0, _utils.createCanvasBuffer)(this.width, this.height + this.pointer.height);
+
+	            txt.font = 20 + "px AdvoCut";
+	            txt.strokeStyle = "#000";
+	            txt.lineWidth = 2;
+	            txt.strokeText(this.msg, this.width / 2, (this.height + this.pointer.height) / 2);
+	            txt.fillStyle = "white";
+	            txt.fillText(this.msg, this.width / 2, (this.height + this.pointer.height) / 2);
+
+	            var resolution = .75;
+
+	            ctx.drawImage(txt.canvas, 0, 0, this.width * resolution << 0, (this.height + this.pointer.height) * resolution << 0);
+
+	            return void 0;
+	        }
+	    }]);
+	    return Notification;
+	}(_Entity3.default);
+
+	exports.default = Notification;
 
 /***/ }
 /******/ ]);

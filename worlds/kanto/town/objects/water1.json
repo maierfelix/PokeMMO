@@ -8,5 +8,7 @@
   "shadow" : false,
   "animation": true,
   "animationFrames": 32,
-  "loop": true
+  "loop": true,
+  "jumpable": false,
+  "collidable": true
 }

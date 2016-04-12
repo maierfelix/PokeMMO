@@ -4,7 +4,9 @@ return (function() {
 
   var MAP = {
     entities: [],
-    settings: {}
+    settings: {
+      music: "new-bark-town"
+    }
   };
 
   var x = 0;
@@ -56,15 +58,7 @@ return (function() {
     x: 208, y: 168,
     type: "ping",
     opacity: .0,
-    collidable: true,
-    onCollide: {
-      EngelScript: `
-        trigger.lock = true;
-        @ trigger.move(0);
-        @ trigger.move(0);
-        trigger.lock = false;
-      `
-    }
+    collidable: true
   });
 
   /*MAP.entities.push({
@@ -73,13 +67,6 @@ return (function() {
     opacity: .75,
     scale: .1
   });*/
-
-  MAP.entities.push({
-    x: 168, y: 136,
-    type: "water1",
-    collidable: false,
-    shadow: false
-  });
 
   MAP.entities.push(
     {
@@ -96,7 +83,7 @@ return (function() {
   );
 
   MAP.entities.push({
-    x: 160, y: 128,
+    x: 160 + 16, y: 128,
     type: "treestub",
     onCollide: {
       /*JavaScript: function(entity) {
@@ -129,6 +116,43 @@ return (function() {
           @ trigger.move(0);
           @ trigger.move(2);
           @ trigger.move(2);
+        }
+      `
+    }
+  });
+
+  MAP.entities.push({
+    x: 160, y: 128,
+    type: "treestub",
+    onCollide: {
+      EngelScript: `
+        if (trigger.facing == 2) {
+          if (FLAGS.GOT_STARTER_PKMN == false) {
+            FLAGS.GOT_STARTER_PKMN = true;
+            trigger.jump();
+          }
+        }
+      `
+    }
+  });
+
+  MAP.entities.push({
+    x: 168, y: 160,
+    type: "treestub",
+    onCollide: {
+      EngelScript: `
+        if (trigger.facing == 2) {
+          if (FLAGS.GOT_STARTER_PKMN == false) {
+            kernel.notify(trigger, "You didnt got your starter pokemon yet!");
+          } {
+            kernel.notify(trigger, "You successfully received your starter pkmn!", 2 * 2, FLAGS.GOT_STARTER_PKMN);
+          }
+        }
+        if (trigger.facing == 1) {
+          FLAGS.COUNTER += 1;
+        }
+        if (trigger.facing == 0) {
+          FLAGS.COUNTER -= 1;
         }
       `
     }
@@ -224,6 +248,81 @@ return (function() {
   MAP.entities.push({
     x: 128, y: 120 + 8,
     type: "flower"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 216, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 232, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 248, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 264, y: 240,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 216, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 232, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 248, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 264, y: 256,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 216, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 232, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 248, y: 272,
+    type: "water1"
+  });
+
+  MAP.entities.push({
+    x: 264, y: 272,
+    type: "water1"
   });
 
   return (MAP);
