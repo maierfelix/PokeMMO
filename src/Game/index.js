@@ -126,9 +126,21 @@ export default class Game {
 
     this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
       onCollide: {
-        JavaScript: function(entity) {
-          this.facing = this.oppositFacing(entity.facing);
+        JavaScript: function(entity, engine) {
+          this.faceEntity(entity);
+          console.log(engine.instance.notify(this, "Stop it fucktard!"));
         }
+      }
+    }));
+
+    this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 176, y: 152, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+      onAction: {
+        EngelScript: `
+          if (trigger.facing == 2) {
+            kernel.notify(this, "Ameno");
+          }
+          this.faceEntity(trigger);
+        `
       }
     }));
 

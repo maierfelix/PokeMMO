@@ -5,7 +5,8 @@ import {
   DIMENSION,
   DISPLAY_SHADOWS, SHADOW_X, SHADOW_Y,
   RENDER_MODE, CANVAS, WGL,
-  MINI_MAP
+  MINI_MAP,
+  TYPES
 } from "../../cfg";
 
 import math from "../../Math";
@@ -22,6 +23,8 @@ export function render() {
   this.instance.sort();
 
   this.update();
+
+  this.instance.logic();
 
   this.draw();
 
@@ -202,14 +205,14 @@ export function renderEntities(lowest) {
   for (; ii < length; ++ii) {
     entity = entities[ii];
     if (lowest === 0 && entity.zIndex <= 0) continue;
-    scaling = entity.scale + (-entity.z / resolution) / ((entity.size.x + entity.size.y) / 2);
+    scaling = entity.scale + (-entity.position.z / resolution) / ((entity.size.x + entity.size.y) / 2);
     if (entity.renderable === false) continue;
     this.updateEntitySpriteFrame(entity);
     this.renderEntity(
       entity,
       /** Position */
-      (camX + (entity.position.x + entity.xMargin + ((entity.z / (entity.size.x / 2)) / 2)) * resolution) << 0,
-      (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0,
+      (camX + (entity.position.x + entity.xMargin + ((entity.position.z / (entity.size.x / 2)) / 2)) * resolution) << 0,
+      (camY + (entity.position.y + entity.yMargin + entity.position.z) * resolution) << 0,
       /** Size */
       (entity.size.x * resolution) * scaling << 0, (entity.size.y * resolution) * scaling << 0,
       /** Scale */
@@ -261,14 +264,34 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
     }
   }
 
-  this.context.drawImage(
-    entity.texture.effect_sprites[entity.sFrame].canvas,
-    0, 0,
-    /** Scale */
-    eWidth, eHeight,
-    x, y,
-    width, height
-  );
+  if (entity.type === TYPES.Notification) {
+    let padding = (
+      (
+        (
+          (Math.max(entity.follow.width, entity.width / 2) / 2) - entity.follow.width / 2
+        )
+        - entity.follow.xMargin - (entity.size.x === entity.follow.size.x ? DIMENSION : 0)
+      )
+      * resolution
+    );
+    this.context.drawImage(
+      entity.texture.canvas,
+      0, 0,
+      /** Scale */
+      eWidth, eHeight,
+      x - padding, y - (entity.size.y * resolution),
+      width, height
+    );
+  } else {
+    this.context.drawImage(
+      entity.texture.effect_sprites[entity.sFrame].canvas,
+      0, 0,
+      /** Scale */
+      eWidth, eHeight,
+      x, y,
+      width, height
+    );
+  }
 
   /** Reset ctx opacity */
   if (cOpacity === true) {

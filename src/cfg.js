@@ -65,7 +65,7 @@ export const VERSION = "0.1.0";
  * @constant
  * @type {Boolean}
  */
-export const WGL_SUPPORT = supportWGL();
+export const WGL_SUPPORT = false;
 
 /**
  * Walk by keyboard
@@ -131,20 +131,6 @@ export let MINI_MAP = true;
 export const DEBUG_FPS = 60;
 
 /**
- * Play bgm
- * @constant
- * @type {Number}
- */
-export const BGM = false;
-
-/**
- * Play bgs
- * @constant
- * @type {Number}
- */
-export const BGS = false;
-
-/**
  * Vertical depth sorting hack
  * @constant
  * @type {Number}
@@ -168,7 +154,7 @@ export const PIXEL_SCALE = .125;
  * @constant
  * @type {Number}
  */
-export const MIN_SCALE = 2.0;
+export const MIN_SCALE = 3.0;
 
 /**
  * @constant
@@ -239,12 +225,38 @@ export const DOWN = 0;
 export const GRAVITY = -1;
 
 /**
+ * Play bgm
+ * @constant
+ * @type {Number}
+ */
+export const BGM = false;
+
+/**
+ * Play bgs
+ * @constant
+ * @type {Number}
+ */
+export const BGS = true;
+
+/**
  * @constant
  * @type {Object}
  */
 export const VOLUME = {
   LOCAL_PLAYER:   100,
-  NETWORK_PLAYER: 10
+  NETWORK_PLAYER: 10,
+  MUSIC: 50
+};
+
+/**
+ * @constant
+ * @type {Object}
+ */
+export const TYPES = {
+  Notification: 0,
+  MapEntity:    1,
+  Player:       2,
+  Ping:         3
 };
 
 /**

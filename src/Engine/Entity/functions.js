@@ -1,3 +1,5 @@
+import MapEntity from "../Map/MapEntity";
+
 import Entity from "./index";
 
 /**
@@ -17,6 +19,61 @@ export function addEntity(entity) {
   }
 
   this.currentMap.entities.push(entity);
+
+}
+
+/**
+ * Clone a entity
+ * @param  {Object} entity
+ * @return {Object}
+ */
+export function cloneEntity(entity) {
+
+  let entities = this.instance.entities;
+
+  let map = this.currentMap;
+
+  let clone = null;
+  let tmp = null;
+
+  if (entity instanceof entities.Player) {
+    tmp = new entities.Player({
+      name: "undefined",
+      map: entity.map,
+      x: entity.x, y: entity.y,
+      zIndex: entity.zIndex,
+      sprite: entity.sprite,
+      width: entity.width, height: entity.height,
+      isLocalPlayer: false,
+      collidable: entity.collidable,
+      shadow: entity.hasShadow
+    });
+    if (entity.instance) {
+      tmp.instance = entity.instance;
+    }
+    if (tmp.hasShadow) {
+      tmp.shadow.x = entity.shadow.x;
+      tmp.shadow.y = entity.shadow.y;
+    }
+    tmp.fadeIn(.75);
+  }
+  else if (entity instanceof MapEntity) {
+    tmp = map.objectTemplates[entity.name.toLowerCase()];
+  } else {
+    return void 0;
+  }
+
+  tmp.x = entity.x;
+  tmp.y = entity.y;
+  tmp.z = entity.z;
+
+  if (entity instanceof MapEntity) {
+    clone = map.addEntity(tmp);
+  } else {
+    clone = tmp;
+  }
+
+  return (clone);
 
 }
 

@@ -5,8 +5,12 @@ import {
 
 import math from "../../Math";
 
+import Audio from "../Audio";
+
 import {
-  DIMENSION
+  DIMENSION,
+  BGM,
+  VOLUME
 } from "../../cfg";
 
 import Map from "../Map";
@@ -28,6 +32,9 @@ export function addMap(path, resolve) {
       this.currentMap = this.maps[map.name];
       if (this.editor !== null) {
         this.editor.map = this.currentMap;
+      }
+      if (map.settings.music && BGM) {
+        Audio.playSong(map.settings.music, VOLUME.MUSIC);
       }
       return (resolve());
     });

@@ -4,7 +4,9 @@ return (function() {
 
   var MAP = {
     entities: [],
-    settings: {}
+    settings: {
+      music: "new-bark-town"
+    }
   };
 
   var x = 0;
@@ -141,9 +143,9 @@ return (function() {
       EngelScript: `
         if (trigger.facing == 2) {
           if (FLAGS.GOT_STARTER_PKMN == false) {
-            console.log("You didnt got your starter pokemon yet!");
+            kernel.notify(trigger, "You didnt got your starter pokemon yet!");
           } {
-            console.log("You successfully received your starter pkmn!", 2 * 2, FLAGS.GOT_STARTER_PKMN);
+            kernel.notify(trigger, "You successfully received your starter pkmn!", 2 * 2, FLAGS.GOT_STARTER_PKMN);
           }
         }
         if (trigger.facing == 1) {
@@ -152,7 +154,6 @@ return (function() {
         if (trigger.facing == 0) {
           FLAGS.COUNTER -= 1;
         }
-        console.log(FLAGS.COUNTER);
       `
     }
   });

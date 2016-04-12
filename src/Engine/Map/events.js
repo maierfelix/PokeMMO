@@ -51,7 +51,7 @@ export function actionTrigger(position, entity) {
     event = entities[ii];
     if (event.id === id) continue;
     if (event.x << 0 === x && event.y << 0 === y) {
-      event.orbitAround(entity);
+      this.triggerEvent(event, entity, "onAction"); 
     }
   };
 

@@ -3,8 +3,6 @@ import {
   DIMENSION
 } from "../../cfg";
 
-import MapEntity from "../Map/MapEntity";
-
 export let commands = [
   /** Select command */
   {
@@ -54,12 +52,11 @@ export let commands = [
   {
     action: "cut",
     onUndo: function(entity) {
-      this.instance.addEntity(entity);
-      this.entitySelection = entity;
+      this.instance.editor.pasteEntity();
     },
     onRedo: function(entity) {
-      this.entityCopy = entity;
-      this.instance.removeEntity(entity);
+      this.instance.editor.copyEntity();
+      this.instance.editor.deleteEntity();
     }
   },
   /** Copy command */
@@ -82,60 +79,19 @@ export let commands = [
     },
     onRedo: function(entity, paste) {
 
-      let entities = this.instance.instance.entities;
-
       let map = this.map;
-
-      let tmp = null;
-
-      let pushEntity = null;
 
       if (paste !== null && paste !== void 0) {
         map.entities.push(paste);
         return void 0;
       }
 
-      if (entity instanceof entities.Player) {
-        tmp = new entities.Player({
-          name: "undefined",
-          map: entity.map,
-          x: entity.x, y: entity.y,
-          zIndex: entity.zIndex,
-          sprite: entity.sprite,
-          width: entity.width, height: entity.height,
-          isLocalPlayer: false,
-          collidable: entity.collidable,
-          shadow: entity.hasShadow
-        });
-        if (entity.instance) {
-          tmp.instance = entity.instance;
-        }
-        if (tmp.hasShadow) {
-          tmp.shadow.x = entity.shadow.x;
-          tmp.shadow.y = entity.shadow.y;
-        }
-        tmp.fadeIn(.75);
-      }
-      else if (entity instanceof MapEntity) {
-        tmp = map.objectTemplates[entity.name.toLowerCase()];
-      } else {
-        return void 0;
-      }
-
-      tmp.x = entity.x;
-      tmp.y = entity.y;
-      tmp.z = entity.z;
-
-      if (entity instanceof MapEntity) {
-        pushEntity = map.addEntity(tmp);
-      } else {
-        pushEntity = tmp;
-      }
+      let clone = this.instance.cloneEntity(entity);
 
       /** Fuck that */
-      this.instance.editor.commander.stack[this.instance.editor.commander.position].data[1] = pushEntity;
+      this.instance.editor.commander.stack[this.instance.editor.commander.position].data[1] = clone;
 
-      map.entities.push(pushEntity);
+      map.entities.push(clone);
 
     }
   }

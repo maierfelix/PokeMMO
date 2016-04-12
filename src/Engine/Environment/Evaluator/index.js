@@ -49,7 +49,9 @@ export default class Evaluator {
 
       console: window.console,
 
-      alert: window.alert
+      alert: window.alert,
+
+      kernel: this.instance.instance
 
     };
 
@@ -535,6 +537,12 @@ export default class Evaluator {
 
     if (ast.operator === "NOT") {
       return (!this.evalBinaryExpression(ast.init));
+    }
+
+    if (this.isIdentifier(ast) === true) {
+      return (
+        this.context[ast.name]
+      );
     }
 
     return (0);

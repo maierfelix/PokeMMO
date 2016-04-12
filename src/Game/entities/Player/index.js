@@ -62,8 +62,8 @@ export class Player extends Entity {
      * Shadow offsets
      * @type {Number}
      */
-    this.shadowX = 0;
-    this.shadowY = -1.75;
+    this.shadowX = obj.shadowX === void 0 ? 0 : obj.shadowX;
+    this.shadowY = obj.shadowY === void 0 ? -1.75 : obj.shadowY;
 
     /**
      * Local player check
@@ -260,6 +260,17 @@ export class Player extends Entity {
   action() {
     let position = math.getTilePosition(this.x << 0, this.y << 0, this.facing);
     Maps[this.map].actionTrigger(position, this);
+  }
+
+  /**
+   * Face a entity
+   * @param {Object} entity
+   */
+  faceEntity(entity) {
+    let facing = this.oppositFacing(entity.facing);
+    if (this.facing !== facing) {
+      this.changeFacing(facing);
+    }
   }
 
 }

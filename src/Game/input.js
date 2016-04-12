@@ -117,13 +117,6 @@ export const keys = [
     name: "Y",
     fire: function() {}
   },
-  {
-    name: "Z",
-    fire: function() {
-      let local = this.engine.localEntity;
-      local.action();
-    }
-  },
   /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
   {
     name: "G",
@@ -148,6 +141,21 @@ export const keys = [
       } else {
         this.engine.scenes.Pause.show();
       }
+    }
+  },
+  {
+    name: "B",
+    spam: false,
+    fire: function() {
+      this.engine.notify(this.engine.localEntity, "Hello World");
+    }
+  },
+  {
+    name: "Z",
+    spam: false,
+    fire: function() {
+      let local = this.engine.localEntity;
+      local.action();
     }
   },
   {

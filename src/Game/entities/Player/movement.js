@@ -161,7 +161,7 @@ export function move(dir, resolve) {
  */
 export function changeFacing(dir) {
 
-  if (this.STATES.LOCK === true) return void 0;
+  if (this.STATES.LOCK === true || this.moving === true) return void 0;
 
   this.idleTime = 0;
 

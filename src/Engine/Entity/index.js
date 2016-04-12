@@ -3,13 +3,15 @@ import {
   LEFT, RIGHT, UP, DOWN,
   SHADOW_X, SHADOW_Y,
   WGL_SUPPORT,
-  IS_CLIENT
+  IS_CLIENT,
+  TYPES
 } from "../../cfg";
 
 import math from "../../Math";
 import { TextureCache, getSprite, createCanvasBuffer } from "../utils";
 
 import DisplayObject from "../DisplayObject";
+import MapEntity from "../Map/MapEntity";
 import Texture from "../Texture";
 import Shadow from "../Shadow";
 
@@ -232,12 +234,7 @@ export default class Entity extends DisplayObject {
      */
     this.x = 0;
     this.y = 0;
-
-    /**
-     * Z axis position
-     * @type {Number}
-     */
-    this.z = .0;
+    this.z = 0;
 
     /**
      * Velocity
@@ -301,6 +298,12 @@ export default class Entity extends DisplayObject {
     this.glTexture = null;
 
     /**
+     * Action trigger
+     * @type {Function}
+     */
+    this.onAction = null;
+
+    /**
      * Enter trigger
      * @type {Function}
      */
@@ -330,6 +333,9 @@ export default class Entity extends DisplayObject {
      */
     this.onJump = null;
 
+    if (obj.onAction !== void 0) {
+      this.onAction = obj.onAction;
+    }
     if (obj.onLoad !== void 0) {
       this.onLoad = obj.onLoad;
     }
@@ -345,6 +351,12 @@ export default class Entity extends DisplayObject {
     if (obj.onJump !== void 0) {
       this.onJump = obj.onJump;
     }
+
+    /**
+     * Entity numeric type
+     * @type {Number}
+     */
+    this.type = this.getEntityType();
 
     /**
      * X
@@ -379,6 +391,24 @@ export default class Entity extends DisplayObject {
     });
 
     /**
+     * Z
+     * @type {Number}
+     * @getter
+     * @setter
+     * @overwrite
+     */
+    Object.defineProperty(this, "z", {
+      get: function() {
+        return (this.position.z);
+      },
+      set: function(value) {
+        this.position.z = value;
+      }
+    });
+
+    this.position.z = 0;
+
+    /**
      * Lock
      * @type {Number}
      * @getter
@@ -395,6 +425,7 @@ export default class Entity extends DisplayObject {
     });
 
     if (IS_CLIENT === false) return void 0;
+    if (this.sprite === null) return void 0;
 
     /** Load texture */
     getSprite(
@@ -415,6 +446,17 @@ export default class Entity extends DisplayObject {
       }
     });
 
+  }
+
+  /**
+   * Get entity type
+   * @return {Number}
+   */
+  getEntityType() {
+    if (this instanceof MapEntity) {
+      return (TYPES.MapEntity);
+    }
+    return (TYPES.Player);
   }
 
   /**

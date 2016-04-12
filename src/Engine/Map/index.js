@@ -122,6 +122,12 @@ export default class Map extends DisplayObject {
      */
     this.collisionLayer = null;
 
+    /**
+     * Settings
+     * @type {Object}
+     */
+    this.settings = {};
+
     /** Load texture */
     getSprite(this.tileset, -1, -1, this::function(texture) {
       this.texture = TextureCache[this.tileset];
@@ -137,20 +143,6 @@ export default class Map extends DisplayObject {
   }
 
   /**
-   * Load map settings
-   * @param {Object} obj
-   */
-  loadMapSettings(obj) {
-
-    for (let key in obj) {
-      if (this[key] !== void 0) {
-        this[key] = obj[key];
-      }
-    };
-
-  }
-
-  /**
    * Load map file
    * @param {Function} resolve
    */
@@ -161,9 +153,7 @@ export default class Map extends DisplayObject {
     $GET(path).then(this::function(data) {
       let map = new Function(data)();
       this.entities = map.entities;
-      if (map.settings !== void 0) {
-        this.loadMapSettings(map.settings);
-      }
+      this.settings = map.settings;
       this.loadMapObjectTypes();
       this.loadMapObjects(function() {
         if (resolve instanceof Function) {
@@ -237,6 +227,12 @@ export default class Map extends DisplayObject {
 
   }
 
+  /**
+   * Inherit properties
+   * @param  {Object} entity
+   * @param  {Object} parent
+   * @return {Object}
+   */
   inheritProperties(entity, parent) {
 
     let key = null;

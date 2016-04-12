@@ -6,7 +6,8 @@ import {
   DIMENSION,
   LEFT, RIGHT, UP, DOWN,
   WGL_SUPPORT,
-  MIN_SCALE
+  MIN_SCALE,
+  TYPES
 } from "../cfg";
 
 import {
@@ -19,11 +20,12 @@ import * as logic from "./logic";
 import * as map from "./Map/functions";
 import * as entity from "./Entity/functions";
 
+import Camera from "./Camera";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
 import Environment from "./Environment";
+import Notification from "./Notification";
 import DisplayObject from "./DisplayObject";
-import Camera from "./Camera";
 
 import { Language } from "./Language";
 
@@ -171,8 +173,6 @@ export default class Engine extends DisplayObject {
 
     this.camera.scale = MIN_SCALE;
 
-    setInterval(() => this.logic(), 1e3 / 60);
-
   }
 
   /**
@@ -295,12 +295,43 @@ export default class Engine extends DisplayObject {
     let pushEntity = map.addEntity(tpl);
 
     pushEntity.opacity = .0;
-
     pushEntity.fadeIn(2);
-
     pushEntity.lifeTime = this.renderer.now + 60;
 
+    pushEntity.type = TYPES.Ping;
+
     map.entities.push(pushEntity);
+
+  }
+
+  /**
+   * Trigger a notification
+   * @param {Object} entity
+   * @param {String} msg
+   */
+  notify(entity, msg) {
+
+    let offset = entity || this.instance.localEntity;
+
+    let map = this.currentMap;
+
+    let notification = new Notification({
+      sprite: null,
+      hasShadow: false,
+      width: math.roundTo(this.context.measureText(String(msg)).width, DIMENSION),
+      height: 16,
+      msg: msg,
+      follow: entity
+    });
+
+    notification.type = TYPES.Notification;
+
+    notification.opacity = .0;
+    notification.fadeIn(2);
+    notification.lifeTime = this.renderer.now + (60 * (msg.length * 4));
+    notification.zIndex = 9999;
+
+    map.entities.push(notification);
 
   }
 
