@@ -159,6 +159,11 @@ return (function() {
   });
 
   MAP.entities.push({
+    x: 144, y: 120,
+    type: "campfire"
+  });
+
+  MAP.entities.push({
     x: 112, y: 136,
     type: "foutune"
   });

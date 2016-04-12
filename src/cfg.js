@@ -245,7 +245,7 @@ export const BGS = true;
 export const VOLUME = {
   LOCAL_PLAYER:   100,
   NETWORK_PLAYER: 10,
-  MUSIC: 50
+  MUSIC: 45
 };
 
 /**

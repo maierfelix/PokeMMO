@@ -256,21 +256,15 @@ export default class Camera extends DisplayObject {
 
     let velocity = EASING_CAMERA === true ? 0 : math.ease(Math.atan(DEBUG_FPS / 60 + .05));
 
-    let x = this.target.x - (this.base.x + (velocity * this.deltaX));
-    let y = this.target.y - (this.base.y + (velocity * this.deltaY));
+    let x = Math.round((this.target.x - (this.base.x + (velocity * this.deltaX))) * 1e2) / 1e2;
+    let y = Math.round((this.target.y - (this.base.y + (velocity * this.deltaY))) * 1e2) / 1e2;
 
-    if (Math.abs(this.position.x + x - this.target.x) > Math.abs(this.position.x - this.target.x)) {
-      this.position.x = this.target.x;
-      this.base.x = this.target.x;
-    } else {
-      this.position.x += x;                
+    if (x !== -0 && x !== 0) {
+      this.position.x += x;
     }
 
-    if (Math.abs(this.position.y + y - this.target.y) > Math.abs(this.position.y - this.target.y)) {
-      this.position.y = this.target.y;
-      this.base.y = this.target.y;
-    } else {
-      this.position.y += y;                
+    if (y !== -0 && y !== 0) {
+      this.position.y += y;
     }
 
     return void 0;

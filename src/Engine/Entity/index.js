@@ -49,7 +49,8 @@ export default class Entity extends DisplayObject {
     this.STATES = {
       JUMPING: false,
       LOCK:    false,
-      EDITING: false
+      EDITING: false,
+      NOISE:   false
     };
 
     /**
@@ -298,6 +299,18 @@ export default class Entity extends DisplayObject {
     this.glTexture = null;
 
     /**
+     * Entity numeric type
+     * @type {Number}
+     */
+    this.type = this.getEntityType();
+
+    /**
+     * Entity makes a noise
+     * @type {String}
+     */
+    this.noise = obj.noise === void 0 ? null : obj.noise;
+
+    /**
      * Action trigger
      * @type {Function}
      */
@@ -351,12 +364,6 @@ export default class Entity extends DisplayObject {
     if (obj.onJump !== void 0) {
       this.onJump = obj.onJump;
     }
-
-    /**
-     * Entity numeric type
-     * @type {Number}
-     */
-    this.type = this.getEntityType();
 
     /**
      * X

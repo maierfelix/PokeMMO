@@ -128,7 +128,7 @@ export default class Game {
       onCollide: {
         JavaScript: function(entity, engine) {
           this.faceEntity(entity);
-          console.log(engine.instance.notify(this, "Stop it fucktard!"));
+          console.log(engine.instance.notify(this, "Stop!"));
         }
       }
     }));

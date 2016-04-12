@@ -20,6 +20,7 @@ import * as logic from "./logic";
 import * as map from "./Map/functions";
 import * as entity from "./Entity/functions";
 
+import Audio from "./Audio";
 import Camera from "./Camera";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
@@ -332,6 +333,10 @@ export default class Engine extends DisplayObject {
     notification.zIndex = 9999;
 
     map.entities.push(notification);
+
+    let dist = map.distance(entity, this.camera);
+
+    Audio.playSound("notice", 75, dist.x, dist.y);
 
   }
 

@@ -334,6 +334,7 @@ export const mouse = [
           this.engine.editor.selectedEntities = [];
         }
       }
+      this.engine.camera.moving = false;
     }
   },
   {
@@ -349,6 +350,7 @@ export const mouse = [
         !this.input.KeyBoard.isKeyPressed("SPACE")
       ) {
         this.engine.camera.move(x, y);
+        this.engine.camera.moving = true;
       }
       if (this.input.KeyBoard.isKeyPressed("SHIFT") && this.engine.editor.STATES.SELECTING) {
         this.engine.editor.selectTo(x, y);

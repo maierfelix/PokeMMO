@@ -1,0 +1,15 @@
+{
+  "name"   : "CampFire",
+  "sprite" : "campfire.png",
+  "width"  : 8,
+  "height" : 8,
+  "scale"  : 1,
+  "shadow" : true,
+  "shadowY": -2,
+  "collidable": true,
+  "animation": true,
+  "animationFrames": 4,
+  "animationSpeed": 300,
+  "loop": true,
+  "noise": "campfire"
+}

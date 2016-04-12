@@ -105,6 +105,12 @@ export default class Map extends DisplayObject {
     this.entities = [];
 
     /**
+     * Noisy entities
+     * @type {Array}
+     */
+    this.entityNoises = [];
+
+    /**
      * Map path
      * @type {Object}
      */
@@ -223,6 +229,9 @@ export default class Map extends DisplayObject {
       this.entities[ii] = this.addEntity(this.inheritProperties(
         this.entities[ii], this.objects[this.entities[ii].type]
       ));
+      if (this.entities[ii].noise !== null) {
+        this.entityNoises.push(this.entities[ii]);
+      }
     };
 
   }
