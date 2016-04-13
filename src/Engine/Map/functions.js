@@ -51,8 +51,8 @@ export function addMap(path, resolve) {
 export function distance(entity, camera) {
 
   let distance = math.distance(
-    entity.x,
-    entity.y,
+    entity.position.x + (entity.size.x / 2) + entity.xMargin,
+    entity.position.y + entity.position.z + (entity.size.y / 2) + entity.yMargin,
     (((camera.size.x / 2) - camera.position.x) / camera.resolution),
     (((camera.size.y / 2) - camera.position.y) / camera.resolution)
   );

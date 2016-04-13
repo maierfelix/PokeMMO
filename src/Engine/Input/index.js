@@ -36,7 +36,7 @@ export default class Input {
     for (let key of this.events.keys) {
       this.KeyBoard.registerKey(
         key,
-        this.instance::key.fire,
+        this.instance.engine.controller::key.fire,
         key.leave instanceof Function ? this.instance::key.leave : void 0
       );
     };
@@ -51,7 +51,7 @@ export default class Input {
     if (this.events.mouse === void 0) return void 0;
 
     for (let ev of this.events.mouse) {
-      this.Mouse.registerEvent(ev, this.instance);
+      this.Mouse.registerEvent(ev, this.instance.engine.controller);
     };
 
   }
@@ -64,7 +64,7 @@ export default class Input {
     if (this.events.global === void 0) return void 0;
 
     for (let ev of this.events.global) {
-      this.registerGlobalEvent(ev, this.instance);
+      this.registerGlobalEvent(ev, this.instance.engine.controller);
     };
 
   }
@@ -75,7 +75,7 @@ export default class Input {
    */
   registerGlobalEvent(event) {
 
-    window.addEventListener(event.name, this.instance::event.fire, false);
+    window.addEventListener(event.name, this.instance.engine.controller::event.fire, false);
 
   }
 

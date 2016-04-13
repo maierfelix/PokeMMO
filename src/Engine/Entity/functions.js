@@ -18,6 +18,11 @@ export function addEntity(entity) {
     entity.fadeIn(1);
   }
 
+  if (entity.noise !== null) {
+    entity.noise.unmute();
+    this.currentMap.entityNoises.push(entity);
+  }
+
   this.currentMap.entities.push(entity);
 
 }
@@ -55,7 +60,6 @@ export function cloneEntity(entity) {
       tmp.shadow.x = entity.shadow.x;
       tmp.shadow.y = entity.shadow.y;
     }
-    tmp.fadeIn(.75);
   }
   else if (entity instanceof MapEntity) {
     tmp = map.objectTemplates[entity.name.toLowerCase()];
@@ -68,7 +72,7 @@ export function cloneEntity(entity) {
   tmp.z = entity.z;
 
   if (entity instanceof MapEntity) {
-    clone = map.addEntity(tmp);
+    clone = new MapEntity(tmp);
   } else {
     clone = tmp;
   }
@@ -86,8 +90,8 @@ export function cloneEntity(entity) {
  */
 export function getEntityByProperty(key, prop) {
 
-  var ii = 0;
-  var length = 0;
+  let ii = 0;
+  let length = 0;
 
   length = this.currentMap.entities.length;
 
@@ -97,6 +101,8 @@ export function getEntityByProperty(key, prop) {
     }
   };
 
+  return (-1);
+
 }
 
 /**
@@ -105,10 +111,7 @@ export function getEntityByProperty(key, prop) {
  */
 export function removeEntity(entity) {
 
-  var ii = 0;
-  var length = 0;
-
-  length = this.currentMap.entities.length;
+  let noiseEntity = null;
 
   /** Clear entity selection */
   if (
@@ -118,13 +121,42 @@ export function removeEntity(entity) {
     this.editor.entitySelection = null;
   }
 
+  noiseEntity = this.removeEntityFromArray(entity, this.currentMap.entityNoises);
+  this.removeEntityFromArray(entity, this.currentMap.entities);
+
+  if (noiseEntity !== void 0) {
+    noiseEntity.noise.mute();
+  }
+
+}
+
+/**
+ * Remove a entity from an array
+ * @param  {Object} entity
+ * @param  {Array}  entities
+ * @return {Object}
+ */
+export function removeEntityFromArray(entity, array) {
+
+  let ii = 0;
+  let length = 0;
+
+  let id = entity.id;
+
+  let cache = null;
+
+  length = array.length;
+
   for (; ii < length; ++ii) {
-    if (this.currentMap.entities[ii].id === entity.id) {
-      this.currentMap.entities[ii] = null;
-      this.currentMap.entities.splice(ii, 1);
-      break;
+    if (array[ii].id === id) {
+      cache = array[ii];
+      array[ii] = null;
+      array.splice(ii, 1);
+      return (cache);
     }
   };
+
+  return void 0;
 
 }
 
@@ -135,9 +167,9 @@ export function removeEntity(entity) {
  */
 export function getEntityById(id) {
 
-  var property = "id";
+  let property = "id";
 
-  var index = 0;
+  let index = 0;
 
   return (this.getEntityByProperty(id, property));
 
@@ -149,7 +181,7 @@ export function getEntityById(id) {
  */
 export function removeEntityById(id) {
 
-  var entity = null;
+  let entity = null;
 
   if ((entity = this.getEntityByProperty(id, property)) === void 0) return void 0;
 

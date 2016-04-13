@@ -20,10 +20,10 @@ import * as logic from "./logic";
 import * as map from "./Map/functions";
 import * as entity from "./Entity/functions";
 
-import Audio from "./Audio";
 import Camera from "./Camera";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
+import Controller from "./Controller";
 import Environment from "./Environment";
 import Notification from "./Notification";
 import DisplayObject from "./DisplayObject";
@@ -160,6 +160,12 @@ export default class Engine extends DisplayObject {
      * @type {Object}
      */
     this.connection = null;
+
+    /**
+     * Controller instance
+     * @type {Object}
+     */
+    this.controller = new Controller(this);
 
     this.init();
 
@@ -316,27 +322,21 @@ export default class Engine extends DisplayObject {
 
     let map = this.currentMap;
 
-    let notification = new Notification({
+    let isLocalEntity = this.localEntity !== null && entity.id !== this.localEntity.id;
+
+    let notification = new Notification(this, {
       sprite: null,
       hasShadow: false,
       width: math.roundTo(this.context.measureText(String(msg)).width, DIMENSION),
       height: 16,
       msg: msg,
-      follow: entity
+      follow: entity,
+      style: "ChatBubble",
+      fade: isLocalEntity,
+      sound: isLocalEntity
     });
 
-    notification.type = TYPES.Notification;
-
-    notification.opacity = .0;
-    notification.fadeIn(2);
-    notification.lifeTime = this.renderer.now + (60 * (msg.length * 4));
-    notification.zIndex = 9999;
-
     map.entities.push(notification);
-
-    let dist = map.distance(entity, this.camera);
-
-    Audio.playSound("notice", 75, dist.x, dist.y);
 
   }
 

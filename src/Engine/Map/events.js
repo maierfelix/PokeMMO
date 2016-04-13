@@ -103,8 +103,8 @@ export function isEntityCollidable(entity, x, y) {
     if (event.id === id) continue;
     intersection = math.linearIntersect(
       event.position.x << 0, event.position.y << 0,
-      ((event.size.x * event.scale) + event.xMargin) - DIMENSION,
-      ((event.size.y * event.scale) + event.yMargin) - DIMENSION,
+      ((math.roundTo(event.size.x, DIMENSION) * event.scale) + event.xMargin) - DIMENSION,
+      ((math.roundTo(event.size.y, DIMENSION) * event.scale) + event.yMargin) - DIMENSION,
       x, y,
       1
     );
@@ -127,8 +127,8 @@ export function isEntityCollidable(entity, x, y) {
       if (
         math.linearIntersect(
           event.position.x << 0, event.position.y << 0,
-          ((event.size.x * event.scale) + event.xMargin) - DIMENSION,
-          ((event.size.y * event.scale) + event.yMargin) - DIMENSION,
+          ((math.roundTo(event.size.x, DIMENSION) * event.scale) + event.xMargin) - DIMENSION,
+          ((math.roundTo(event.size.y, DIMENSION) * event.scale) + event.yMargin) - DIMENSION,
           entity.position.x << 0, entity.position.y << 0,
           1
         ) === true
@@ -163,8 +163,8 @@ export function collidesWithCollisionBox(entity, x, y) {
 
   let dim = DIMENSION * entity.scale;
 
-  let width  = (entity.size.x + entity.xMargin) / DIMENSION;
-  let height = (entity.size.y + entity.yMargin) / DIMENSION;
+  let width  = (math.roundTo(entity.size.x, DIMENSION) + entity.xMargin) / DIMENSION;
+  let height = (math.roundTo(entity.size.y, DIMENSION) + entity.yMargin) / DIMENSION;
 
   let length = width * height;
 

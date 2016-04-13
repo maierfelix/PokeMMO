@@ -70,8 +70,6 @@ export class Pause extends Element {
       }
     ]};
 
-    this.input = new Input(input, this);
-
     this.x = this.y = 0;
 
     this.width = window.innerWidth;

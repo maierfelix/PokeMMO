@@ -91,7 +91,7 @@ export let commands = [
       /** Fuck that */
       this.instance.editor.commander.stack[this.instance.editor.commander.position].data[1] = clone;
 
-      map.entities.push(clone);
+      map.instance.addEntity(clone);
 
     }
   }

@@ -217,8 +217,8 @@ export default class Editor {
 
     for (; ii < length; ++ii) {
       entity = this.map.entities[ii];
-      eWidth  = (entity.width * entity.scale) + ((x2 >= x1) ? -DIMENSION : 0);
-      eHeight = (entity.height * entity.scale);
+      eWidth  = (math.roundTo(entity.width, DIMENSION) * entity.scale) + ((x2 >= x1) ? -DIMENSION : 0);
+      eHeight = (math.roundTo(entity.height, DIMENSION) * entity.scale);
       if (
         math.linearIntersect(
           xx1, yy1,
@@ -263,8 +263,8 @@ export default class Editor {
       if (
         math.linearIntersect(
           math.roundTo(entity.position.x, DIMENSION), math.roundTo(entity.position.y, DIMENSION) << 0,
-          ((entity.size.x * entity.scale) + entity.xMargin) - DIMENSION,
-          ((entity.size.y * entity.scale) + entity.yMargin) - DIMENSION,
+          ((math.roundTo(entity.width, DIMENSION) * entity.scale) + entity.xMargin) - DIMENSION,
+          ((math.roundTo(entity.height, DIMENSION) * entity.scale) + entity.yMargin) - DIMENSION,
           xx, yy,
           1
         ) === true

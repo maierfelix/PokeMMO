@@ -170,8 +170,17 @@ return (function() {
 
   MAP.entities.push({
     x: 192, y: 120,
-    type: "windmill",
-    scale: 1
+    type: "windmill"
+  });
+
+  MAP.entities.push({
+    x: 160, y: 176,
+    type: "building1"
+  });
+
+  MAP.entities.push({
+    x: 168, y: 208,
+    type: "door1"
   });
 
   MAP.entities.push({
@@ -267,7 +276,8 @@ return (function() {
 
   MAP.entities.push({
     x: 232, y: 240,
-    type: "water1"
+    type: "water1",
+    noise: "sea"
   });
 
   MAP.entities.push({
@@ -282,7 +292,8 @@ return (function() {
 
   MAP.entities.push({
     x: 200, y: 256,
-    type: "water1"
+    type: "water1",
+    noise: "sea"
   });
 
   MAP.entities.push({
@@ -302,7 +313,8 @@ return (function() {
 
   MAP.entities.push({
     x: 264, y: 256,
-    type: "water1"
+    type: "water1",
+    noise: "sea"
   });
 
   MAP.entities.push({
@@ -312,7 +324,8 @@ return (function() {
 
   MAP.entities.push({
     x: 216, y: 272,
-    type: "water1"
+    type: "water1",
+    noise: "sea"
   });
 
   MAP.entities.push({
@@ -322,7 +335,8 @@ return (function() {
 
   MAP.entities.push({
     x: 248, y: 272,
-    type: "water1"
+    type: "water1",
+    noise: "sea"
   });
 
   MAP.entities.push({

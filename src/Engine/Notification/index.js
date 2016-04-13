@@ -7,6 +7,7 @@ import math from "../../Math";
 
 import { TextureCache, getSprite, createCanvasBuffer } from "../utils";
 
+import Audio from "../Audio";
 import Entity from "../Entity";
 
 /**
@@ -17,22 +18,25 @@ import Entity from "../Entity";
 export default class Notification extends Entity {
 
   /**
+   * @param {Object} instance
    * @param {Object} obj
    * @constructor
    */
-  constructor(obj) {
+  constructor(instance, obj) {
 
     super(obj);
+
+    /**
+     * Instance
+     * @type {Object}
+     */
+    this.instance = instance;
 
     /**
      * Entity to follow
      * @type {Object}
      */
     this.follow = obj.follow || null;
-
-    if (this.follow !== null) {
-      this.position = this.follow.position;
-    }
 
     /**
      * Has shadow
@@ -45,6 +49,12 @@ export default class Notification extends Entity {
      * @type {Number}
      */
     this.type = TYPES.Notification;
+
+    /**
+     * Notification style
+     * @type {String}
+     */
+    this.style = obj.style || "MapMessage";
 
     /**
      * Message
@@ -94,13 +104,52 @@ export default class Notification extends Entity {
      */
     this.texture = null;
 
-    this.sprite = null;
-
+    /**
+     * Padding
+     * @type {Number}
+     */
     this.padding = 3;
 
-    this.msgMaxWidth = 100;
+    /**
+     * zIndex
+     * @type {Number}
+     */
+    this.zIndex = 9999;
 
-    this.heightOfMessage = 20;
+    /**
+     * Max lifetime
+     * @type {Number}
+     */
+    this.maxLifeTime = 3e3 + Date.now();
+
+    /**
+     * Lifetime
+     * @type {Number}
+     */
+    this.lifeTime = Date.now() + (60 * (this.msg.length * 4));
+
+    /** Follow */
+    if (this.follow !== null) {
+      this.position = this.follow.position;
+    }
+
+    /** Fade notification */
+    if (obj.fade === true) {
+      this.opacity = .0;
+      this.fadeIn(2);
+    } else {
+      this.opacity = 1.0;
+    }
+
+    /** Play notification sound */
+    if (obj.sound === true) {
+      this.playSound();
+    }
+
+    /** Dont let notifications stay too long */
+    if (this.lifeTime > this.maxLifeTime) {
+      this.lifeTime = this.maxLifeTime;
+    }
 
     this.loadTexture();
 
@@ -112,6 +161,17 @@ export default class Notification extends Entity {
    */
   getFrameIndex() {
     return (0);
+  }
+
+  /**
+   * Play notifcation sound
+   */
+  playSound() {
+
+    let dist = this.instance.currentMap.distance(this.follow, this.instance.camera);
+
+    Audio.playSound("notice", 75, dist.x, dist.y);
+
   }
 
   /**
@@ -149,6 +209,25 @@ export default class Notification extends Entity {
    * Draw
    */
   draw() {
+
+    if (this.style === "ChatBubble") {
+      this.drawChatBubble();
+    }
+    else if (this.style === "MapMessage") {
+      this.drawMapMessage();
+    }
+    else if (this.style === "MessageBox") {
+      this.drawMessageBox();
+    }
+
+    return void 0;
+
+  }
+
+  /**
+   * Draw a chat bubble
+   */
+  drawChatBubble() {
 
     this.texture = createCanvasBuffer(this.width, this.height + this.pointer.height);
 
@@ -224,8 +303,6 @@ export default class Notification extends Entity {
       0, 0,
       (this.width * resolution) << 0, ((this.height + this.pointer.height) * resolution) << 0
     );
-
-    return void 0;
 
   }
 

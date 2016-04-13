@@ -219,8 +219,8 @@ export default class Entity extends DisplayObject {
      * Sprite margin
      * @type {Number}
      */
-    this.xMargin = 0;
-    this.yMargin = 0;
+    this.xMargin = obj.xMargin === void 0 ? 0 : obj.xMargin;
+    this.yMargin = obj.yMargin === void 0 ? 0 : obj.yMargin;
 
     /**
      * Sizes

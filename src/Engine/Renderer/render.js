@@ -158,12 +158,16 @@ export function entityInSelectionRange(id) {
  * @return {Number}
  */
 export function getAnimationFrame(entity) {
+  let index = Math.floor(
+    (this.now - entity.animationStart) / entity.animationSpeed
+  );
+  if (entity.loop === false && entity.sFrame + 1 >= entity.animationFrames) {
+    return (
+      (3 * (entity.size.x * 2)) << 0
+    );
+  }
   return (
-    Math.floor(
-      (this.now - entity.animationStart) / entity.animationSpeed
-    ) %
-    ((entity.animationFrames - 1) + (entity.loop === true ? 1 : 0)) *
-    ((entity.size.x * 2) << 0 * entity.size.x / entity.frames)
+    (index % entity.animationFrames * (entity.size.x * 2)) << 0
   );
 }
 
