@@ -170,8 +170,17 @@ return (function() {
 
   MAP.entities.push({
     x: 192, y: 120,
-    type: "windmill",
-    scale: 1
+    type: "windmill"
+  });
+
+  MAP.entities.push({
+    x: 160, y: 176,
+    type: "building1"
+  });
+
+  MAP.entities.push({
+    x: 168, y: 208,
+    type: "door1"
   });
 
   MAP.entities.push({
@@ -292,7 +301,9 @@ return (function() {
 
   MAP.entities.push({
     x: 232, y: 256,
-    type: "water1"
+    type: "water1",
+    noise: "sea",
+    noiseRadius: 72
   });
 
   MAP.entities.push({

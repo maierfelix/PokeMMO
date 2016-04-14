@@ -1,0 +1,13 @@
+{
+  "name"   : "Door1",
+  "sprite" : "door1.png",
+  "width"  : 10,
+  "xMargin": -1,
+  "height" : 7,
+  "shadow" : false,
+  "collidable": true,
+  "animation": true,
+  "animationFrames": 4,
+  "animationSpeed": 500,
+  "loop": false
+}

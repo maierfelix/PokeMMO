@@ -13,5 +13,7 @@
   ],
   "animation": true,
   "animationFrames": 4,
-  "loop": true
+  "loop": true,
+  "noise": "fountain",
+  "noiseRadius": 48
 }
