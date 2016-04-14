@@ -125,6 +125,10 @@ export function renderEntitySelection() {
   let width  = ((entity.size.x * entity.scale) * resolution) << 0;
   let height = ((entity.size.y * entity.scale) * resolution) << 0;
 
+  if (entity.noise !== null) {
+    this.renderEntityNoise(entity, x, y, width, height);
+  }
+
   this.context.beginPath();
 
   this.context.strokeStyle = "red";
@@ -153,6 +157,40 @@ export function renderEntitySelection() {
       this.context.fill();
     }
   }
+
+  this.context.globalAlpha = 1.0;
+
+  return void 0;
+
+}
+
+/**
+ * Render entity noise radius
+ * @param {Object} entity
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ */
+export function renderEntityNoise(entity, x, y, width, height) {
+
+  let resolution = this.camera.resolution;
+
+  let radius = ((entity.noiseRadius - DIMENSION) || DIMENSION) * resolution;
+
+  x += width / 2;
+  y += height / 2;
+
+  this.context.globalAlpha = .2;
+
+  this.context.beginPath();
+
+  this.context.fillStyle = "green";
+  this.context.lineWidth = (resolution / 2) << 0;
+  this.context.arc(x, y, radius, 0, 2 * Math.PI, false);
+  this.context.fill();
+
+  this.context.closePath();
 
   this.context.globalAlpha = 1.0;
 

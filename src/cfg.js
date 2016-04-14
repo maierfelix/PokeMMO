@@ -245,7 +245,9 @@ export const BGS = true;
 export const VOLUME = {
   LOCAL_PLAYER:   100,
   NETWORK_PLAYER: 10,
-  MUSIC: 45
+  MUSIC: 45,
+  ENTITY_NOISE: 35,
+  FADE_SPEED: 1500
 };
 
 /**

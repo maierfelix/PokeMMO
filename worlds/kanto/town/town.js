@@ -276,8 +276,7 @@ return (function() {
 
   MAP.entities.push({
     x: 232, y: 240,
-    type: "water1",
-    noise: "sea"
+    type: "water1"
   });
 
   MAP.entities.push({
@@ -292,8 +291,7 @@ return (function() {
 
   MAP.entities.push({
     x: 200, y: 256,
-    type: "water1",
-    noise: "sea"
+    type: "water1"
   });
 
   MAP.entities.push({
@@ -303,7 +301,9 @@ return (function() {
 
   MAP.entities.push({
     x: 232, y: 256,
-    type: "water1"
+    type: "water1",
+    noise: "sea",
+    noiseRadius: 72
   });
 
   MAP.entities.push({
@@ -313,8 +313,7 @@ return (function() {
 
   MAP.entities.push({
     x: 264, y: 256,
-    type: "water1",
-    noise: "sea"
+    type: "water1"
   });
 
   MAP.entities.push({
@@ -324,8 +323,7 @@ return (function() {
 
   MAP.entities.push({
     x: 216, y: 272,
-    type: "water1",
-    noise: "sea"
+    type: "water1"
   });
 
   MAP.entities.push({
@@ -335,8 +333,7 @@ return (function() {
 
   MAP.entities.push({
     x: 248, y: 272,
-    type: "water1",
-    noise: "sea"
+    type: "water1"
   });
 
   MAP.entities.push({

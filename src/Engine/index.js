@@ -7,7 +7,8 @@ import {
   LEFT, RIGHT, UP, DOWN,
   WGL_SUPPORT,
   MIN_SCALE,
-  TYPES
+  TYPES,
+  VOLUME
 } from "../cfg";
 
 import {
@@ -20,6 +21,7 @@ import * as logic from "./logic";
 import * as map from "./Map/functions";
 import * as entity from "./Entity/functions";
 
+import Audio from "./Audio";
 import Camera from "./Camera";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
@@ -239,6 +241,77 @@ export default class Engine extends DisplayObject {
   set height(height) {
     this.height = height || 0;
     this.camera.height = this.height;
+  }
+
+  /**
+   * Update noisy entities
+   */
+  updateSound() {
+
+    let map = this.currentMap;
+
+    if (
+      map === null ||
+      map.entityNoises.length <= 0
+    ) return void 0;
+
+    let entity = null;
+
+    let ii = 0;
+    let length = map.entityNoises.length;
+
+    for (; ii < length; ++ii) {
+      entity = map.entityNoises[ii];
+      this.updateEntityNoise(entity, map.distance(entity, this.camera));
+    };
+
+    return void 0;
+
+  }
+
+  /**
+   * Update entity noise
+   * @param {Object} entity
+   * @param {Object} distance
+   */
+  updateEntityNoise(entity, dist) {
+
+    let radius = 0;
+
+    let cx = 0;
+    let cy = 0;
+    let dx = 0;
+    let dy = 0;
+
+    if (entity.STATES.NOISE === false) {
+      entity.noise = Audio.playNoise(entity.noise, VOLUME.ENTITY_NOISE, dist.x, dist.y);
+      entity.STATES.NOISE = true;
+    }
+
+    radius = (entity.noiseRadius - DIMENSION) || DIMENSION;
+    cx = radius / 2;
+    cy = radius / 2;
+    dx = Math.floor(dist.x * 1e2) + cx;
+    dy = Math.floor(dist.y * 1e2) + cy;
+
+    if (math.pointIntersectsCircle(dx, dy, cx, cy, radius) === true) {
+      if (entity.noise.isInView === false) {
+        entity.noise.volume(.0);
+        entity.noise.fadeIn(VOLUME.ENTITY_NOISE / 1e2, VOLUME.FADE_SPEED);
+        entity.noise.isInView = true;
+      }
+    } else {
+      if (entity.noise.isInView === true) {
+        entity.noise.volume(VOLUME.ENTITY_NOISE / 1e2);
+        entity.noise.fadeOut(.0, VOLUME.FADE_SPEED);
+        entity.noise.isInView = false;
+      }
+    }
+
+    entity.noise.pos3d(dist.x, dist.y, 0);
+
+    return void 0;
+
   }
 
   /**

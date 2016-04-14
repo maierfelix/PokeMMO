@@ -74,6 +74,8 @@ class Audio {
       pos3d: [x, y, vol / 1e3]
     });
     this.noises.push(noise);
+    /** This is for smooth out/in fading noise range area */
+    noise.isInView = true;
     return (noise);
   }
 

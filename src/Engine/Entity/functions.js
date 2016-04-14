@@ -18,7 +18,7 @@ export function addEntity(entity) {
     entity.fadeIn(1);
   }
 
-  if (entity.noise !== null) {
+  if (entity.noise !== null && !entity.noise.length) {
     entity.noise.unmute();
     this.currentMap.entityNoises.push(entity);
   }

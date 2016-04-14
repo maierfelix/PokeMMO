@@ -272,7 +272,7 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
     let padding = (
       (
         (
-          (Math.max(entity.follow.width, entity.width / 2) / 2) - entity.follow.width / 2
+          (Math.max(entity.follow.size.x, entity.size.x / 2) / 2) - entity.follow.size.x / 2
         )
         - entity.follow.xMargin - (entity.size.x === entity.follow.size.x ? DIMENSION : 0)
       )

@@ -11,5 +11,6 @@
   "animationFrames": 4,
   "animationSpeed": 300,
   "loop": true,
-  "noise": "campfire"
+  "noise": "campfire",
+  "noiseRadius": 32
 }

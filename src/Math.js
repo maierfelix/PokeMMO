@@ -6,11 +6,11 @@ import {
 import * as randSeed from "./libs/seed";
 
 /**
- * Math
- * @class Math
+ * Mathematical
+ * @class Mathematical
  * @export
  */
-export default class Math {
+export default class Mathematical {
 
   /**
    * @constructor
@@ -114,7 +114,7 @@ export default class Math {
    */
   static clamp(value, min, max) {
     return (
-      window.Math.min(max, window.Math.max(min, value))
+      Math.min(max, Math.max(min, value))
     );
   }
 
@@ -185,8 +185,8 @@ export default class Math {
    */
   static linearIntersect(xx, yy, width, height, x, y, scale) {
     return (
-      window.Math.abs(2 * (x - ((xx * scale))) + -(width * scale)) <= (width * scale) &&
-      window.Math.abs(2 * (y - ((yy * scale))) + -(height * scale)) <= (height * scale)
+      Math.abs(2 * (x - ((xx * scale))) + -(width * scale)) <= (width * scale) &&
+      Math.abs(2 * (y - ((yy * scale))) + -(height * scale)) <= (height * scale)
     );
   }
 
@@ -219,7 +219,7 @@ export default class Math {
    */
   static roundTo(a, b) {
     b = 1 / (b);
-    return (window.Math.round(a * b) / b);
+    return (Math.round(a * b) / b);
   }
 
   /**
@@ -237,12 +237,27 @@ export default class Math {
 
   /**
    * Hypotenuse
-   * @param {Number} x
-   * @param {Number} y
+   * @param  {Number} x
+   * @param  {Number} y
    * @return {Number}
    */
   static hypot(x, y) {
-    return (window.Math.sqrt((x * x) + (y * y)));
+    return (Math.sqrt((x * x) + (y * y)));
+  }
+
+  /**
+   * 2d point intersects circle
+   * @param  {Number} x
+   * @param  {Number} y
+   * @param  {Number} cx
+   * @param  {Number} cy
+   * @param  {Number} r
+   * @return {Number}
+   */
+  static pointIntersectsCircle(x, y, cx, cy, r) {
+    return (
+      (x - cx) ** 2 + (y - cy) ** 2 <= r ** 2
+    );
   }
 
   /**
@@ -255,8 +270,8 @@ export default class Math {
    */
   static distance(x1, y1, x2, y2) {
 
-    let x = window.Math.sqrt(window.Math.pow((x1 - x2), 2));
-    let y = window.Math.sqrt(window.Math.pow((y1 - y2), 2));
+    let x = Math.sqrt((x1 - x2) ** 2);
+    let y = Math.sqrt((y1 - y2) ** 2);
 
     return ({
       x: x1 - x2 < 0 ? -x : x,
@@ -272,7 +287,7 @@ export default class Math {
    */
   static ease(n) {
     return (
-      .5 + (window.Math.sin((n - .5) * window.Math.PI) / 2)
+      .5 + (Math.sin((n - .5) * Math.PI) / 2)
     );
   }
 

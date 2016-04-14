@@ -311,6 +311,12 @@ export default class Entity extends DisplayObject {
     this.noise = obj.noise === void 0 ? null : obj.noise;
 
     /**
+     * Noise radius
+     * @type {Number}
+     */
+    this.noiseRadius = obj.noiseRadius === void 0 ? 0 : obj.noiseRadius;
+
+    /**
      * Action trigger
      * @type {Function}
      */

@@ -37,7 +37,7 @@ export default class Input {
       this.KeyBoard.registerKey(
         key,
         this.instance.engine.controller::key.fire,
-        key.leave instanceof Function ? this.instance::key.leave : void 0
+        key.leave instanceof Function ? this.instance.engine.controller::key.leave : void 0
       );
     };
 

@@ -52,13 +52,13 @@ export function distance(entity, camera) {
 
   let distance = math.distance(
     entity.position.x + (entity.size.x / 2) + entity.xMargin,
-    entity.position.y + entity.position.z + (entity.size.y / 2) + entity.yMargin,
+    entity.position.y + (entity.size.y / 2) + entity.position.z + entity.yMargin,
     (((camera.size.x / 2) - camera.position.x) / camera.resolution),
     (((camera.size.y / 2) - camera.position.y) / camera.resolution)
   );
 
-  distance.x /= 10;
-  distance.y /= 10;
+  distance.x /= 1e2;
+  distance.y /= 1e2;
 
   return (distance);
 

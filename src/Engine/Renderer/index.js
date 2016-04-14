@@ -9,8 +9,6 @@ import * as entity from "../Entity/functions";
 import * as render from "./render";
 import * as debug from "./debug";
 
-import Audio from "../Audio";
-
 import WGL_Renderer from "./webgl";
 
 /**
@@ -191,42 +189,7 @@ export default class Renderer {
       this.camera.animate(this.camera.objectFocus);
     }
 
-    this.updateSound();
-
-    return void 0;
-
-  }
-
-  /**
-   * Update noisy entities
-   */
-  updateSound() {
-
-    let map = this.instance.currentMap;
-
-    if (
-      map === null ||
-      map.entityNoises.length <= 0
-    ) return void 0;
-
-    let dist = 0;
-
-    let vol = 75;
-
-    let entity = null;
-
-    let ii = 0;
-    let length = map.entityNoises.length;
-
-    for (; ii < length; ++ii) {
-      entity = map.entityNoises[ii];
-      dist = map.distance(entity, this.camera);
-      if (entity.STATES.NOISE === false) {
-        entity.noise = Audio.playNoise(entity.noise, vol, dist.x, dist.y);
-        entity.STATES.NOISE = true;
-      }
-      entity.noise.pos3d(dist.x, dist.y, vol / 1e3);
-    };
+    this.instance.updateSound();
 
     return void 0;
 
