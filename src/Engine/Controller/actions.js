@@ -195,7 +195,8 @@ actions["SPACE"] = {
       this.engine.camera.objectFocus !== null &&
       this.engine.camera.objectFocus.id !== this.engine.localEntity.id
     );
-  }
+  },
+  log: false
 };
 
 actions["DBLCLICK"] = {
@@ -213,10 +214,11 @@ actions["DBLCLICK"] = {
       }
     }
   },
-  rule: () => true
+  rule: () => true,
+  log: false
 };
 
-actions["MOUSEDOWN"] = {
+actions["LEFTCLICK"] = {
   action: function(e) {
     if (e.target.id !== this.engine.node.id) {
       return void 0;
@@ -247,14 +249,16 @@ actions["MOUSEDOWN"] = {
       this.engine.editor.selectEntity(x, y);
     }
   },
-  rule: () => true
+  rule: () => true,
+  log: false
 };
 
 actions["RESIZE"] = {
   action: function() {
     this.engine.renderer.resize(true);
   },
-  rule: () => true
+  rule: () => true,
+  log: false
 };
 
 actions["MOUSEUP"] = {
@@ -273,7 +277,8 @@ actions["MOUSEUP"] = {
     }
     this.engine.camera.moving = false;
   },
-  rule: () => true
+  rule: () => true,
+  log: false
 };
 
 actions["MOUSEMOVE"] = {
@@ -298,7 +303,17 @@ actions["MOUSEMOVE"] = {
       this.engine.editor.dragEntity(x, y);
     }
   },
-  rule: () => true
+  rule: () => true,
+  log: false
+};
+
+actions["RIGHTCLICK"] = {
+  action: function(e) {
+    e.preventDefault();
+    //this.engine.walkByMouse(e.clientX, e.clientY);
+  },
+  rule: () => true,
+  log: false
 };
 
 actions["MOUSEWHEEL"] = {
@@ -309,5 +324,6 @@ actions["MOUSEWHEEL"] = {
     }
     this.engine.camera.zoom(e);
   },
-  rule: () => true
+  rule: () => true,
+  log: false
 };

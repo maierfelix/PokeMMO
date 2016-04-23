@@ -36,6 +36,8 @@ export function addMap(path, resolve) {
       if (map.settings.music && BGM) {
         Audio.playSong(map.settings.music, VOLUME.MUSIC);
       }
+      /** Map name notification */
+      this.notify(map, map.name + map.name + map.name + map.name, "MapMessage");
       return (resolve());
     });
   });

@@ -1,5 +1,6 @@
 import {
-  DIMENSION
+  DIMENSION,
+  GRAVITY
 } from "../cfg";
 
 /**
@@ -29,11 +30,13 @@ export function logic() {
     }
   };
 
+  return void 0;
+
 }
 
 /**
  * Orbit animation
- * @param  {Object} entity
+ * @param {Object} entity
  */
 export function orbit(entity) {
 
@@ -73,6 +76,30 @@ export function orbit(entity) {
 }
 
 /**
+ * Floating animation
+ * TODO: ENTITY CAN ONLY WALK IF ON FLOOR (Z =^ 0)
+ * @param {Object} entity
+ */
+export function float(entity) {
+
+  entity.z += entity.gravity / 5;
+
+  if (entity.z < 0) {
+    entity.gravity += (.1 / 5);
+  } else {
+    entity.gravity = GRAVITY;
+    entity.z = 0;
+    entity.updateShadow();
+    entity.refreshState();
+  }
+
+  entity.updateShadow();
+
+  return void 0;
+
+}
+
+/**
  * Update entity
  * @param  {Object} entity
  * @return {Boolean} renderable
@@ -90,6 +117,20 @@ export function updateEntity(entity) {
 
   if (entity.orbit === true) {
     this.orbit(entity);
+  }
+
+  if (entity.floating === true) {
+    this.float(entity);
+  }
+
+  if (entity.z !== 0) {
+    entity.updateShadow();
+  }
+
+  if (entity.absolute === true) {
+    return (
+      this.isRenderable(entity) === true
+    );
   }
 
   if (this.camera.isInView(

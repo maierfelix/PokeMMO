@@ -10,10 +10,14 @@ import {
 import math from "../../Math";
 import { TextureCache, getSprite, createCanvasBuffer } from "../utils";
 
-import DisplayObject from "../DisplayObject";
-import MapEntity from "../Map/MapEntity";
-import Texture from "../Texture";
 import Shadow from "../Shadow";
+import Texture from "../Texture";
+
+import DisplayObject from "../DisplayObject";
+
+import {
+  Maps
+} from "../utils";
 
 /**
  * Entity
@@ -236,6 +240,19 @@ export default class Entity extends DisplayObject {
     this.x = 0;
     this.y = 0;
     this.z = 0;
+    this.r = 0;
+
+    /**
+     * Floating
+     * @type {Boolean}
+     */
+    this.floating = false;
+
+    /**
+     * Absolute positioning
+     * @type {Boolean}
+     */
+    this.absolute = false;
 
     /**
      * Velocity
@@ -315,6 +332,18 @@ export default class Entity extends DisplayObject {
      * @type {Number}
      */
     this.noiseRadius = obj.noiseRadius === void 0 ? 0 : obj.noiseRadius;
+
+    /**
+     * Following a entity
+     * @type {String}
+     */
+    this.following = obj.following === void 0 ? null : obj.following;
+
+    /**
+     * Entity to follow
+     * @type {Object}
+     */
+    this.leader = null;
 
     /**
      * Action trigger
@@ -418,8 +447,24 @@ export default class Entity extends DisplayObject {
         this.position.z = value;
       }
     });
+    this.z = obj.z === void 0 ? 0 : obj.z;
 
-    this.position.z = 0;
+    /**
+     * R radius
+     * @type {Number}
+     * @getter
+     * @setter
+     * @overwrite
+     */
+    Object.defineProperty(this, "r", {
+      get: function() {
+        return (this.position.r);
+      },
+      set: function(value) {
+        this.position.r = value;
+      }
+    });
+    this.r = obj.r === void 0 ? 0 : obj.r;
 
     /**
      * Lock
@@ -451,6 +496,11 @@ export default class Entity extends DisplayObject {
       if (WGL_SUPPORT === true) {
         this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
       }
+      if (this.following !== null) {
+        this.leader = Maps[this.map].instance.getEntityByProperty(this.following, "name");
+        this.x = this.leader.last.x;
+        this.y = this.leader.last.y;
+      }
       if (
         this.onLoad !== null &&
         this.onLoad instanceof Function
@@ -466,10 +516,10 @@ export default class Entity extends DisplayObject {
    * @return {Number}
    */
   getEntityType() {
-    if (this instanceof MapEntity) {
-      return (TYPES.MapEntity);
+    if (this instanceof Entity) {
+      return (TYPES.Player);
     }
-    return (TYPES.Player);
+    return (TYPES.MapEntity);
   }
 
   /**
@@ -525,26 +575,38 @@ export default class Entity extends DisplayObject {
 
     if (this.z < 0) {
       this.gravity += .1;
-      if (this.hasShadow === true) {
+    } else {
+      this.gravity = GRAVITY;
+      this.z = 0;
+      this.updateShadow();
+      this.refreshState();
+      if (this.jumpCB) {
+        this.jumpCB();
+      }
+    }
+
+  }
+
+  /**
+   * Update shadow
+   */
+  updateShadow() {
+
+    if (this.hasShadow === true) {
+      if (this.z < 0) {
         this.shadow.position.x = -(this.z / 2);
         this.shadow.position.y = this.shadowY - (this.z);
         this.shadow.scale.x = this.z;
         this.shadow.scale.y = this.z;
-      }
-    } else {
-      this.gravity = GRAVITY;
-      this.z = 0;
-      this.refreshState();
-      if (this.hasShadow === true) {
+      } else {
         this.shadow.position.x = this.shadowX;
         this.shadow.position.y = this.shadowY;
         this.shadow.scale.x = 0;
         this.shadow.scale.y = 0;
       }
-      if (this.jumpCB !== null) {
-        this.jumpCB();
-      }
     }
+
+    return void 0;
 
   }
 

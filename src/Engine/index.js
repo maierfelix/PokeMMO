@@ -1,5 +1,3 @@
-import math from "../Math";
-
 import {
   DEV_VERSION,
   RECORD_MODE,
@@ -7,9 +5,10 @@ import {
   LEFT, RIGHT, UP, DOWN,
   WGL_SUPPORT,
   MIN_SCALE,
-  TYPES,
-  VOLUME
+  TYPES
 } from "../cfg";
+
+import math from "../Math";
 
 import {
   inherit,
@@ -17,11 +16,14 @@ import {
   ajax as $GET
 } from "./utils";
 
-import * as logic from "./logic";
+import { Language } from "./Language";
+
 import * as map from "./Map/functions";
+import * as sound from "./sound";
+import * as logic from "./logic";
 import * as entity from "./Entity/functions";
 
-import Audio from "./Audio";
+import Map from "./Map";
 import Camera from "./Camera";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
@@ -29,8 +31,6 @@ import Controller from "./Controller";
 import Environment from "./Environment";
 import Notification from "./Notification";
 import DisplayObject from "./DisplayObject";
-
-import { Language } from "./Language";
 
 /**
  * Engine
@@ -244,77 +244,6 @@ export default class Engine extends DisplayObject {
   }
 
   /**
-   * Update noisy entities
-   */
-  updateSound() {
-
-    let map = this.currentMap;
-
-    if (
-      map === null ||
-      map.entityNoises.length <= 0
-    ) return void 0;
-
-    let entity = null;
-
-    let ii = 0;
-    let length = map.entityNoises.length;
-
-    for (; ii < length; ++ii) {
-      entity = map.entityNoises[ii];
-      this.updateEntityNoise(entity, map.distance(entity, this.camera));
-    };
-
-    return void 0;
-
-  }
-
-  /**
-   * Update entity noise
-   * @param {Object} entity
-   * @param {Object} distance
-   */
-  updateEntityNoise(entity, dist) {
-
-    let radius = 0;
-
-    let cx = 0;
-    let cy = 0;
-    let dx = 0;
-    let dy = 0;
-
-    if (entity.STATES.NOISE === false) {
-      entity.noise = Audio.playNoise(entity.noise, VOLUME.ENTITY_NOISE, dist.x, dist.y);
-      entity.STATES.NOISE = true;
-    }
-
-    radius = (entity.noiseRadius - DIMENSION) || DIMENSION;
-    cx = radius / 2;
-    cy = radius / 2;
-    dx = Math.floor(dist.x * 1e2) + cx;
-    dy = Math.floor(dist.y * 1e2) + cy;
-
-    if (math.pointIntersectsCircle(dx, dy, cx, cy, radius) === true) {
-      if (entity.noise.isInView === false) {
-        entity.noise.volume(.0);
-        entity.noise.fadeIn(VOLUME.ENTITY_NOISE / 1e2, VOLUME.FADE_SPEED);
-        entity.noise.isInView = true;
-      }
-    } else {
-      if (entity.noise.isInView === true) {
-        entity.noise.volume(VOLUME.ENTITY_NOISE / 1e2);
-        entity.noise.fadeOut(.0, VOLUME.FADE_SPEED);
-        entity.noise.isInView = false;
-      }
-    }
-
-    entity.noise.pos3d(dist.x, dist.y, 0);
-
-    return void 0;
-
-  }
-
-  /**
    * Sort layers and entities
    */
   sort() {
@@ -389,9 +318,7 @@ export default class Engine extends DisplayObject {
    * @param {Object} entity
    * @param {String} msg
    */
-  notify(entity, msg) {
-
-    let offset = entity || this.instance.localEntity;
+  notify(entity, msg, type) {
 
     let map = this.currentMap;
 
@@ -404,9 +331,10 @@ export default class Engine extends DisplayObject {
       height: 16,
       msg: msg,
       follow: entity,
-      style: "ChatBubble",
-      fade: isLocalEntity,
-      sound: isLocalEntity
+      style: type || "ChatBubble",
+      fade: isLocalEntity || entity instanceof Map,
+      sound: isLocalEntity,
+      absolute: entity instanceof Map
     });
 
     map.entities.push(notification);
@@ -418,61 +346,23 @@ export default class Engine extends DisplayObject {
    * @param {Number} x
    * @param {Number} y
    */
-  walkTo(x, y) {
+  walkByMouse(x, y) {
 
-    let ii = 0;
-    let length = 0;
+    let local = this.localEntity;
 
-    let lastX = this.instance.localEntity.x;
-    let lastY = this.instance.localEntity.y;
-
-    let xx = 0;
-    let yy = 0;
+    if (local === null) return void 0;
 
     let offset = this.camera.getGameMouseOffset(x, y);
 
-    let dir = 0;
-
-    let path = this.instance.currentMap.path.getShortestPath(
-      this.instance.localEntity.x, this.instance.localEntity.y,
+    local.walkTo(
       offset.x, offset.y
     );
-
-    if (
-      path === void 0 ||
-      path === null   ||
-      path.length <= 0
-    ) return void 0;
-
-    length = path.length;
-
-    for (; ii < length; ++ii) {
-      xx = path[ii].x * DIMENSION;
-      yy = path[ii].y * DIMENSION;
-      if (xx !== lastX) {
-        dir = xx < lastX ? LEFT : RIGHT;
-      } else {
-        if (yy !== lastY) {
-          dir = yy < lastY ? UP : DOWN;
-        }
-      }
-      this.instance.localEntity.animations.push({
-        type: "walk",
-        facing: dir,
-        obstacle: false,
-        x: xx,
-        y: yy,
-        oX: this.instance.localEntity.x,
-        oY: this.instance.localEntity.y
-      });
-      lastX = xx;
-      lastY = yy;
-    };
 
   }
 
 }
 
 inherit(Engine, map);
-inherit(Engine, entity);
 inherit(Engine, logic);
+inherit(Engine, sound);
+inherit(Engine, entity);

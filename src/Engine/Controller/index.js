@@ -55,7 +55,7 @@ export default class Controller {
       cmd.action.bind(this.engine.instance).apply(this, args);
     }
 
-    this.log(name, rule);
+    if (cmd.log !== false) this.log(name, rule);
 
     return void 0;
 

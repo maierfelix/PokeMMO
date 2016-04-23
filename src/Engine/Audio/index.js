@@ -76,6 +76,8 @@ class Audio {
     this.noises.push(noise);
     /** This is for smooth out/in fading noise range area */
     noise.isInView = true;
+    noise.fadingIn = false;
+    noise.fadingOut = false;
     return (noise);
   }
 

@@ -134,12 +134,15 @@ export default class Map extends DisplayObject {
      */
     this.settings = {};
 
+    this.xMargin = 0;
+    this.yMargin = 0;
+
     /** Load texture */
     getSprite(this.tileset, -1, -1, this::function(texture) {
       this.texture = TextureCache[this.tileset];
       this.parseLayers();
       /** Attach path finder */
-      this.path = new Path(this.collisionLayer.data);
+      this.path = new Path(this);
       Maps[this.name] = this;
       this.loadMapFile(this::function() {
         if (resolve instanceof Function) resolve();

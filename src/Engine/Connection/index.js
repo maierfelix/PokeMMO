@@ -1,5 +1,15 @@
 import * as Packet from "../../Packets";
 
+import {
+  LEFT, RIGHT, UP, DOWN
+} from "../../cfg";
+
+import {
+  Maps
+} from "../utils";
+
+import math from "../../Math";
+
 /**
  * Connection
  * @class Connection
@@ -136,6 +146,18 @@ export default class Connection {
       }
     }
 
+    /** Nerby players */
+    if (key === 40) {
+      offset += 4;
+      offset += 4;
+      let data = JSON.parse(getString());
+      for (let key in data) {
+        this.instance.engine.addEntity(
+          new this.instance.entities.Player(data[key])
+        );
+      };
+    }
+
     /** Jumping */
     if (key === 30) {
       offset += 4;
@@ -160,9 +182,9 @@ export default class Connection {
       offset += 4;
       let data = JSON.parse(getString());
       let entity = this.instance.engine.getEntityByProperty(data.name, "name");
-      entity.position.x = data.x;
-      entity.position.y = data.y;
-      entity.move(data.dir);
+      let position = math.getTilePosition(data.x, data.y, data.dir);
+      let obstacle = Maps[entity.map].isEntityCollidable(entity, position.x, position.y) === true;
+      entity.onlineMove(position.x, position.y, position.facing);
     }
 
     /** Velocity */

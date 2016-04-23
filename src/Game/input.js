@@ -178,7 +178,13 @@ export const mouse = [
   {
     name: "mousedown|touchstart",
     fire: function(e) {
-      this.action("MOUSEDOWN", [e]);
+      this.action("LEFTCLICK", [e]);
+    }
+  },
+  {
+    name: "contextmenu",
+    fire: function(e) {
+      this.action("RIGHTCLICK", [e]);
     }
   },
   {
@@ -197,12 +203,6 @@ export const mouse = [
     name: "mousewheel",
     fire: function(e) {
       this.action("MOUSEWHEEL", [e]);
-    }
-  },
-  {
-    name: "contextmenu",
-    fire: function(e) {
-      e.preventDefault();
     }
   }
 ];

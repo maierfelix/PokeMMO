@@ -86,7 +86,7 @@ export function renderDebugScene() {
 
   if (this.instance.localEntity !== null) {
     this.drawPixelText(
-      `LOCAL X: ${this.instance.localEntity.x} Y: ${this.instance.localEntity.y.toFixed(2)}`,
+      `LOCAL X: ${this.instance.localEntity.x} Y: ${this.instance.localEntity.y.toFixed(2)} LOCAL Z: ${-this.instance.localEntity.z.toFixed(4)}`,
       15, 270,
       20, 1.5,
     color

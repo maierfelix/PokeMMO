@@ -136,12 +136,32 @@ export default class Game {
     this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 176, y: 152, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
       onAction: {
         EngelScript: `
-          if (trigger.facing == 2) {
-            kernel.notify(this, "Ameno");
+          if (trigger.facing == 2 || trigger.facing == 3) {
+            FLAGS.COUNTER += 1;
+          } {
+            FLAGS.COUNTER -= 1;
           }
+          kernel.notify(this, '+' + FLAGS.COUNTER + " ");
           this.faceEntity(trigger);
         `
       }
+    }));
+
+    this.engine.addEntity(new player({ name: "Merlin2", map: "Town", x: 168, y: 168, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+      onCollide: {
+        EngelScript: `
+          kernel.notify(this, trigger.name);
+        `
+      }
+    }));
+
+    this.engine.addEntity(new player({
+      name: "Mew", map: "Town",
+      x: 0,
+      y: 0, sprite: "assets/img/151.png",
+      width: 16, height: 16,
+      collidable: false,
+      following: "Felix"
     }));
 
     if (OFFLINE_MODE) {

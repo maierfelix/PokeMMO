@@ -123,8 +123,8 @@ export default class Camera extends DisplayObject {
     let yy = ((y - this.y) / this.resolution);
 
     return ({
-      x: (Math.ceil(xx / DIMENSION) * DIMENSION) - DIMENSION,
-      y: (Math.ceil(yy / DIMENSION) * DIMENSION) - DIMENSION
+      x: ((Math.ceil(xx / DIMENSION) * DIMENSION) - DIMENSION) << 0,
+      y: ((Math.ceil(yy / DIMENSION) * DIMENSION) - DIMENSION) << 0
     });
 
   }
@@ -286,11 +286,12 @@ export default class Camera extends DisplayObject {
    * @param {Boolean} instant
    */
   focus(object, instant) {
+    if (
+      object === null ||
+      object === void 0 ||
+      object === -1
+    ) return void 0;
     if (instant === true) {
-      if (
-        object === null ||
-        object === void 0
-      ) return void 0;
       this.objectFocus = object;
       this.position.x = this.getX(object);
       this.position.y = this.getY(object);

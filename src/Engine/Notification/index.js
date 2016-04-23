@@ -1,6 +1,7 @@
 import {
   DIMENSION,
-  TYPES
+  TYPES,
+  BGS
 } from "../../cfg";
 
 import math from "../../Math";
@@ -117,6 +118,18 @@ export default class Notification extends Entity {
     this.zIndex = 9999;
 
     /**
+     * Z position
+     * @type {Number}
+     */
+    this.z = 0;
+
+    /**
+     * Absolute position
+     * @type {Boolean}
+     */
+    this.absolute = obj.absolute || false;
+
+    /**
      * Max lifetime
      * @type {Number}
      */
@@ -167,6 +180,8 @@ export default class Notification extends Entity {
    * Play notifcation sound
    */
   playSound() {
+
+    if (BGS === false) return void 0;
 
     let dist = this.instance.currentMap.distance(this.follow, this.instance.camera);
 
@@ -225,6 +240,36 @@ export default class Notification extends Entity {
   }
 
   /**
+   * Draw a map message
+   */
+  drawMapMessage() {
+
+    this.position = {
+      x: DIMENSION,
+      y: DIMENSION
+    };
+
+    let height = this.size.y;
+
+    this.size = this.instance.size;
+
+    this.size.y = height * 7.5;
+
+    this.size.x = (this.instance.width * 2) - this.padding * 10;
+
+    this.z = 0;
+
+    this.texture = createCanvasBuffer(this.width, this.height + this.pointer.height);
+
+    let ctx = this.texture;
+
+    this.drawBox(ctx, this.width, this.height, this.padding);
+
+    this.drawText(ctx, this.width, this.height, this.msg, 1.5);
+
+  }
+
+  /**
    * Draw a chat bubble
    */
   drawChatBubble() {
@@ -233,35 +278,52 @@ export default class Notification extends Entity {
 
     let ctx = this.texture;
 
-    let cornerWidth = this.topLeft.width;
-    let cornerHeight = this.topLeft.height;
+    this.drawBox(ctx, this.width, this.height, this.padding);
+
+    ctx.drawImage(
+      this.pointer.texture.canvas,
+      this.width / 2, this.height
+    );
+
+    this.drawText(ctx, this.width, this.height + this.pointer.height, this.msg, .75);
+
+  }
+
+  /**
+   * Draw chat box
+   * @param {Object} ctx
+   * @param {Number} width
+   * @param {Number} height
+   * @param {Number} padding
+   */
+  drawBox(ctx, width, height, padding) {
 
     ctx.drawImage(
       this.fill.texture.canvas,
-      this.padding, this.padding,
-      this.width - this.padding * 2, this.height - this.padding * 2
+      padding, padding,
+      width - padding * 2, height - padding * 2
     );
 
     ctx.drawImage(
       this.fill.texture.canvas,
-      0, this.padding,
-      this.padding, this.height - this.padding * 2
+      0, padding,
+      padding, height - padding * 2
     );
     ctx.drawImage(
       this.fill.texture.canvas,
-      this.width - this.padding, this.padding,
-      this.padding, this.height - this.padding * 2
+      width - padding, padding,
+      padding, height - padding * 2
     );
 
     ctx.drawImage(
       this.fill.texture.canvas,
-      this.padding, 0,
-      this.width - this.padding * 2, this.padding
+      padding, 0,
+      width - padding * 2, padding
     );
     ctx.drawImage(
       this.fill.texture.canvas,
-      this.padding, this.height - this.padding,
-      this.width - this.padding * 2, this.padding
+      padding, height - padding,
+      width - padding * 2, padding
     );
 
     ctx.drawImage(
@@ -270,38 +332,44 @@ export default class Notification extends Entity {
     );
     ctx.drawImage(
       this.topRight.texture.canvas,
-      this.width - this.topRight.width, 0
+      width - this.topRight.width, 0
     );
     ctx.drawImage(
       this.bottomLeft.texture.canvas,
-      0, this.height - this.bottomLeft.height
+      0, height - this.bottomLeft.height
     );
     ctx.drawImage(
       this.bottomRight.texture.canvas,
-      this.width - this.topRight.width,
-      this.height - this.bottomLeft.height
+      width - this.topRight.width,
+      height - this.bottomLeft.height
     );
 
-    ctx.drawImage(
-      this.pointer.texture.canvas,
-      this.width / 2, this.height
-    );
+  }
 
-    let txt = createCanvasBuffer(this.width, this.height + this.pointer.height);
+  /**
+   * Draw a text
+   * @param {Object} ctx
+   * @param {Number} width
+   * @param {Number} height
+   * @param {String} msg
+   * @param {Number} resolution
+   */
+  drawText(ctx, width, height, msg, resolution) {
 
-    txt.font = 20 + "px AdvoCut";
+    let txt = createCanvasBuffer(width, height);
+    let margin = 0;
+
+    txt.font = 25 + "px AdvoCut";
     txt.strokeStyle = "#000";
-    txt.lineWidth = 2;
-    txt.strokeText(this.msg, this.width / 2, (this.height + this.pointer.height) / 2);
+    txt.lineWidth = 2.75;
+    txt.strokeText(msg, width / 4, height);
     txt.fillStyle = "white";
-    txt.fillText(this.msg, this.width / 2, (this.height + this.pointer.height) / 2);
-
-    let resolution = .75;
+    txt.fillText(msg, width / 4, height);
 
     ctx.drawImage(
       txt.canvas,
       0, 0,
-      (this.width * resolution) << 0, ((this.height + this.pointer.height) * resolution) << 0
+      (width * resolution) << 0, (height * resolution) << 0
     );
 
   }

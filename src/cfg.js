@@ -65,7 +65,7 @@ export const VERSION = "0.1.0";
  * @constant
  * @type {Boolean}
  */
-export const WGL_SUPPORT = false;
+export const WGL_SUPPORT = /*supportWGL()*/ false;
 
 /**
  * Walk by keyboard
@@ -85,6 +85,12 @@ export let FREE_CAMERA = false;
  * @type {Boolean}
  */
 export let EASING_CAMERA = false;
+
+/**
+ * Debug mode
+ * @type {Boolean}
+ */
+export let DEBUG_MODE = true;
 
 /**
  * Offline mode
@@ -110,12 +116,6 @@ export let EDIT_MODE = true;
  * @type {Boolean}
  */
 export let GOD_MODE = false;
-
-/**
- * Debug mode
- * @type {Boolean}
- */
-export let DEBUG_MODE = true;
 
 /**
  * Debug mode
@@ -245,9 +245,9 @@ export const BGS = true;
 export const VOLUME = {
   LOCAL_PLAYER:   100,
   NETWORK_PLAYER: 10,
-  MUSIC: 45,
-  ENTITY_NOISE: 35,
-  FADE_SPEED: 1500
+  MUSIC:          45,
+  ENTITY_NOISE:   35,
+  FADE_SPEED:     25e2
 };
 
 /**

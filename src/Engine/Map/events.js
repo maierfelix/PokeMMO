@@ -67,7 +67,7 @@ export function actionTrigger(position, entity) {
  */
 export function isObstacle(entity, dir) {
 
-  let position = math.getTilePosition(entity.x << 0, entity.y << 0, dir);
+  let position = math.getTilePosition(entity.x << 0, entity.y << 0, dir << 0);
 
   return (
     this.collisionLayer.data[(position.y << 0) / DIMENSION][(position.x << 0) / DIMENSION] === 0 ||

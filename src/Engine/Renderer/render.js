@@ -283,8 +283,10 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
       0, 0,
       /** Scale */
       eWidth, eHeight,
-      x - padding, y - (entity.size.y * resolution),
-      width, height
+      entity.absolute === true ? entity.position.x : x - padding,
+      entity.absolute === true ? entity.position.y : y - (entity.size.y * resolution),
+      entity.absolute === true ? width  / resolution : width,
+      entity.absolute === true ? height / resolution : height
     );
   } else {
     this.context.drawImage(

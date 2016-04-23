@@ -1,6 +1,5 @@
 import math from "../../../Math";
 import {
-  LEFT, RIGHT, UP, DOWN,
   OFFLINE_MODE,
   DIMENSION, GRAVITY
 } from "../../../cfg";
@@ -44,7 +43,7 @@ export class Player extends Entity {
      * Player facing
      * @type {Number}
      */
-    this.facing = obj.facing !== void 0 ? obj.facing : 0;
+    this.facing = 0;
 
     /**
      * Idle state
@@ -146,34 +145,7 @@ export class Player extends Entity {
       this.y = obj.y;
     }
 
-    let last = this.getLastPosition();
-
-    this.last.x = this.x + last.x;
-    this.last.y = this.y + last.y;
-
     this.init(obj);
-
-  }
-
-  /**
-   * Last position
-   * @return {Object}
-   */
-  getLastPosition() {
-
-    let x = 0;
-    let y = 0;
-
-    if (this.facing === LEFT || this.facing === RIGHT) {
-      x = this.facing === LEFT ? DIMENSION : -DIMENSION;
-    } else {
-      y = this.facing === DOWN ? -DIMENSION : DIMENSION;
-    }
-
-    return ({
-      x: x,
-      y: y
-    });
 
   }
 
@@ -277,7 +249,7 @@ export class Player extends Entity {
 
   /** Refresh entity states */
   refreshState() {
-    this.STATES.RUNNING = this.velocity === .5 ? false : this.velocity >= 1 && this.STATES.WALKING === true ? true : false;
+    this.STATES.RUNNING = this.velocity === .5 ? false : this.velocity === 1 && this.STATES.WALKING === true ? true : false;
     this.STATES.JUMPING = this.z !== 0;
   }
 
@@ -292,6 +264,7 @@ export class Player extends Entity {
    * @param {Object} entity
    */
   faceEntity(entity) {
+    if (entity === null) return void 0;
     let facing = this.oppositFacing(entity.facing);
     if (this.facing !== facing) {
       this.changeFacing(facing);
@@ -301,28 +274,23 @@ export class Player extends Entity {
   /** Animate */
   animate() {
 
-    if (this.STATES.JUMPING === true) {
-      this.jumping();
-    }
-
     if (this.animations.length <= 0) return void 0;
 
-    this.animationIndex = 0;
+    if (this.animations[0] !== void 0 && this.animations[0].type === "fade") {
+      this.fade(this.animations[0]);
+    }
 
-    let ii = 0;
-    let animation = null;
-    let walking = false;
-    let bumping = false;
+    if (this.animations[0] !== void 0 && this.animations[0].type === "jump") {
+      this.jumpAnimation();
+    }
 
-    for (; ii < this.animations.length; ++ii) {
-      animation = this.animations[this.animationIndex];
-      if (animation.type === "walk" && walking === true) continue;
-      if (animation.type === "bump" && bumping === true) continue;
-      this[animation.type](animation);
-      if (animation.type === "walk") walking = true;
-      if (animation.type === "bump") bumping = true;
-      this.animationIndex++;
-    };
+    if (this.animations[0] !== void 0 && this.animations[0].type === "move") {
+      this.moveAnimation(this.animations[0]);
+    }
+
+    if (this.animations[0] !== void 0 && this.animations[0].type === "bump") {
+      this.bumpAnimation(this.animations[0]);
+    }
 
   }
 
