@@ -169,6 +169,11 @@ return (function() {
   });
 
   MAP.entities.push({
+    x: 112 + 16, y: 136,
+    type: "raindrop"
+  });
+
+  MAP.entities.push({
     x: 192, y: 120,
     type: "windmill"
   });

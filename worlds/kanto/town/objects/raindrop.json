@@ -1,0 +1,16 @@
+{
+  "name"   : "RainDrop",
+  "sprite" : "raindrop.png",
+  "width"  : 15,
+  "height" : 11,
+  "scale"  : 0.25,
+  "shadow" : true,
+  "shadowY": -2,
+  "collidable": false,
+  "animation": true,
+  "animationFrames": 4,
+  "animationSpeed": 100,
+  "loop": true,
+  "xMargin": 2,
+  "yMargin": 2
+}
