@@ -3,7 +3,8 @@
 [Demo](http://maierfelix.github.io/PokeMMO)<br>
 Runs the best on Chrome.<br>
 Uses the 2d canvas for rendering the editor mode and webgl for the gameplay (unfinished).<br>
-Tileset is created by [KyleDove](http://kyle-dove.deviantart.com/)
+Tileset is created by [KyleDove](http://kyle-dove.deviantart.com/)</br>
+Sounds are taken from [SoundBible](http://soundbible.com/)
 
 - Z: Action
 - X: Run
