@@ -309,7 +309,7 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
     this.context.globalCompositeOperation = "source-over";
   }
 
-  this.context.resetTransform();
+  this.context.setTransform(1, 0, 0, 1, 0, 0);
 
   return void 0;
 
