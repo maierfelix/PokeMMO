@@ -14,6 +14,18 @@ Sounds are taken from [SoundBible](http://soundbible.com/)
 - F3: Free camera mode (Press right mouse key to drag around)
 - F4: God mode
 
+Setup:
+````
+Client:
+npm install
+npm run watch
+
+Server:
+cd ./server
+npm install
+npm run start
+````
+
 - [ ] Engine
    - [x] Collisions
    - [x] Camera
