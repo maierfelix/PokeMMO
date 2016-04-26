@@ -124,9 +124,9 @@ export default class Game {
 
     let player = this.entities.Player;
 
-    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 120, y: 120, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
+    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 96, y: 144, sprite: "assets/img/200.png", width: 16, height: 16, collidable: false,
       onCollide: {
-        JavaScript: function(entity, engine) {
+        JavaScript: (entity, engine) => {
           this.faceEntity(entity);
           console.log(engine.instance.notify(this, "Stop!"));
         }
@@ -157,15 +157,43 @@ export default class Game {
 
     this.engine.addEntity(new player({
       name: "Mew", map: "Town",
-      x: 0,
-      y: 0, sprite: "assets/img/151.png",
+      sprite: "assets/img/151.png",
       width: 16, height: 16,
       collidable: false,
-      following: "Felix"
+      following: "Joy"
+    }));
+
+    this.engine.addEntity(new player({
+      name: "Charizard", map: "Town",
+      sprite: "assets/img/4.png",
+      width: 16, height: 16,
+      collidable: false,
+      following: "Felix",
+      onAction: {
+        EngelScript: `
+          kernel.notify(this, ":p");
+        `
+      }
+    }));
+
+    this.engine.addEntity(new player({
+      name: "CoolBoy", map: "Town",
+      sprite: "assets/img/1.png",
+      width: 16, height: 16,
+      collidable: false,
+      following: "Charizard"
     }));
 
     if (OFFLINE_MODE) {
-      this.engine.addEntity(new player({ name: "Felix", map: "Town", x: 152, y: 128, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true }));
+      this.engine.addEntity(new player({
+        name: "Felix", map: "Town", x: 152, y: 128, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true,
+        onJump: (entity, map) => {
+          if (entity.leader) {
+            setTimeout(() => map.instance.notify(entity.leader, " :3 "), 250);
+            setTimeout(() => entity.leader.jump(), 500);
+          }
+        }
+      }));
     }
 
     return (resolve());

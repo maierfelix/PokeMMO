@@ -489,25 +489,35 @@ export default class Entity extends DisplayObject {
     getSprite(
       this.sprite, this.width, this.height, this::function(texture) {
       this.texture = texture;
-      if (this.hasShadow === true) {
-        this.shadow = new Shadow(this);
-        this.shadow.position.set(this.shadowX, this.shadowY);
-      }
-      if (WGL_SUPPORT === true) {
-        this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
-      }
-      if (this.following !== null) {
-        this.leader = Maps[this.map].instance.getEntityByProperty(this.following, "name");
-        this.x = this.leader.last.x;
-        this.y = this.leader.last.y;
-      }
-      if (
-        this.onLoad !== null &&
-        this.onLoad instanceof Function
-      ) {
-        this.onLoad();
-      }
+      this.setup();
     });
+
+  }
+
+  /**
+   * Setup
+   */
+  setup() {
+
+    if (this.hasShadow === true) {
+      this.shadow = new Shadow(this);
+      this.shadow.position.set(this.shadowX, this.shadowY);
+    }
+    if (WGL_SUPPORT === true) {
+      this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
+    }
+    if (this.following !== null) {
+      let leader = Maps[this.map].instance.getEntityByProperty(this.following, "name");
+      leader.leader = this;
+      this.x = leader.last.x;
+      this.y = leader.last.y;
+    }
+    if (
+      this.onLoad !== null &&
+      this.onLoad instanceof Function
+    ) {
+      this.onLoad();
+    }
 
   }
 

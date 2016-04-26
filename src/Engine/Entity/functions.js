@@ -77,7 +77,7 @@ export function cloneEntity(entity) {
   tmp.z = entity.z;
 
   if (entity instanceof MapEntity) {
-    clone = new MapEntity(tmp);
+    clone = new MapEntity(entity);
     if (entity.noise) {
       clone.noiseSrcPath = entity.noiseSrcPath;
       clone.noise = clone.noiseSrcPath;

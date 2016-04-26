@@ -189,8 +189,6 @@ export default class Renderer {
       this.camera.animate(this.camera.objectFocus);
     }
 
-    this.instance.updateSound();
-
     return void 0;
 
   }

@@ -197,6 +197,9 @@ export class Player extends Entity {
         [this.id, value]
       );
     }
+    if (this.leader) {
+      this.leader.velocity = value;
+    }
     this.refreshState();
   }
 

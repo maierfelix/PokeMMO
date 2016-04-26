@@ -9,32 +9,6 @@ import math from "../Math";
 import Audio from "./Audio";
 
 /**
- * Update noisy entities
- */
-export function updateSound() {
-
-  let map = this.currentMap;
-
-  if (
-    map === null
-  ) return void 0;
-
-  let entity = null;
-
-  let ii = 0;
-  let length = map.entities.length;
-
-  for (; ii < length; ++ii) {
-    entity = map.entities[ii];
-    if (entity.noise === null) continue;
-    this.updateEntityNoise(entity, map.distance(entity, this.camera));
-  };
-
-  return void 0;
-
-}
-
-/**
  * Update entity noise
  * @param {Object} entity
  * @param {Object} distance

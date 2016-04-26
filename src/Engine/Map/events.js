@@ -9,18 +9,26 @@ import math from "../../Math";
  */
 export function triggerEvent(entity, parent, event) {
 
+  let cmd = entity[event];
+
   /** Collide event */
-  if (entity[event] !== null) {
+  if (cmd !== null) {
     /** JavaScript API */
-    if (entity[event].JavaScript !== void 0) {
-      entity[event].JavaScript.bind(entity)(parent, this);
+    if (cmd.JavaScript !== void 0) {
+      cmd.JavaScript.bind(entity)(parent, this);
     }
     /** EngelScript API */
-    if (entity[event].EngelScript !== void 0) {
+    if (cmd.EngelScript !== void 0) {
       this.instance.environment.run(
         parent, entity,
-        entity[event].EngelScript
+        cmd.EngelScript
       );
+    } else {
+      if (cmd.JavaScript === void 0) {
+        if (cmd instanceof Function) {
+          cmd.bind(entity)(parent, this);
+        }
+      }
     }
   }
 
@@ -69,10 +77,22 @@ export function isObstacle(entity, dir) {
 
   let position = math.getTilePosition(entity.x << 0, entity.y << 0, dir << 0);
 
-  return (
+  let obstacle = (
     this.collisionLayer.data[(position.y << 0) / DIMENSION][(position.x << 0) / DIMENSION] === 0 ||
     this.isEntityCollidable(entity, position.x, position.y) === true
   );
+
+  /** Entity is leader of a following entity */
+  if (entity.leader !== null) {
+    if (obstacle === false && entity.moving === false) {
+      entity.leader.walkTo(
+        math.roundTo(entity.x, DIMENSION),
+        math.roundTo(entity.y, DIMENSION)
+      );
+    }
+  }
+
+  return (obstacle);
 
 }
 

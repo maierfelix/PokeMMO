@@ -28,6 +28,8 @@ export function logic() {
       --ii;
       continue;
     }
+    if (entity.noise === null) continue;
+    this.updateEntityNoise(entity, this.currentMap.distance(entity, this.camera));
   };
 
   return void 0;
