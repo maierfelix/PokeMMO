@@ -1,3 +1,7 @@
+import {
+  VOLUME
+} from "../../cfg";
+
 import MapEntity from "../Map/MapEntity";
 
 import Entity from "./index";
@@ -18,9 +22,10 @@ export function addEntity(entity) {
     entity.fadeIn(1);
   }
 
-  if (entity.noise !== null && !entity.noise.length) {
-    entity.noise.unmute();
-    this.currentMap.entityNoises.push(entity);
+  if (entity.noise) {
+    if (entity.noise._audioNode !== void 0) {
+      entity.noise._audioNode[0].gain.linearRampToValueAtTime(VOLUME.ENTITY_NOISE / 1e2, entity.noise._audioNode[0].context.currentTime);
+    }
   }
 
   this.currentMap.entities.push(entity);
@@ -73,6 +78,10 @@ export function cloneEntity(entity) {
 
   if (entity instanceof MapEntity) {
     clone = new MapEntity(tmp);
+    if (entity.noise) {
+      clone.noiseSrcPath = entity.noiseSrcPath;
+      clone.noise = clone.noiseSrcPath;
+    }
   } else {
     clone = tmp;
   }
@@ -121,12 +130,13 @@ export function removeEntity(entity) {
     this.editor.entitySelection = null;
   }
 
-  noiseEntity = this.removeEntityFromArray(entity, this.currentMap.entityNoises);
-  this.removeEntityFromArray(entity, this.currentMap.entities);
-
-  if (noiseEntity !== void 0) {
-    noiseEntity.noise.mute();
+  if (entity.noise) {
+    if (entity.noise._audioNode !== void 0) {
+      entity.noise._audioNode[0].gain.linearRampToValueAtTime(.0, entity.noise._audioNode[0].context.currentTime);
+    }
   }
+
+  this.removeEntityFromArray(entity, this.currentMap.entities);
 
 }
 

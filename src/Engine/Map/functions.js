@@ -34,7 +34,7 @@ export function addMap(path, resolve) {
         this.editor.map = this.currentMap;
       }
       if (map.settings.music && BGM) {
-        Audio.playSong(map.settings.music, VOLUME.MUSIC);
+        Audio.playSong(map.settings.music, VOLUME.MUSIC, true);
       }
       /** Map name notification */
       this.notify(map, map.name + map.name + map.name + map.name, "MapMessage");

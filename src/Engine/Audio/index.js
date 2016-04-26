@@ -43,17 +43,22 @@ class Audio {
 
   /**
    * Play a song
-   * @param {String} name
-   * @param {Number} vol
+   * @param {String}  name
+   * @param {Number}  vol
+   * @param {Boolean} fadeIn
    */
-  playSong(name, vol) {
+  playSong(name, vol, fadeIn) {
+    vol = vol / 1e2;
     let path = this.path + `${name}.ogg`;
     var song = new Howl({
       urls: [path],
       autoplay: true,
       loop: true,
-      volume: vol / 1e2
+      volume: fadeIn ? 0 : vol
     });
+    if (fadeIn) {
+      song.fadeIn(vol, 2e3);
+    }
   }
 
   /**

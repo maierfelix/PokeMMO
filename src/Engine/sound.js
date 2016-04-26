@@ -16,17 +16,17 @@ export function updateSound() {
   let map = this.currentMap;
 
   if (
-    map === null ||
-    map.entityNoises.length <= 0
+    map === null
   ) return void 0;
 
   let entity = null;
 
   let ii = 0;
-  let length = map.entityNoises.length;
+  let length = map.entities.length;
 
   for (; ii < length; ++ii) {
-    entity = map.entityNoises[ii];
+    entity = map.entities[ii];
+    if (entity.noise === null) continue;
     this.updateEntityNoise(entity, map.distance(entity, this.camera));
   };
 
@@ -52,6 +52,7 @@ export function updateEntityNoise(entity, dist) {
     dist.x = 99999;
     dist.y = 99999;
     radius = 0;
+    entity.noise._audioNode[0].gain.value = 0;
   }
 
   radius = (entity.noiseRadius - DIMENSION) || DIMENSION;
@@ -61,26 +62,29 @@ export function updateEntityNoise(entity, dist) {
   dy = Math.floor(dist.y * 1e2) + cy;
 
   if (entity.STATES.NOISE === false) {
+    entity.noiseSrcPath = entity.noise;
     entity.noise = Audio.playNoise(entity.noise, VOLUME.ENTITY_NOISE, dist.x, dist.y);
     entity.STATES.NOISE = true;
   }
 
   if (math.pointIntersectsCircle(dx, dy, cx, cy, radius) === true) {
     if (entity.noise.isInView === false) {
-      if (entity.noise.fadingOut === true) {
-        entity.noise.volume(.0);
-      }
+      let gainNode = entity.noise._audioNode[0];
       entity.noise.fadingIn = true;
-      entity.noise.fadeIn(VOLUME.ENTITY_NOISE / 1e2, VOLUME.FADE_SPEED, () => entity.noise.fadingIn = false);
+      let start = gainNode.context.currentTime;
+      let end = start + 1;
+      gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, start);
+      gainNode.gain.linearRampToValueAtTime(VOLUME.ENTITY_NOISE / 1e2, end);
       entity.noise.isInView = true;
     }
   } else {
     if (entity.noise.isInView === true) {
-      if (entity.noise.fadingIn === true) {
-        entity.noise.volume(VOLUME.ENTITY_NOISE / 1e2);
-      }
+      let gainNode = entity.noise._audioNode[0];
       entity.noise.fadingOut = true;
-      entity.noise.fadeOut(.0, VOLUME.FADE_SPEED, () => entity.noise.fadingOut = false);
+      let start = gainNode.context.currentTime;
+      let end = start + 1;
+      gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, start);
+      gainNode.gain.linearRampToValueAtTime(.0, end);
       entity.noise.isInView = false;
     }
   }
@@ -88,21 +92,5 @@ export function updateEntityNoise(entity, dist) {
   entity.noise.pos3d(dist.x, dist.y, 0);
 
   return void 0;
-
-}
-
-/**
- * Recursive entity noise fading
- * @param {Number} volume
- */
-export function fade(volume) {
-
-  entity.noise.fade = () => {
-    
-  };
-
-  entity.noise.volume(.0);
-
-  this.fade();
 
 }

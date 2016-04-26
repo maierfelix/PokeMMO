@@ -20,6 +20,11 @@ export function playStateSound() {
 
   let dist = Maps[this.map].distance(this, game.engine.camera);
 
+  if (Math.abs(dist.x) + Math.abs(dist.y) >= 1.0) {
+    dist.x *= 4;
+    dist.y *= 4;
+  }
+
   if (this.STATES.JUMPING === true && this.z === 0) {
     Audio.playSound("jump", volume, dist.x, dist.y);
   }

@@ -229,7 +229,7 @@ export const GRAVITY = -1;
  * @constant
  * @type {Number}
  */
-export const BGM = false;
+export const BGM = true;
 
 /**
  * Play bgs
@@ -245,8 +245,8 @@ export const BGS = true;
 export const VOLUME = {
   LOCAL_PLAYER:   100,
   NETWORK_PLAYER: 10,
-  MUSIC:          45,
-  ENTITY_NOISE:   35,
+  MUSIC:          30,
+  ENTITY_NOISE:   30,
   FADE_SPEED:     25e2
 };
 
