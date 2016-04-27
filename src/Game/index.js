@@ -172,6 +172,7 @@ export default class Game {
       onAction: {
         EngelScript: `
           kernel.notify(this, ":p");
+          trigger.leader.faceEntity(trigger);
         `
       }
     }));

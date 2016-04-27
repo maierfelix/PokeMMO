@@ -47,6 +47,12 @@ export default class Entity extends DisplayObject {
     this.last = new math.Point();
 
     /**
+     * Follow position
+     * @type {Object}
+     */
+    this.follow = new math.Point();
+
+    /**
      * States
      * @type {Object}
      */
@@ -511,6 +517,8 @@ export default class Entity extends DisplayObject {
       leader.leader = this;
       this.x = leader.last.x;
       this.y = leader.last.y;
+      leader.follow.x = this.x;
+      leader.follow.y = this.y;
     }
     if (
       this.onLoad !== null &&

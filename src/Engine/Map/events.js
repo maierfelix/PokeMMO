@@ -84,15 +84,38 @@ export function isObstacle(entity, dir) {
 
   /** Entity is leader of a following entity */
   if (entity.leader !== null) {
-    if (obstacle === false && entity.moving === false) {
-      entity.leader.walkTo(
-        math.roundTo(entity.x, DIMENSION),
-        math.roundTo(entity.y, DIMENSION)
-      );
-    }
+    this.follow(entity, obstacle);
   }
 
   return (obstacle);
+
+}
+
+/**
+ * Entity collidable check
+ * @param  {Object}  entity
+ * @param  {Boolean} obstacle
+ */
+export function follow(entity, obstacle) {
+
+  let leaderX = entity.leader.x << 0;
+  let leaderY = entity.leader.y << 0;
+
+  let followX = entity.follow.x << 0;
+  let followY = entity.follow.y << 0;
+
+  if (
+    obstacle === false
+  ) {
+    if (
+      leaderX === followX &&
+      leaderY === followY
+    ) {
+      entity.leader.walkTo(entity.x, entity.y);
+      entity.follow.x = entity.x << 0;
+      entity.follow.y = entity.y << 0;
+    }
+  }
 
 }
 
