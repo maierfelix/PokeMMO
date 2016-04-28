@@ -1,5 +1,7 @@
 #Pokémon Engine
 
+[![Join the chat at https://gitter.im/maierfelix/PokeMMO](https://badges.gitter.im/maierfelix/PokeMMO.svg)](https://gitter.im/maierfelix/PokeMMO?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [Demo](http://maierfelix.github.io/PokeMMO)<br>
 Runs best on Chrome.<br>
 Uses the 2D canvas to render the editor mode and WebGL for the gameplay (unfinished).<br>
