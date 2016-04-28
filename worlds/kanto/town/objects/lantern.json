@@ -1,0 +1,15 @@
+{
+  "name"   : "Lantern",
+  "sprite" : "lantern.png",
+  "width"  : 8,
+  "height" : 24,
+  "scale"  : 1,
+  "shadow" : true,
+  "shadowY": -5,
+  "collidable": true,
+  "collisionBox": [
+    0,
+    0,
+    1
+  ]
+}

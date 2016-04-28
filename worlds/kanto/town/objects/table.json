@@ -1,0 +1,13 @@
+{
+  "name"   : "Table",
+  "sprite" : "table.png",
+  "width"  : 16,
+  "height" : 16,
+  "scale"  : 1,
+  "shadow" : true,
+  "collidable": true,
+  "collisionBox": [
+    1, 1,
+    1, 1
+  ]
+}
