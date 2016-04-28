@@ -124,11 +124,12 @@ export default class Game {
 
     let player = this.entities.Player;
 
-    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 96, y: 144, sprite: "assets/img/200.png", width: 16, height: 16, collidable: false,
+    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 104, y: 176, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
+      facing: 2,
       onCollide: {
-        JavaScript: (entity, engine) => {
+        JavaScript: function(entity, engine) {
           this.faceEntity(entity);
-          console.log(engine.instance.notify(this, "Stop!"));
+          engine.instance.notify(this, "Stop!");
         }
       }
     }));
@@ -178,11 +179,11 @@ export default class Game {
     }));
 
     this.engine.addEntity(new player({
-      name: "CoolBoy", map: "Town",
-      sprite: "assets/img/1.png",
+      name: "Flareon", map: "Town",
+      sprite: "assets/img/136.png",
       width: 16, height: 16,
       collidable: false,
-      following: "Charizard"
+      following: "Mew"
     }));
 
     if (OFFLINE_MODE) {

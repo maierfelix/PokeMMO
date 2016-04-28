@@ -47,12 +47,6 @@ export default class Entity extends DisplayObject {
     this.last = new math.Point();
 
     /**
-     * Follow position
-     * @type {Object}
-     */
-    this.follow = new math.Point();
-
-    /**
      * States
      * @type {Object}
      */
@@ -346,6 +340,12 @@ export default class Entity extends DisplayObject {
     this.following = obj.following === void 0 ? null : obj.following;
 
     /**
+     * Follow position
+     * @type {Object}
+     */
+    this.followTarget = new math.Point();
+
+    /**
      * Entity to follow
      * @type {Object}
      */
@@ -515,10 +515,20 @@ export default class Entity extends DisplayObject {
     if (this.following !== null) {
       let leader = Maps[this.map].instance.getEntityByProperty(this.following, "name");
       leader.leader = this;
-      this.x = leader.last.x;
-      this.y = leader.last.y;
-      leader.follow.x = this.x;
-      leader.follow.y = this.y;
+      if (
+        leader.last.x <= 0 ||
+        leader.last.y <= 0
+      ) {
+        let last = leader.getLastPosition();
+        this.x = leader.x + last.x;
+        this.y = leader.y + last.y;
+      } else {
+        this.x = leader.last.x;
+        this.y = leader.last.y;
+      }
+      this.facing = leader.facing;
+      leader.followTarget.x = this.x;
+      leader.followTarget.y = this.y;
     }
     if (
       this.onLoad !== null &&

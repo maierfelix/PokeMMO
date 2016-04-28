@@ -65,7 +65,8 @@ export function walkTo(x, y) {
       x: xx,
       y: yy,
       oX: this.x,
-      oY: this.y
+      oY: this.y,
+      isPath: true
     });
     lastX = xx;
     lastY = yy;
@@ -248,6 +249,8 @@ export function startMoving(x, y, dir) {
  */
 export function stopMoving(animation) {
 
+  let continuous = -1;
+
   this.x = animation.x;
   this.y = animation.y + Y_DEPTH_HACK;
 
@@ -275,21 +278,28 @@ export function stopMoving(animation) {
   /** Continue moving */
   if (this.isLocalPlayer === true) {
     if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(LEFT)) === true) {
-      this.move(LEFT);
+      continuous = LEFT;
     }
     else if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(UP)) === true) {
-      this.move(UP);
+      continuous = UP;
     }
     else if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(RIGHT)) === true) {
-      this.move(RIGHT);
+      continuous = RIGHT;
     }
     else if (this.instance.input.KeyBoard.isKeyPressed(this.facingToKey(DOWN)) === true) {
-      this.move(DOWN);
+      continuous = DOWN;
     } else {
       this.soundSteps = DIMENSION;
     }
+    if (continuous >= 0) {
+      this.move(continuous);
+    }
   } else {
     this.soundSteps = DIMENSION;
+  }
+
+  if (this.leader !== null) {
+    this.follow(this.last.x, this.last.y, false);
   }
 
   if (this.moveCB) {
@@ -309,10 +319,12 @@ export function walk(animation) {
     if (this.moveCB) {
       this.moveCB();
     }
-    return void 0;
   }
 
   if (this.stepCount <= 0) {
+    if (this.leader !== null) {
+      this.follow(this.x, this.y, false);
+    }
     if (this.STATES.JUMPING === false) {
       this.resetFrame();
     }
@@ -340,12 +352,9 @@ export function walk(animation) {
       this.y += this.velocity;
     }
     this.stepCount += this.velocity;
-  } else {
-    animation.x = this.x;
-    animation.y = this.y;
-    this.stopMoving(animation);
   }
 
+  /** Reached destination */
   if (this.stepCount >= DIMENSION) {
     this.lastFacing = this.facing;
     this.stopMoving(animation);

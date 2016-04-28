@@ -17,6 +17,7 @@ import * as jump from "./jump";
 import * as walk from "./walk";
 import * as face from "./face";
 import * as sound from "./sound";
+import * as follow from "./follow";
 
 export class Player extends Entity {
 
@@ -335,3 +336,4 @@ inherit(Player, jump);
 inherit(Player, walk);
 inherit(Player, face);
 inherit(Player, sound);
+inherit(Player, follow);
