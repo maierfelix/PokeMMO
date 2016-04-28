@@ -1,10 +1,10 @@
 #Pokémon Engine
 
 [Demo](http://maierfelix.github.io/PokeMMO)<br>
-Runs the best on Chrome.<br>
-Uses the 2d canvas for rendering the editor mode and webgl for the gameplay (unfinished).<br>
-Graphics used in the demo are created by EpicDay and Red_Ex</br>
-Sounds are taken from [SoundBible](http://soundbible.com/)
+Runs best on Chrome.<br>
+Uses the 2D canvas to render the editor mode and WebGL for the gameplay (unfinished).<br>
+Graphics used in the demo are created by [EpicDay](http://epicday.deviantart.com/) and [Red_Ex](http://the-red-ex.deviantart.com/).</br>
+Sounds are taken from [SoundBible](http://soundbible.com/).
 
 - Z: Action
 - X: Run
