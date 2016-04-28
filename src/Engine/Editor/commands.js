@@ -82,7 +82,7 @@ export let commands = [
       let map = this.map;
 
       if (paste !== null && paste !== void 0) {
-        map.entities.push(paste);
+        map.instance.addEntity(paste);
         return void 0;
       }
 

@@ -211,7 +211,7 @@ export default class Entity extends DisplayObject {
      * Entity has shadow
      * @type {Boolean}
      */
-    this.hasShadow = obj.shadow === void 0 ? true : obj.shadow;
+    this.hasShadow = obj.shadow === void 0 ? true : obj.shadow instanceof Shadow ? true : obj.shadow;
 
     /**
      * Animation index

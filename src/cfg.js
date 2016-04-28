@@ -263,6 +263,24 @@ export const TYPES = {
 
 /**
  * @constant
+ * @type {Object}
+ */
+export const BROWSERS = {
+  IE:      window.ActiveXObject !== void 0,
+  iOS:     !!(navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)),
+  Chrome:  false,
+  Firefox: !!(navigator.userAgent.match(/Firefox/i)),
+  Vivaldi: false
+};
+
+let isChrome  = !!(navigator.userAgent.match(/Chrome/i));
+let isVivaldi = !!(navigator.userAgent.match(/Vivaldi/i));
+
+BROWSERS.Chrome  = isChrome && !isVivaldi;
+BROWSERS.Vivaldi = !BROWSERS.Chrome;
+
+/**
+ * @constant
  * @type {Array}
  */
 export const ColorPalette = [

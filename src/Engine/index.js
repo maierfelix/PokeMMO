@@ -1,12 +1,4 @@
-import {
-  DEV_VERSION,
-  RECORD_MODE,
-  DIMENSION,
-  LEFT, RIGHT, UP, DOWN,
-  WGL_SUPPORT,
-  MIN_SCALE,
-  TYPES
-} from "../cfg";
+import * as cfg from "../cfg";
 
 import math from "../Math";
 
@@ -104,7 +96,7 @@ export default class Engine extends DisplayObject {
     this.glContext = null;
 
     /** Attach webgl context */
-    if (WGL_SUPPORT && this.glNode) {
+    if (cfg.WGL_SUPPORT && this.glNode) {
       this.glContext = getWGLContext(this.glNode);
     }
 
@@ -180,7 +172,15 @@ export default class Engine extends DisplayObject {
 
     this.initScenes();
 
-    this.camera.scale = MIN_SCALE;
+    this.camera.scale = cfg.MIN_SCALE;
+
+    /**
+     * Disable debug mode in firefox
+     * for performance reasons
+     */
+    if (cfg.BROWSERS.Firefox) {
+      cfg.DEBUG_MODE = false;
+    }
 
   }
 
@@ -307,7 +307,7 @@ export default class Engine extends DisplayObject {
     pushEntity.fadeIn(2);
     pushEntity.lifeTime = this.renderer.now + 60;
 
-    pushEntity.type = TYPES.Ping;
+    pushEntity.type = cfg.TYPES.Ping;
 
     map.entities.push(pushEntity);
 
@@ -327,7 +327,7 @@ export default class Engine extends DisplayObject {
     let notification = new Notification(this, {
       sprite: null,
       hasShadow: false,
-      width: math.roundTo(this.context.measureText(String(msg)).width, DIMENSION),
+      width: math.roundTo(this.context.measureText(String(msg)).width, cfg.DIMENSION),
       height: 16,
       msg: msg,
       follow: entity,
