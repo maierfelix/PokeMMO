@@ -183,7 +183,7 @@ export default class Game {
       sprite: "assets/img/136.png",
       width: 16, height: 16,
       collidable: false,
-      following: "Mew"
+      following: "Charizard"
     }));
 
     if (OFFLINE_MODE) {

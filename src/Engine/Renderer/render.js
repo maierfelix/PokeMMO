@@ -48,8 +48,10 @@ export function render() {
  */
 export function clear() {
   if (RENDER_MODE === CANVAS) {
-    this.node.width = this.node.width;
-    this.context.setImageSmoothing(this.imageSmoothing);
+    this.context.clearRect(
+      0, 0,
+      this.width, this.height
+    );
   }
   if (RENDER_MODE === WGL) {
     this.glRenderer.clear();
@@ -208,7 +210,11 @@ export function renderEntities(lowest) {
 
   for (; ii < length; ++ii) {
     entity = entities[ii];
-    if (lowest === 0 && entity.zIndex <= 0) continue;
+    if (lowest === 1) {
+      if (entity.zIndex > 0) continue;
+    } else {
+      if (entity.zIndex <= 0) continue;
+    }
     scaling = entity.scale + (-entity.position.z / resolution) / ((entity.size.x + entity.size.y) / 2);
     if (entity.renderable === false) continue;
     this.updateEntitySpriteFrame(entity);

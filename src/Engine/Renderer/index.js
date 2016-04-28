@@ -226,6 +226,7 @@ export default class Renderer {
       this.node.height = this.height;
     }
     this.clear();
+    this.context.setImageSmoothing(this.imageSmoothing);
     this.instance.mini.resize();
     this.draw();
   }

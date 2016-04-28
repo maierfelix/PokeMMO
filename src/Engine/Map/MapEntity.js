@@ -27,7 +27,7 @@ export default class MapEntity extends Entity {
 
     this.scale = obj.scale === void 0 ? 1.0 : obj.scale;
 
-    this.frame = 1;
+    this.frame = obj.frame === void 0 ? 1 : obj.frame;
 
     this.reversed = [0, 0];
 
