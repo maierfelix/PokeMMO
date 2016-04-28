@@ -84,7 +84,7 @@ return (function() {
 
   MAP.entities.push({
     x: 160 + 16, y: 128,
-    type: "treestub",
+    type: "sign",
     onCollide: {
       /*JavaScript: function(entity) {
         if (entity.facing === 2) {
@@ -123,7 +123,7 @@ return (function() {
 
   MAP.entities.push({
     x: 160, y: 128,
-    type: "treestub",
+    type: "sign",
     onCollide: {
       EngelScript: `
         if (trigger.facing == 2) {
@@ -137,8 +137,8 @@ return (function() {
   });
 
   MAP.entities.push({
-    x: 168, y: 160,
-    type: "treestub",
+    x: 160, y: 176,
+    type: "sign",
     onCollide: {
       EngelScript: `
         if (trigger.facing == 2) {
@@ -164,8 +164,18 @@ return (function() {
   });
 
   MAP.entities.push({
-    x: 112, y: 136,
-    type: "foutune"
+    x: 112, y: 144,
+    type: "table"
+  });
+
+  MAP.entities.push({
+    x: 168, y: 96,
+    type: "lantern"
+  });
+
+  MAP.entities.push({
+    x: 112, y: 168,
+    type: "charizard"
   });
 
   /*MAP.entities.push({
@@ -174,24 +184,8 @@ return (function() {
   });*/
 
   MAP.entities.push({
-    x: 192, y: 120,
-    type: "windmill"
-  });
-
-  MAP.entities.push({
-    x: 160, y: 176,
+    x: 168, y: 144,
     type: "building1"
-  });
-
-  MAP.entities.push({
-    x: 168, y: 208,
-    type: "door1"
-  });
-
-  MAP.entities.push({
-    x: 256, y: 120,
-    type: "windmill",
-    scale: 2
   });
 
   MAP.entities.push({
@@ -268,7 +262,82 @@ return (function() {
     x: 128, y: 120 + 8,
     type: "flower"
   });
+/*
+  MAP.entities.push({
+    x: 92 + 4, y: 120 + 56 - 8,
+    type: "grass"
+  });
 
+  MAP.entities.push({
+    x: 104, y: 120 + 56 - 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 112, y: 120 + 56 - 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 120, y: 120 + 56 - 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 128, y: 120 + 56 - 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 96, y: 120 + 56,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 104, y: 120 + 56,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 112, y: 120 + 56,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 120, y: 120 + 56,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 128, y: 120 + 56,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 96, y: 120 + 56 + 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 104, y: 120 + 56 + 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 112, y: 120 + 56 + 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 120, y: 120 + 56 + 8,
+    type: "grass"
+  });
+
+  MAP.entities.push({
+    x: 128, y: 120 + 56 + 8,
+    type: "grass"
+  });
+*/
   MAP.entities.push({
     x: 200, y: 240,
     type: "water1"

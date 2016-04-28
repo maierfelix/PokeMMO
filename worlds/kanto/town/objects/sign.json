@@ -1,0 +1,10 @@
+{
+  "name"   : "Sign",
+  "sprite" : "sign.png",
+  "width"  : 8,
+  "height" : 9,
+  "scale"  : 1,
+  "shadow" : true,
+  "shadowY": -2,
+  "collidable": true
+}

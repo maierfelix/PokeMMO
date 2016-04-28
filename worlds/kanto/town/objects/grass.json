@@ -1,0 +1,14 @@
+{
+  "name"   : "Grass",
+  "sprite" : "grass.png",
+  "width"  : 8,
+  "height" : 8,
+  "scale"  : 1,
+  "shadow" : true,
+  "shadowY": -4,
+  "collidable": false,
+  "animation": true,
+  "animationFrames": 4,
+  "animationSpeed": 175,
+  "loop": true
+}

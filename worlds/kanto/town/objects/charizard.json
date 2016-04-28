@@ -1,0 +1,17 @@
+{
+  "name"   : "Charizard",
+  "sprite" : "charizard.png",
+  "width"  : 32,
+  "height" : 40,
+  "scale"  : 1,
+  "shadow" : true,
+  "collidable": true,
+  "shadowY": -14,
+  "collisionBox": [
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    1, 1, 1, 1,
+    1, 1, 1, 1,
+    1, 1, 1, 1
+  ]
+}
