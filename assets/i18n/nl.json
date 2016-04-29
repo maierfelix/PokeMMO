@@ -1,0 +1,33 @@
+{
+  "s_BrowserNotSupported": "Uw browser word niet ondersteund.",
+  "s_Days": [
+    "Zondag",
+    "Maandag",
+    "Dinsdag",
+    "Woensdag",
+    "Donderdag",
+    "Vrijdag",
+    "Zaterdag"
+  ],
+  "s_Months": [
+    "Januari",
+    "Februari",
+    "Maart",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Augustus",
+    "September",
+    "Oktober",
+    "November",
+    "December"
+  ],
+  "s_German": "Duits",
+  "s_English": "Engels",
+  "s_Settings": "Instellingen",
+  "s_Objects": "Objecten",
+  "s_On": "Aan",
+  "s_Off": "Uit",
+  "s_ChangeLanguage": "Taal Veranderen"
+}
