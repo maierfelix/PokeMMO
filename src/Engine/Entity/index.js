@@ -510,7 +510,7 @@ export default class Entity extends DisplayObject {
       this.shadow.position.set(this.shadowX, this.shadowY);
     }
     if (WGL_SUPPORT === true) {
-      this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites[0].canvas);
+      this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites);
     }
     if (this.following !== null) {
       let leader = Maps[this.map].instance.getEntityByProperty(this.following, "name");

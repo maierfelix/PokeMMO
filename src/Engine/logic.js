@@ -146,6 +146,8 @@ export function updateEntity(entity) {
     return (false);
   }
 
+  this.renderer.updateEntitySpriteFrame(entity);
+
   return (true);
 
 }

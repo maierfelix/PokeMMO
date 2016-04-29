@@ -297,6 +297,8 @@ export default class Map extends DisplayObject {
 
     this.joinLayers();
 
+    //this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.mainBuffer);
+
     return void 0;
 
   }

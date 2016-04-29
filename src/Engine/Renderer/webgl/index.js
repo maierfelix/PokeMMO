@@ -1,4 +1,8 @@
 /** Inspired by gles.js web demo */
+import {
+  DIMENSION
+} from "../../../cfg";
+
 import { canvasToImage } from "../../utils";
 
 import * as shaders from "./shaders";
@@ -121,7 +125,9 @@ export default class WGL_Renderer {
     let width  = 0;
     let height = 0;
 
-    let entities = this.instance.instance.currentMap.entities;
+    let map = this.instance.instance.currentMap;
+
+    let entities = map.entities;
 
     let length = entities.length;
 
@@ -140,9 +146,27 @@ export default class WGL_Renderer {
     loc = gl.getUniformLocation(this.shaderProgram, "uScale");
     gl.uniform2f(loc, this.instance.width, this.instance.height);
 
-    loc = gl.getUniformLocation(this.shaderProgram, "uObjScale");
+    for (ii = 0; ii < 6; ++ii) {
+      this.spritepos[2 * ii] = (camX + (map.size.x * DIMENSION) / 2 * resolution) << 0;
+      this.spritepos[2 * ii + 1] = (camY + (map.size.y * DIMENSION) / 2 * resolution) << 0;
+    };
 
-    for (; ii < length; ++ii) {
+    gl.uniform2f(
+      gl.getUniformLocation(this.shaderProgram, "uObjScale"),
+      ((map.size.x * DIMENSION) * resolution) << 0,
+      ((map.size.y * DIMENSION) * resolution) << 0
+    );
+
+    if (map.glTexture) {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
+      gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uTex1"), 0);
+      this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
+      this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", 6, 1);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    }
+
+    for (ii = 0; ii < length; ++ii) {
 
       entity = entities[ii];
 
@@ -160,8 +184,7 @@ export default class WGL_Renderer {
       gl.uniform2f(gl.getUniformLocation(this.shaderProgram, "uObjScale"), width, height);
 
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, entity.glTexture);
-      gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uTex1"), 0);
+      gl.bindTexture(gl.TEXTURE_2D, entity.glTexture[entity.sFrame]);
 
       this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
       this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", 6, 1);
@@ -176,26 +199,37 @@ export default class WGL_Renderer {
 
   /**
    * Buffer a 2d texture
-   * @param  {Object} canvas
-   * @return {Object}
+   * @param  {Array} sprites
+   * @return {Array}
    */
-  bufferTexture(canvas) {
+  bufferTexture(sprites) {
 
     let gl = this.gl;
 
-    let texture = gl.createTexture();
+    let ii = 0;
+    let length = 0;
 
-    let image = canvasToImage(canvas);
+    let image = null;
+    let texture = null;
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    let textures = [];
 
-    return (texture);
+    length = sprites.length;
+
+    for (; ii < length; ++ii) {
+      texture = gl.createTexture();
+      image = canvasToImage(sprites[ii].canvas);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      textures.push(texture);
+    };
+
+    return (textures);
 
   }
 

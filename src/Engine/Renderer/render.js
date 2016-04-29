@@ -217,7 +217,6 @@ export function renderEntities(lowest) {
     }
     scaling = entity.scale + (-entity.position.z / resolution) / ((entity.size.x + entity.size.y) / 2);
     if (entity.renderable === false) continue;
-    this.updateEntitySpriteFrame(entity);
     this.renderEntity(
       entity,
       /** Position */
