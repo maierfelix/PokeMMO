@@ -1,3 +1,7 @@
+import {
+  DEV_MODE
+} from "../../cfg";
+
 import Texture from "../Texture";
 
 let rx = {
@@ -233,10 +237,23 @@ export function getTime() {
 }
 
 /**
+ * Anti cache
+ * @return {String}
+ */
+export function antiCache() {
+  return (
+    `?${+(new Date())}`
+  );
+}
+
+/**
  * Ajax
  * @param {String} url
  */
 export function ajax(url) {
+  if (DEV_MODE === true) {
+    url = url + antiCache();
+  }
   return new Promise(function(resolve, reject) {
     let req = new XMLHttpRequest();
     req.open("GET", url);

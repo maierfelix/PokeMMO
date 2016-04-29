@@ -14,7 +14,7 @@ import {
  */
 export function drawTimeLightning(buffer, ctx, x, y, width, height, colors) {
 
-  let hour = getTime().hours;
+  let hour = 18/*getTime().hours*/;
 
   let imgData = buffer.getImageData(
     x, y,

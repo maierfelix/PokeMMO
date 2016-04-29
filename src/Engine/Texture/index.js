@@ -1,11 +1,15 @@
 import {
+  DEV_MODE,
+  ColorPalette
+} from "../../cfg";
+
+import {
   inherit,
   TextureCache,
   createCanvasBuffer,
-  imageToCanvas
+  imageToCanvas,
+  antiCache
 } from "../utils";
-
-import { ColorPalette } from "../../cfg";
 
 import * as effect from "./effects";
 
@@ -134,7 +138,11 @@ export default class Texture {
       resolve();
     });
 
-    img.src = url;
+    if (DEV_MODE === true) {
+      img.src = url + antiCache();
+    } else {
+      img.src = url;
+    }
 
     return void 0;
 

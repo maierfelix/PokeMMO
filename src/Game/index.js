@@ -34,9 +34,7 @@ export default class Game {
 
     this.scenes = scenes;
 
-    this.engine = new Engine(this);
-
-    this.setup();
+    this.engine = new Engine(this, () => this.setup());
 
   }
 
@@ -124,8 +122,8 @@ export default class Game {
 
     let player = this.entities.Player;
 
-    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 104, y: 176, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
-      facing: 2,
+    this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 96, y: 144, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
+      facing: 1,
       onCollide: {
         JavaScript: function(entity, engine) {
           this.faceEntity(entity);
@@ -134,7 +132,7 @@ export default class Game {
       }
     }));
 
-    this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 176, y: 152, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+    this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 160, y: 144, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
       onAction: {
         EngelScript: `
           if (trigger.facing == 2 || trigger.facing == 3) {
@@ -148,7 +146,7 @@ export default class Game {
       }
     }));
 
-    this.engine.addEntity(new player({ name: "Merlin2", map: "Town", x: 168, y: 168, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+    this.engine.addEntity(new player({ name: "Merlin2", map: "Town", x: 136, y: 120, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
       onCollide: {
         EngelScript: `
           kernel.notify(this, trigger.name);
@@ -188,7 +186,7 @@ export default class Game {
 
     if (OFFLINE_MODE) {
       this.engine.addEntity(new player({
-        name: "Felix", map: "Town", x: 152, y: 128, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true,
+        name: "Felix", map: "Town", x: 144, y: 152, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true,
         onJump: (entity, map) => {
           if (entity.leader) {
             setTimeout(() => map.instance.notify(entity.leader, " :3 "), 250);

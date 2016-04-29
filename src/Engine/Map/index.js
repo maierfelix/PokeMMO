@@ -1,5 +1,7 @@
-import { DIMENSION } from "../../cfg";
-import math from "../../Math";
+import {
+  DIMENSION
+} from "../../cfg";
+
 import {
   inherit,
   Maps,
@@ -8,6 +10,8 @@ import {
   createCanvasBuffer,
   ajax as $GET,
 } from "../utils";
+
+import math from "../../Math";
 
 import MapEntity from "./MapEntity";
 import DisplayObject from "../DisplayObject";

@@ -87,6 +87,12 @@ export let FREE_CAMERA = false;
 export let EASING_CAMERA = false;
 
 /**
+ * Developer mode
+ * @type {Boolean}
+ */
+export let DEV_MODE = true;
+
+/**
  * Debug mode
  * @type {Boolean}
  */
@@ -278,6 +284,15 @@ let isVivaldi = !!(navigator.userAgent.match(/Vivaldi/i));
 
 BROWSERS.Chrome  = isChrome && !isVivaldi;
 BROWSERS.Vivaldi = !BROWSERS.Chrome;
+
+/**
+ * Default language packet
+ * to auto load and use,
+ * if no language file for
+ * the navigator was found
+ * @type {String}
+ */
+export const DEFAULT_LANG = "en";
 
 /**
  * @constant

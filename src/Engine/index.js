@@ -8,8 +8,6 @@ import {
   ajax as $GET
 } from "./utils";
 
-import { Language } from "./Language";
-
 import * as map from "./Map/functions";
 import * as sound from "./sound";
 import * as logic from "./logic";
@@ -19,6 +17,7 @@ import Map from "./Map";
 import Camera from "./Camera";
 import Editor from "./Editor";
 import MiniMap from "./MiniMap";
+import Language from "./Language";
 import Controller from "./Controller";
 import Environment from "./Environment";
 import Notification from "./Notification";
@@ -32,12 +31,11 @@ import DisplayObject from "./DisplayObject";
 export default class Engine extends DisplayObject {
 
   /**
-   * @param {Object} instance
-   * @param {Number} width
-   * @param {Number} height
+   * @param {Object}   instance
+   * @param {Function} resolve
    * @constructor
    */
-  constructor(instance, width, height) {
+  constructor(instance, resolve) {
 
     super(null);
 
@@ -101,19 +99,6 @@ export default class Engine extends DisplayObject {
     }
 
     /**
-     * Engine size
-     * @type {Number}
-     */
-    this.width = width || 0;
-    this.height = height || 0;
-
-    /**
-     * Camera object
-     * @type {Object}
-     */
-    this.camera = new Camera(this);
-
-    /**
      * Parsed maps
      * @type {Object}
      */
@@ -132,55 +117,85 @@ export default class Engine extends DisplayObject {
     this.renderer = null;
 
     /**
-     * Editor instance
-     * @type {Object}
-     */
-    this.editor = new Editor(this);
-
-    /**
-     * MiniMap instance
-     * @type {Object}
-     */
-    this.mini = new MiniMap(this);
-
-    /**
-     * Environment instance
-     * @type {Object}
-     */
-    this.environment = new Environment(this);
-
-    /**
      * Connection instance
      * @type {Object}
      */
     this.connection = null;
 
     /**
+     * Environment instance
+     * @type {Object}
+     */
+    this.language = null;
+
+    /**
+     * Camera object
+     * @type {Object}
+     */
+    this.camera = null;
+
+    /**
+     * Editor instance
+     * @type {Object}
+     */
+    this.editor = null;
+
+    /**
+     * MiniMap instance
+     * @type {Object}
+     */
+    this.mini = null;
+
+    /**
+     * Environment instance
+     * @type {Object}
+     */
+    this.environment = null;
+
+    /**
      * Controller instance
      * @type {Object}
      */
-    this.controller = new Controller(this);
+    this.controller = null;
 
-    this.init();
+    this.setup(resolve);
 
   }
 
   /**
-   * Initialise
+   * Setup process
+   * @param {Function} resolve
    */
-  init() {
-
-    this.initScenes();
-
-    this.camera.scale = cfg.MIN_SCALE;
+  setup(resolve) {
 
     /**
-     * Disable debug mode in firefox
-     * for performance reasons
+     * Environment instance
+     * @type {Object}
      */
-    if (cfg.BROWSERS.Firefox) {
-      cfg.DEBUG_MODE = false;
-    }
+    this.language = new Language(() => {
+
+      this.camera = new Camera(this);
+      this.mini = new MiniMap(this);
+      this.editor = new Editor(this);
+      this.controller = new Controller(this);
+      this.environment = new Environment(this);
+
+      this.initScenes();
+      this.camera.scale = cfg.MIN_SCALE;
+
+      /**
+       * Disable debug mode in firefox
+       * for performance reasons
+       */
+      if (cfg.BROWSERS.Firefox) {
+        cfg.DEBUG_MODE = false;
+      }
+
+      resolve();
+
+    });
+
+    return void 0;
 
   }
 
@@ -358,6 +373,28 @@ export default class Engine extends DisplayObject {
       offset.x, offset.y
     );
 
+  }
+
+  /**
+   * Get language dependant string
+   * @param  {String} str
+   * @return {String}
+   */
+  getString(str) {
+    return (
+      this.language.get(this.language.strBase + str)
+    );
+  }
+
+  /**
+   * Get uppercased string
+   * @param  {String} str
+   * @return {String}
+   */
+  getUpperCaseString(str) {
+    return (
+      this.getString(str).toUpperCase()
+    );
   }
 
 }
