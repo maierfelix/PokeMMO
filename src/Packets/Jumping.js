@@ -7,13 +7,10 @@ export class Jumping {
 
   /**
    * @param  {Number} id
-   * @param  {Number} dir
-   * @param  {Number} x
-   * @param  {Number} y
    * @return {Object}
    * @constructor
    */
-  constructor(id, dir) {
+  constructor(id) {
 
     /**
      * Entity id

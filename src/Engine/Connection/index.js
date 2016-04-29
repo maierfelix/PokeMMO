@@ -1,8 +1,6 @@
 import * as Packet from "../../Packets";
 
-import {
-  LEFT, RIGHT, UP, DOWN
-} from "../../cfg";
+import * as cfg from "../../cfg";
 
 import {
   Maps
@@ -236,14 +234,14 @@ export default class Connection {
 
     if (this.open === false) return void 0;
 
-    let text = location.search.replace("?", "");
+    let name = cfg.LOCAL_PLAYER;
 
-    let msg = this.prepareData(1 + 2 * text.length);
+    let msg = this.prepareData(1 + 2 * name.length);
 
     msg.setUint8(0, 0);
 
-    for (var ii = 0; ii < text.length; ++ii) {
-      msg.setUint16(1 + 2 * ii, text.charCodeAt(ii), true);
+    for (var ii = 0; ii < name.length; ++ii) {
+      msg.setUint16(1 + 2 * ii, name.charCodeAt(ii), true);
     };
 
     this.send(msg);

@@ -56,6 +56,26 @@ export function getLocalHost() {
 }
 
 /**
+ * Converts a string into corresponding type
+ * @param {String} value
+ * @return {*}
+ */
+export function parseString(value) {
+
+  let isNumber  = Number(value) >= 0 || Number(value) < 0;
+  let isBoolean = value === "true"   || value === "false";
+  let isString  = !isNumber && !isBoolean;
+
+  return (
+    isNumber  ? Number(value) :
+    isBoolean ? value === "true" :
+    isString  ? value :
+    null
+  );
+
+}
+
+/**
  * Get wgl context of a canvas
  * @return {Object}
  */

@@ -5,7 +5,8 @@ import math from "../Math";
 import {
   inherit,
   getWGLContext,
-  ajax as $GET
+  ajax as $GET,
+  parseString
 } from "./utils";
 
 import * as map from "./Map/functions";
@@ -191,11 +192,49 @@ export default class Engine extends DisplayObject {
         cfg.DEBUG_MODE = false;
       }
 
+      this.handleAdressBar();
+
       resolve();
 
     });
 
     return void 0;
+
+  }
+
+  /**
+   * Scan the adressbar and fetch
+   * configuration parameters
+   */
+  handleAdressBar() {
+
+    let ii = 0;
+    let length = 0;
+
+    let tmp = null;
+    let key = null;
+    let val = null;
+
+    let params = [];
+
+    let search = window.location.search;
+
+    if (search.length <= 0) return void 0;
+
+    search = search.replace("?", "");
+    params = search.split("&");
+
+    length = params.length;
+
+    for (; ii < length; ++ii) {
+      tmp = params[ii].split("=");
+      key = tmp[0];
+      val = tmp[1] === void 0 ? null : tmp[1];
+      if (cfg[key] === void 0 || val === null) continue;
+      val = parseString(val);
+      if (val === null) continue;
+      cfg[key] = val;
+    };
 
   }
 

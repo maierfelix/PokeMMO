@@ -1,12 +1,6 @@
 import { supportWGL, getLocalHost } from "./Engine/utils";
 
 /**
- * Is client
- * @type {Boolean}
- */
-export let IS_CLIENT = true;
-
-/**
  * Canvas rendering mode
  * @constant
  * @type {Number}
@@ -32,6 +26,12 @@ export let RENDER_MODE = -1;
  * @type {Number}
  */
 export const GRID_WIDTH = 1;
+
+/**
+ * Local player name
+ * @type {String}
+ */
+export let LOCAL_PLAYER = null;
 
 /**
  * Connection url
@@ -252,8 +252,7 @@ export const VOLUME = {
   LOCAL_PLAYER:   100,
   NETWORK_PLAYER: 10,
   MUSIC:          30,
-  ENTITY_NOISE:   30,
-  FADE_SPEED:     25e2
+  ENTITY_NOISE:   30
 };
 
 /**
@@ -268,22 +267,37 @@ export const TYPES = {
 };
 
 /**
- * @constant
+ * Which browser we
+ * are running on
  * @type {Object}
  */
-export const BROWSERS = {
-  IE:      window.ActiveXObject !== void 0,
-  iOS:     !!(navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)),
-  Chrome:  false,
-  Firefox: !!(navigator.userAgent.match(/Firefox/i)),
-  Vivaldi: false
+export let BROWSERS = {
+  IE:       false,
+  iOS:      false,
+  Chrome:   false,
+  Firefox:  false,
+  Vivaldi:  false,
+  Electron: false
 };
 
-let isChrome  = !!(navigator.userAgent.match(/Chrome/i));
-let isVivaldi = !!(navigator.userAgent.match(/Vivaldi/i));
+BROWSERS::function() {
 
-BROWSERS.Chrome  = isChrome && !isVivaldi;
-BROWSERS.Vivaldi = !BROWSERS.Chrome;
+  if (typeof window === "undefined") return void 0;
+
+  let isChrome   = !!(navigator.userAgent.match(/Chrome/i));
+  let isVivaldi  = !!(navigator.userAgent.match(/Vivaldi/i));
+  let isElectron = !!(typeof window !== "undefined" && window.process && window.process.type === "renderer");
+
+  this.IE =       !!(typeof window !== "undefined" && window.ActiveXObject !== void 0);
+  this.iOS =      !!(navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i));
+  this.Firefox =  !!(navigator.userAgent.match(/Firefox/i));
+
+  this.Chrome   = isChrome && !isVivaldi;
+  this.Vivaldi  = !this.Chrome;
+
+  this.Electron = !this.Chrome && this.Vivaldi;
+
+}();
 
 /**
  * Default language packet
@@ -293,6 +307,12 @@ BROWSERS.Vivaldi = !BROWSERS.Chrome;
  * @type {String}
  */
 export const DEFAULT_LANG = "en";
+
+/**
+ * Is client
+ * @type {Boolean}
+ */
+export let IS_CLIENT = true;
 
 /**
  * @constant

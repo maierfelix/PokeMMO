@@ -8,8 +8,6 @@ export class Facing {
   /**
    * @param  {Number} id
    * @param  {Number} dir
-   * @param  {Number} x
-   * @param  {Number} y
    * @return {Object}
    * @constructor
    */
