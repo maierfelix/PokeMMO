@@ -157,21 +157,18 @@ export default class WGL_Renderer {
         this.spritepos[12 * ii + 2 * jj + 1] = y + (height / 2);
       };
 
-      gl.uniform2f(
-        loc,
-        width, height
-      );
+      gl.uniform2f(gl.getUniformLocation(this.shaderProgram, "uObjScale"), width, height);
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, entity.glTexture);
+      gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uTex1"), 0);
+
+      this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
+      this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", 6, 1);
+
+      gl.drawArrays(gl.TRIANGLES, ii * 6, 6);
 
     };
-
-    this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
-
-    this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1);
-
-    gl.drawArrays(gl.TRIANGLES, 0, length * 6);
 
     return void 0;
 

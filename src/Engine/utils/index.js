@@ -45,17 +45,6 @@ export function supportWGL() {
 }
 
 /**
- * Get local host
- * @return {String}
- */
-export function getLocalHost() {
-  if (typeof document === "undefined") return void 0;
-  return (
-    document.location.host.replace(/:.*/, "")
-  );
-}
-
-/**
  * Converts a string into corresponding type
  * @param {String} value
  * @return {*}
@@ -73,6 +62,17 @@ export function parseString(value) {
     null
   );
 
+}
+
+/**
+ * Get local host
+ * @return {String}
+ */
+export function getLocalHost() {
+  if (typeof document === "undefined") return void 0;
+  return (
+    document.location.host.replace(/:.*/, "")
+  );
 }
 
 /**

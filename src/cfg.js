@@ -65,7 +65,7 @@ export const VERSION = "0.1.0";
  * @constant
  * @type {Boolean}
  */
-export const WGL_SUPPORT = /*supportWGL()*/ false;
+export const WGL_SUPPORT = supportWGL();
 
 /**
  * Walk by keyboard

@@ -67,20 +67,21 @@ export default class Game {
         this.setup(stage);
       return void 0;
       case 7:
-        window.rAF(() => this.engine.renderer.render());
-        this.setup(stage);
-      return void 0;
-      case 8:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
-      case 9:
+      case 8:
         if (!OFFLINE_MODE) {
           this.engine.connection = new Connection(
             this,
             `${CONNECTION_URL}:${CONNECTION_PORT}`
           );
         }
+        this.setup(stage);
+      return void 0;
+      case 9:
+        window.rAF(() => this.engine.renderer.render());
+        this.setup(stage);
       return void 0;
     };
 
