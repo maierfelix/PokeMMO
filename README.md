@@ -35,12 +35,15 @@ npm run start
    - [x] Grid based path finding
    - [x] Maps
    - [ ] Map connections
-   - [ ] Dynamic multi-lingual support
+   - [x] Dynamic multi-lingual support
    - [x] Mini map
    - [x] Pings
    - [ ] Notifications (Map name, dialog boxes etc)
    - [ ] Record/Replay Mode
    - [ ] Seed based animations
+   - [x] Canvas renderer
+   - [x] WebGL renderer
+   - [ ] Normal map based lighting
 
 - [ ] Editor
    - [x] Undo & Redo
