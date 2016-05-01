@@ -13,10 +13,10 @@ import {
 
 import math from "../../Math";
 
+import Path from "../Path";
+import Texture from "../Texture";
 import MapEntity from "./MapEntity";
 import DisplayObject from "../DisplayObject";
-import Texture from "../Texture";
-import Path from "../Path";
 
 import * as events from "./events";
 import * as functions from "./functions";
@@ -201,7 +201,11 @@ export default class Map extends DisplayObject {
       $GET(path + ".json").then(
         JSON.parse
       ).then(this::function(data) {
+        data.map = this.name;
         data.sprite = path + ".png";
+        if (data.normal === true) {
+          data.normalSprite = path + "_normal" + ".png";
+        }
         this.objects[key] = data;
         if (--length <= 0) {
           this.buildEntities();
@@ -296,8 +300,6 @@ export default class Map extends DisplayObject {
     this.mainBuffer = this.buffers[0];
 
     this.joinLayers();
-
-    //this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.mainBuffer);
 
     return void 0;
 

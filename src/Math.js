@@ -135,10 +135,10 @@ export default class Mathematical {
     let distances = [];
 
     for (; ii < length; ++ii) {
-      distance = this.distance(array[ii].x, array[ii].y, x, y + (array[ii].height / 2));
+      distance = this.distance(array[ii].x, array[ii].y, x, y + ((array[ii].height / 2) * array[ii].scaling));
       distance.index = ii;
-      distance.width = array[ii].width;
-      distance.height = array[ii].height;
+      distance.width = array[ii].width * array[ii].scaling;
+      distance.height = array[ii].height * array[ii].scaling;
       distances.push(distance);
     };
 

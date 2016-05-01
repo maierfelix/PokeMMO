@@ -41,6 +41,12 @@ export default class Entity extends DisplayObject {
     this.name = obj.name || null;
 
     /**
+     * Entity's map
+     * @type {Object}
+     */
+    this.map = obj.map;
+
+    /**
      * Last position
      * @type {Object}
      */
@@ -178,6 +184,12 @@ export default class Entity extends DisplayObject {
     this.sprite = obj.sprite;
 
     /**
+     * Normal sprite
+     * @type {String}
+     */
+    this.normalSprite = obj.normalSprite;
+
+    /**
      * Reversed facing
      * @type {Array}
      */
@@ -208,10 +220,22 @@ export default class Entity extends DisplayObject {
     this.shadow = null;
 
     /**
+     * Normal map
+     * @type {Object}
+     */
+    this.normal = null;
+
+    /**
      * Entity has shadow
      * @type {Boolean}
      */
     this.hasShadow = obj.shadow === void 0 ? true : obj.shadow instanceof Shadow ? true : obj.shadow;
+
+    /**
+     * Entity has normal map
+     * @type {Boolean}
+     */
+    this.hasNormalMap = obj.normal === void 0 ? false : obj.normal;
 
     /**
      * Animation index
@@ -491,11 +515,30 @@ export default class Entity extends DisplayObject {
     if (IS_CLIENT === false) return void 0;
     if (this.sprite === null) return void 0;
 
-    /** Load texture */
-    getSprite(
-      this.sprite, this.width, this.height, this::function(texture) {
+    /** Load sprite texture */
+    getSprite(this.sprite, this.width, this.height, this::function(texture) {
       this.texture = texture;
-      this.setup();
+      /** Shadow texture */
+      if (this.hasShadow === true) {
+        this.shadow = new Shadow(this);
+        this.shadow.position.set(this.shadowX, this.shadowY);
+      }
+      if (WGL_SUPPORT === true) {
+        this.glTexture = Maps[this.map].instance.renderer.glRenderer.bufferTexture(this.texture.effect_sprites);
+      }
+      /** Normal map texture */
+      if (this.hasNormalMap === true) {
+        if (this.normalSprite === void 0) {
+          let split = this.sprite.split(".");
+          this.normalSprite = split[0] + "_normal." + split[1];
+        }
+        getSprite(this.normalSprite, this.width, this.height, this::function(texture) {
+          this.normal = Maps[this.map].instance.renderer.glRenderer.bufferTexture(texture.sprites);
+          this.setup();
+        });
+      } else {
+        this.setup();
+      }
     });
 
   }
@@ -505,13 +548,7 @@ export default class Entity extends DisplayObject {
    */
   setup() {
 
-    if (this.hasShadow === true) {
-      this.shadow = new Shadow(this);
-      this.shadow.position.set(this.shadowX, this.shadowY);
-    }
-    if (WGL_SUPPORT === true) {
-      this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture(this.texture.effect_sprites);
-    }
+    /** Follower */
     if (this.following !== null) {
       let leader = Maps[this.map].instance.getEntityByProperty(this.following, "name");
       leader.leader = this;
@@ -530,6 +567,7 @@ export default class Entity extends DisplayObject {
       leader.followTarget.x = this.x;
       leader.followTarget.y = this.y;
     }
+
     if (
       this.onLoad !== null &&
       this.onLoad instanceof Function

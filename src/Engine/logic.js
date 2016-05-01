@@ -115,6 +115,8 @@ export function updateEntity(entity) {
     }
   }
 
+  entity.scaling = entity.scale + (-entity.position.z / this.camera.resolution) / ((entity.size.x + entity.size.y) / 2);
+
   entity.animate();
 
   if (entity.orbit === true) {

@@ -1,6 +1,7 @@
 {
   "name"   : "Tree",
   "sprite" : "tree.png",
+  "normal" : true,
   "width"  : 32,
   "height" : 32,
   "scale"  : 1,

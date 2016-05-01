@@ -1,7 +1,10 @@
 /** Inspired by gles.js web demo */
 import {
-  DIMENSION
+  DIMENSION,
+  PIXEL_SCALE
 } from "../../../cfg";
+
+import math from "../../../Math";
 
 import { canvasToImage } from "../../utils";
 
@@ -27,10 +30,10 @@ export default class WGL_Renderer {
     this.instance = instance;
 
     /**
-     * Shader program
+     * Sprite shader
      * @type {Object}
      */
-    this.shaderProgram = null;
+    this.spriteShader = null;
 
     /**
      * Shaders
@@ -57,6 +60,15 @@ export default class WGL_Renderer {
      */
     this.posbuffer = null;
 
+    this.lightZ = 0.05;
+
+    this.lightSize = 512;
+
+    this.ambientColor = new Float32Array([0.8, 0.8, 0.8, 0.7]);
+    this.lightColor = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+    this.falloff = new Float32Array([0.4, 7.0, 40.0]);
+    this.lightPos = new Float32Array([0, 0, this.lightZ]);
+
     this.ready = false;
 
   }
@@ -66,26 +78,37 @@ export default class WGL_Renderer {
    */
   init() {
 
+    this.compileShaders();
+
+    this.ready = true;
+
+  }
+
+  /**
+   * Compile shaders
+   */
+  compileShaders() {
+
     let gl = this.gl;
 
-    let entities = this.instance.instance.currentMap.entities;
+    let loc = null;
 
-    let length = entities.length;
+    let length = this.instance.instance.currentMap.entities.length;
+
+    let vshaderid = gl.createShader(gl.VERTEX_SHADER);
+    let fshaderid = gl.createShader(gl.FRAGMENT_SHADER);
 
     this.spritepos = new Float32Array(length * 12);
     this.spriteidx = new Float32Array(length * 6);
 
-    this.vshaderid = gl.createShader(gl.VERTEX_SHADER);
-    this.fshaderid = gl.createShader(gl.FRAGMENT_SHADER);
+    this.compileShader(0, vshaderid, shaders.spritevs);
+    this.compileShader(1, fshaderid, shaders.spritefs);
 
-    this.compileShader(0, this.vshaderid, shaders.spritevs);
-    this.compileShader(1, this.fshaderid, shaders.spritefs);
+    this.spriteShader = gl.createProgram();
 
-    this.shaderProgram = gl.createProgram();
-
-    gl.attachShader(this.shaderProgram, this.vshaderid);
-    gl.attachShader(this.shaderProgram, this.fshaderid);
-    gl.linkProgram(this.shaderProgram);
+    gl.attachShader(this.spriteShader, vshaderid);
+    gl.attachShader(this.spriteShader, fshaderid);
+    gl.linkProgram(this.spriteShader);
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -103,9 +126,14 @@ export default class WGL_Renderer {
       this.spriteidx[6 * i + 5] = 3;
     };
 
-    this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
+    this.setAttribute(this.spriteShader, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
 
-    this.ready = true;
+    gl.useProgram(this.spriteShader);
+
+    loc = gl.getUniformLocation(this.spriteShader, "u_normals");
+    gl.uniform1i(loc, 1);
+
+    console.log(gl);
 
   }
 
@@ -132,7 +160,6 @@ export default class WGL_Renderer {
     let length = entities.length;
 
     let ii = 0;
-    let jj = 0;
 
     let camera = this.instance.camera;
 
@@ -141,57 +168,141 @@ export default class WGL_Renderer {
     let camX = camera.position.x;
     let camY = camera.position.y;
 
-    gl.useProgram(this.shaderProgram);
+    gl.useProgram(this.spriteShader);
 
-    loc = gl.getUniformLocation(this.shaderProgram, "uScale");
+    loc = gl.getUniformLocation(this.spriteShader, "uScale");
     gl.uniform2f(loc, this.instance.width, this.instance.height);
 
-    for (ii = 0; ii < 6; ++ii) {
-      this.spritepos[2 * ii] = (camX + (map.size.x * DIMENSION) / 2 * resolution) << 0;
-      this.spritepos[2 * ii + 1] = (camY + (map.size.y * DIMENSION) / 2 * resolution) << 0;
+    this.drawMapTexture(map, camX, camY, resolution);
+
+    for (ii = 0; ii < length; ++ii) {
+      entity = entities[ii];
+      if (entity.renderable === false) continue;
+      width  = (entity.size.x * resolution) * entity.scaling << 0;
+      height = (entity.size.y * resolution) * entity.scaling << 0;
+      x = (camX + (entity.position.x + entity.xMargin) * resolution) << 0;
+      y = (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
+      this.drawTexture(entity, ii, x, y, width, height);
+    };
+
+    return void 0;
+
+  }
+
+  /**
+   * Draw map texture
+   * @param {Object} map
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} resolution
+   */
+  drawMapTexture(map, x, y, resolution) {
+
+    let gl = this.gl;
+
+    let ii = 0;
+
+    let width  = ((map.size.x * DIMENSION) * resolution) << 0;
+    let height = ((map.size.y * DIMENSION) * resolution) << 0;
+
+    for (; ii < 6; ++ii) {
+      this.spritepos[2 * ii]     = ((x << 0) + width / 2) << 0;
+      this.spritepos[2 * ii + 1] = ((y << 0) + height / 2) << 0;
     };
 
     gl.uniform2f(
-      gl.getUniformLocation(this.shaderProgram, "uObjScale"),
-      ((map.size.x * DIMENSION) * resolution) << 0,
-      ((map.size.y * DIMENSION) * resolution) << 0
+      gl.getUniformLocation(this.spriteShader, "uEntityScale"),
+      width, height
     );
 
-    if (map.glTexture) {
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
-      gl.uniform1i(gl.getUniformLocation(this.shaderProgram, "uTex1"), 0);
-      this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
-      this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", 6, 1);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
+    this.setAttribute(this.spriteShader, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
+    this.setAttribute(this.spriteShader, this.idxbuffer, "aIdx", 6, 1);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+  }
+
+  /**
+   * Draw map texture
+   * @param {Object} entity
+   * @param {Number} ii
+   * @param {Number} x
+   * @param {Number} y
+   * @param {Number} width
+   * @param {Number} height
+   */
+  drawTexture(entity, ii, x, y, width, height) {
+
+    let loc = null;
+
+    let gl = this.gl;
+
+    let jj = 0;
+
+    for (jj = 0; jj < 6; ++jj) {
+      this.spritepos[12 * ii + 2 * jj] = x + (width / 2);
+      this.spritepos[12 * ii + 2 * jj + 1] = y + (height / 2);
+    };
+
+    this.setAttribute(this.spriteShader, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
+    this.setAttribute(this.spriteShader, this.idxbuffer, "aIdx", 6, 1);
+
+    let resolution = this.instance.camera.resolution;
+
+    let camX = this.instance.camera.position.x;
+    let camY = this.instance.camera.position.y;
+
+    if (entity.isLight === true) {
+      loc = gl.getUniformLocation(this.spriteShader, "LightSize");
+      gl.uniform1f(loc, resolution);
+    } else {
+      loc = gl.getUniformLocation(this.spriteShader, "LightSize");
+      gl.uniform1f(loc, 0.0);
     }
 
-    for (ii = 0; ii < length; ++ii) {
+    this.lightPos[0] = 2.0;
+    this.lightPos[1] = 2.0;
 
-      entity = entities[ii];
+    loc = gl.getUniformLocation(this.spriteShader, "hasNormal");
+    gl.uniform1f(loc, entity.name === "Lantern" ? 1.0 : 0.0);
 
-      x = (camX + (entity.position.x + entity.xMargin) * resolution) << 0;
-      y = (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
+    gl.uniform2f(
+      gl.getUniformLocation(this.spriteShader, "uEntityScale"),
+      width, height
+    );
+    gl.uniform4fv(
+      gl.getUniformLocation(this.spriteShader, "AmbientColor"),
+      this.ambientColor
+    );
+    gl.uniform3fv(
+      gl.getUniformLocation(this.spriteShader, "LightPos"),
+      this.lightPos
+    );
+    gl.uniform3fv(
+      gl.getUniformLocation(this.spriteShader, "Falloff"),
+      this.falloff
+    );
+    gl.uniform4fv(
+      gl.getUniformLocation(this.spriteShader, "LightColor"),
+      this.lightColor
+    );
 
-      width  = (entity.size.x * resolution) << 0;
-      height = (entity.size.y * resolution) << 0;
-
-      for (jj = 0; jj < 6; ++jj) {
-        this.spritepos[12 * ii + 2 * jj] = x + (width / 2);
-        this.spritepos[12 * ii + 2 * jj + 1] = y + (height / 2);
-      };
-
-      gl.uniform2f(gl.getUniformLocation(this.shaderProgram, "uObjScale"), width, height);
-
-      gl.activeTexture(gl.TEXTURE0);
+    /** Normal */
+    gl.activeTexture(gl.TEXTURE1);
+    if (entity.hasNormalMap) {
+      gl.bindTexture(gl.TEXTURE_2D, entity.normal[entity.sFrame]);
+    } else {
       gl.bindTexture(gl.TEXTURE_2D, entity.glTexture[entity.sFrame]);
+    }
 
-      this.setAttribute(this.shaderProgram, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
-      this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", 6, 1);
+    /** Diffuse */
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, entity.glTexture[entity.sFrame]);
 
-      gl.drawArrays(gl.TRIANGLES, ii * 6, 6);
-
-    };
+    gl.drawArrays(gl.TRIANGLES, ii * 6, 6);
 
     return void 0;
 
@@ -249,35 +360,6 @@ export default class WGL_Renderer {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       throw "shader " + type + " compile error: " + gl.getShaderInfoLog(shader);
     }
-
-  }
-
-  /**
-   * Compile shaders
-   */
-  compileShaders() {
-
-    let gl = this.gl;
-
-    let entities = this.instance.instance.currentMap.entities;
-
-    let length = entities.length;
-
-    this.vshader = gl.createShader(gl.VERTEX_SHADER);
-    this.fshader = gl.createShader(gl.FRAGMENT_SHADER);
-
-    this.compileShader(0, this.vshader, shaders.spritevs);
-    this.compileShader(1, this.fshader, shaders.spritefs);
-
-    this.shaderProgram = gl.createProgram();
-
-    gl.attachShader(this.shaderProgram, shaders.vshader);
-    gl.attachShader(this.shaderProgram, shaders.fshader);
-    gl.linkProgram(this.shaderProgram);
-
-    this.posbuffer = gl.createBuffer();
-
-    this.setAttribute(this.shaderProgram, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
 
   }
 

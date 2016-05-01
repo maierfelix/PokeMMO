@@ -26,7 +26,9 @@ export function updateEntityNoise(entity, dist) {
     dist.x = 99999;
     dist.y = 99999;
     radius = 0;
-    entity.noise._audioNode[0].gain.value = 0;
+    if (entity.noise._audioNode !== void 0) {
+      entity.noise._audioNode[0].gain.value = 0;
+    }
   }
 
   radius = (entity.noiseRadius - DIMENSION) || DIMENSION;

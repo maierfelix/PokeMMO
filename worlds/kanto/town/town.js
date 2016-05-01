@@ -54,13 +54,6 @@ return (function() {
     type: "ping"
   });
 
-  MAP.entities.push({
-    x: 208, y: 168,
-    type: "ping",
-    opacity: .0,
-    collidable: true
-  });
-
   /*MAP.entities.push({
     x: 144, y: 40,
     type: "cloud",
@@ -170,6 +163,16 @@ return (function() {
 
   MAP.entities.push({
     x: 168, y: 96,
+    type: "lantern"
+  });
+
+  MAP.entities.push({
+    x: 200, y: 160,
+    type: "lantern"
+  });
+
+  MAP.entities.push({
+    x: 104, y: 136,
     type: "lantern"
   });
 

@@ -83,6 +83,10 @@ export default class Game {
         window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
+      case 10:
+        this.engine.currentMap.glTexture = this.engine.renderer.glRenderer.bufferTexture([this.engine.currentMap.mainBuffer]);
+        this.setup(stage);
+      return void 0;
     };
 
     return void 0;
@@ -121,6 +125,13 @@ export default class Game {
   addEntities(resolve) {
 
     let player = this.entities.Player;
+
+    this.engine.addEntity(new entities.Light({
+      sprite: "assets/img/light.png",
+      map: "Town",
+      x: 168, y: 96,
+      width: 32, height: 32
+    }));
 
     this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 96, y: 144, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
       facing: 1,

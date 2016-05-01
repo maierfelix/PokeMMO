@@ -55,10 +55,10 @@ actions["DELETE"] = {
 actions["F1"] = {
   action: function() {
     cfg.DEBUG_MODE = cfg.DEBUG_MODE ? false : true;
-    if (!cfg.DEBUG_MODE) {
+    /*if (!cfg.DEBUG_MODE) {
       cfg.FREE_CAMERA = false;
       this.engine.camera.focus(this.engine.localEntity, false);
-    }
+    }*/
     this.engine.renderer.switchRenderingMode(cfg.DEBUG_MODE ? 0 : 1);
     this.engine.renderer.resize(true);
     this.engine.renderer.clear();
@@ -220,7 +220,10 @@ actions["DBLCLICK"] = {
 
 actions["LEFTCLICK"] = {
   action: function(e) {
-    if (e.target.id !== this.engine.node.id) {
+    if (
+      e.target.id !== this.engine.node.id &&
+      e.target.id !== this.engine.glNode.id
+    ) {
       return void 0;
     }
     let x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -230,8 +233,8 @@ actions["LEFTCLICK"] = {
       this.engine.ping(x, y, "notify");
       return void 0;
     }
-    if (!cfg.DEBUG_MODE) return void 0;
-    if (cfg.EDIT_MODE && e.which === 1 && this.input.KeyBoard.isKeyPressed("SHIFT")) {
+    //if (!cfg.DEBUG_MODE) return void 0;
+    if (e.which === 1 && this.input.KeyBoard.isKeyPressed("SHIFT")) {
       this.engine.editor.STATES.SELECTING = true;
       this.engine.editor.selectFrom(x, y);
       this.engine.editor.selectTo(x, y);
@@ -244,7 +247,7 @@ actions["LEFTCLICK"] = {
       this.engine.camera.dragging = true;
       this.engine.camera.click(x, y);
     }
-    if (cfg.EDIT_MODE && (e.touches || e.which === 1)) {
+    if (/*cfg.EDIT_MODE && */(e.touches || e.which === 1)) {
       this.engine.editor.dragging = true;
       this.engine.editor.selectEntity(x, y);
     }
@@ -264,11 +267,11 @@ actions["RESIZE"] = {
 actions["MOUSEUP"] = {
   action: function(e) {
     e.preventDefault();
-    if (!cfg.DEBUG_MODE) return void 0;
+    //if (!cfg.DEBUG_MODE) return void 0;
     if (cfg.FREE_CAMERA) {
       this.engine.camera.dragging = false;
     }
-    if (cfg.EDIT_MODE) {
+    if (/*cfg.EDIT_MODE*/true) {
       if (e.touches || e.which === 1) {
         this.engine.editor.dragging = false;
         this.engine.editor.STATES.SELECTING = false;
@@ -286,7 +289,7 @@ actions["MOUSEMOVE"] = {
     let x = e.touches ? e.touches[0].clientX : e.clientX;
     let y = e.touches ? e.touches[0].clientY : e.clientY;
     e.preventDefault();
-    if (!cfg.DEBUG_MODE) return void 0;
+    //if (!cfg.DEBUG_MODE) return void 0;
     if (
       cfg.FREE_CAMERA &&
       this.engine.camera.dragging &&
@@ -299,7 +302,7 @@ actions["MOUSEMOVE"] = {
       this.engine.editor.selectTo(x, y);
       return void 0;
     }
-    if (cfg.EDIT_MODE && this.engine.editor.dragging) {
+    if (/*cfg.EDIT_MODE && */this.engine.editor.dragging) {
       this.engine.editor.dragEntity(x, y);
     }
   },

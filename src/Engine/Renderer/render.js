@@ -122,10 +122,10 @@ export function renderMap() {
     map.mainBuffer.canvas,
     0, 0,
     /** Scale */
-    map.size.x * dim, map.size.y * dim,
+    (map.size.x * 2) * dim, (map.size.y * 2) * dim,
     this.camera.position.x << 0, this.camera.position.y << 0,
-    ((map.size.x * dim) / 2 * this.camera.resolution) << 0,
-    ((map.size.y * dim) / 2 * this.camera.resolution) << 0
+    ((map.size.x * dim) * this.camera.resolution) << 0,
+    ((map.size.y * dim) * this.camera.resolution) << 0
   );
 
   return void 0;
@@ -215,17 +215,18 @@ export function renderEntities(lowest) {
     } else {
       if (entity.zIndex <= 0) continue;
     }
-    scaling = entity.scale + (-entity.position.z / resolution) / ((entity.size.x + entity.size.y) / 2);
     if (entity.renderable === false) continue;
     this.renderEntity(
       entity,
       /** Position */
-      (camX + (entity.position.x + entity.xMargin + ((entity.position.z / (entity.size.x / 2)) / 2)) * resolution) << 0,
+      (camX + (entity.position.x + entity.xMargin) * resolution) << 0,
       (camY + (entity.position.y + entity.yMargin + entity.position.z) * resolution) << 0,
       /** Size */
-      (entity.size.x * resolution) * scaling << 0, (entity.size.y * resolution) * scaling << 0,
+      (entity.size.x * resolution) * entity.scaling << 0,
+      (entity.size.y * resolution) * entity.scaling << 0,
       /** Scale */
-      ((entity.size.x /scaling) * 2) * scaling << 0, ((entity.size.y / scaling) * 2) * scaling << 0
+      entity.size.x * 2 << 0,
+      entity.size.y * 2 << 0
     );
   };
 

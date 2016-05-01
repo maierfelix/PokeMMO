@@ -124,6 +124,12 @@ export default class Notification extends Entity {
     this.z = 0;
 
     /**
+     * Sprite frame
+     * @type {Number}
+     */
+    this.sFrame = 0;
+
+    /**
      * Absolute position
      * @type {Boolean}
      */
@@ -140,6 +146,14 @@ export default class Notification extends Entity {
      * @type {Number}
      */
     this.lifeTime = Date.now() + (60 * (this.msg.length * 4));
+
+    this.frames = [0, 0];
+
+    this.frame = obj.frame === void 0 ? 1 : obj.frame;
+
+    this.reversed = [0, 0];
+
+    this.reverseShadow = [0, 0];
 
     /** Follow */
     if (this.follow !== null) {
@@ -234,6 +248,8 @@ export default class Notification extends Entity {
     else if (this.style === "MessageBox") {
       this.drawMessageBox();
     }
+
+    this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture([this.texture]);
 
     return void 0;
 

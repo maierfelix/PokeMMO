@@ -1,6 +1,7 @@
 {
   "name"   : "Building1",
   "sprite" : "building1.png",
+  "normal": true,
   "width"  : 32,
   "height" : 40,
   "scale"  : 1,
