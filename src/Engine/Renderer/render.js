@@ -20,8 +20,6 @@ export function render() {
 
   this.clear();
 
-  this.instance.sort();
-
   this.update();
 
   this.instance.logic();
@@ -63,6 +61,10 @@ export function clear() {
  * Draw
  */
 export function draw() {
+
+  if (
+    this.instance.currentMap === null
+  ) return void 0;
 
   let gl = RENDER_MODE === WGL;
 

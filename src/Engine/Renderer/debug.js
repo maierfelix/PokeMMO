@@ -50,28 +50,34 @@ export function renderDebugScene() {
     color
   );
 
-  this.drawPixelText(
-    `${get("Entities")}: ${this.instance.currentMap.entities.length}`,
-    15, 180,
-    20, 1.5,
-    color
-  );
+  if (this.instance.currentMap !== null) {
+    this.drawPixelText(
+      `${get("Entities")}: ${this.instance.currentMap.entities.length}`,
+      15, 180,
+      20, 1.5,
+      color
+    );
+  }
 
   let ii = 0;
   let kk = 0;
 
   let length = 0;
 
-  let entities = this.instance.currentMap.entities;
+  if (this.instance.currentMap !== null) {
 
-  length = entities.length;
+    let entities = this.instance.currentMap.entities;
 
-  for (; ii < length; ++ii) {
-    if (this.instance.camera.isInView(
-      entities[ii].position.x, entities[ii].position.y,
-      entities[ii].size.x, (entities[ii].size.y * 2) + entities[ii].shadowY
-    ) && ++kk) {}
-  };
+    length = entities.length;
+
+    for (; ii < length; ++ii) {
+      if (this.instance.camera.isInView(
+        entities[ii].position.x, entities[ii].position.y,
+        entities[ii].size.x, (entities[ii].size.y * 2) + entities[ii].shadowY
+      ) && ++kk) {}
+    };
+
+  }
 
   this.drawPixelText(
     `${get("EntitiesInView")}: ${kk}`,

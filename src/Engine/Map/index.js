@@ -1,5 +1,6 @@
 import {
-  DIMENSION
+  DIMENSION,
+  WGL_SUPPORT
 } from "../../cfg";
 
 import {
@@ -8,7 +9,7 @@ import {
   uHash,
   TextureCache, getSprite,
   createCanvasBuffer,
-  ajax as $GET,
+  ajax as $GET
 } from "../utils";
 
 import math from "../../Math";
@@ -135,6 +136,12 @@ export default class Map extends DisplayObject {
     this.xMargin = 0;
     this.yMargin = 0;
 
+    /**
+     * Map texture loaded
+     * @type {Boolean}
+     */
+    this.renderable = false;
+
     /** Load texture */
     getSprite(this.tileset, -1, -1, this::function(texture) {
       this.texture = TextureCache[this.tileset];
@@ -142,6 +149,10 @@ export default class Map extends DisplayObject {
       /** Attach path finder */
       this.path = new Path(this);
       Maps[this.name] = this;
+      if (WGL_SUPPORT) {
+        this.glTexture = this.instance.renderer.glRenderer.bufferTexture([this.mainBuffer]);
+      }
+      this.renderable = true;
       this.loadMapFile(this::function() {
         if (resolve instanceof Function) resolve();
       });

@@ -58,16 +58,27 @@ export default class WGL_Renderer {
      * Position buffer
      * @type {Object}
      */
-    this.posbuffer = null;
+    this.posBuffer = null;
 
-    this.lightZ = 0.05;
+    /**
+     * Rotation buffer
+     * @type {Object}
+     */
+    this.rotBuffer = null;
 
-    this.lightSize = 512;
+    this.lightZ = 0.075;
 
-    this.ambientColor = new Float32Array([0.8, 0.8, 0.8, 0.7]);
+    this.lightSize = 256;
+
+    this.ambientColor = new Float32Array([0.8, 0.8, 0.8, 0.9]);
     this.lightColor = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-    this.falloff = new Float32Array([0.4, 7.0, 40.0]);
+    this.falloff = new Float32Array([0.4, 7.0, 30.0]);
     this.lightPos = new Float32Array([0, 0, this.lightZ]);
+
+    this.spriteidx = null;
+    this.spriteRot = null;
+
+    this.EMPTY_ARRAY = new Float32Array(0);
 
     this.ready = false;
 
@@ -78,44 +89,52 @@ export default class WGL_Renderer {
    */
   init() {
 
-    this.compileShaders();
+    this.buildShader(shaders.spritevs, shaders.spritefs);
 
     this.ready = true;
+
+    console.log(this.gl);
 
   }
 
   /**
-   * Compile shaders
+   * Build a shader
    */
-  compileShaders() {
+  buildShader(vs, fs) {
 
     let gl = this.gl;
 
     let loc = null;
 
-    let length = this.instance.instance.currentMap.entities.length;
+    let length = 1e3;
+
+    let shader = null;
 
     let vshaderid = gl.createShader(gl.VERTEX_SHADER);
     let fshaderid = gl.createShader(gl.FRAGMENT_SHADER);
 
-    this.spritepos = new Float32Array(length * 12);
-    this.spriteidx = new Float32Array(length * 6);
+    this.compileShader(0, vshaderid, vs);
+    this.compileShader(1, fshaderid, fs);
 
-    this.compileShader(0, vshaderid, shaders.spritevs);
-    this.compileShader(1, fshaderid, shaders.spritefs);
+    shader = gl.createProgram();
 
-    this.spriteShader = gl.createProgram();
-
-    gl.attachShader(this.spriteShader, vshaderid);
-    gl.attachShader(this.spriteShader, fshaderid);
-    gl.linkProgram(this.spriteShader);
+    gl.attachShader(shader, vshaderid);
+    gl.attachShader(shader, fshaderid);
+    gl.linkProgram(shader);
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
     gl.disable(gl.BLEND);
 
-    this.posbuffer = gl.createBuffer();
-    this.idxbuffer = gl.createBuffer();
+    this.shader = shader;
+
+    this.spritePos = new Float32Array(length * 12);
+    this.spriteidx = new Float32Array(length * 6);
+    this.spriteRot = new Float32Array(length * 6);
+
+    this.posBuffer = gl.createBuffer();
+    this.rotBuffer = gl.createBuffer();
+    this.idxBuffer = gl.createBuffer();
 
     for (var i = 0; i < length; i++) {
       this.spriteidx[6 * i + 0] = 0;
@@ -126,14 +145,12 @@ export default class WGL_Renderer {
       this.spriteidx[6 * i + 5] = 3;
     };
 
-    this.setAttribute(this.spriteShader, this.idxbuffer, "aIdx", length * 6, 1, this.spriteidx);
+    this.setAttribute(this.shader, this.idxBuffer, "aIdx", length * 6, 1, this.spriteidx);
 
-    gl.useProgram(this.spriteShader);
+    gl.useProgram(this.shader);
 
-    loc = gl.getUniformLocation(this.spriteShader, "u_normals");
+    loc = gl.getUniformLocation(this.shader, "u_normals");
     gl.uniform1i(loc, 1);
-
-    console.log(gl);
 
   }
 
@@ -145,7 +162,36 @@ export default class WGL_Renderer {
     let gl = this.gl;
 
     let loc = null;
+
+    let map = this.instance.instance.currentMap;
+
+    if (map.renderable === false) return void 0;
+
+    /** Set global size */
+    loc = gl.getUniformLocation(this.shader, "uScale");
+    gl.uniform2f(loc, this.instance.width, this.instance.height);
+
+    this.renderEntities(1);
+    this.renderMap(map);
+    this.renderEntities(0);
+
+    return void 0;
+
+  }
+
+  /**
+   * Render entities
+   * @param {Number} lowest
+   */
+  renderEntities(lowest) {
+
+    let map = this.instance.instance.currentMap;
+
     let entity = null;
+    let entities = map.entities;
+
+    let ii = 0;
+    let length = entities.length;
 
     let x = 0;
     let y = 0;
@@ -153,65 +199,55 @@ export default class WGL_Renderer {
     let width  = 0;
     let height = 0;
 
-    let map = this.instance.instance.currentMap;
-
-    let entities = map.entities;
-
-    let length = entities.length;
-
-    let ii = 0;
-
     let camera = this.instance.camera;
-
-    let resolution = camera.resolution;
 
     let camX = camera.position.x;
     let camY = camera.position.y;
 
-    gl.useProgram(this.spriteShader);
-
-    loc = gl.getUniformLocation(this.spriteShader, "uScale");
-    gl.uniform2f(loc, this.instance.width, this.instance.height);
-
-    this.drawMapTexture(map, camX, camY, resolution);
+    let resolution = camera.resolution;
 
     for (ii = 0; ii < length; ++ii) {
       entity = entities[ii];
+      if (lowest === 1) {
+        if (entity.zIndex > 0) continue;
+      } else {
+        if (entity.zIndex <= 0) continue;
+      }
       if (entity.renderable === false) continue;
       width  = (entity.size.x * resolution) * entity.scaling << 0;
       height = (entity.size.y * resolution) * entity.scaling << 0;
       x = (camX + (entity.position.x + entity.xMargin) * resolution) << 0;
       y = (camY + (entity.position.y + entity.yMargin + entity.z) * resolution) << 0;
-      this.drawTexture(entity, ii, x, y, width, height);
+      this.renderEntity(entity, ii, x, y, width, height);
     };
-
-    return void 0;
 
   }
 
   /**
-   * Draw map texture
+   * Render a map
    * @param {Object} map
-   * @param {Number} x
-   * @param {Number} y
-   * @param {Number} resolution
    */
-  drawMapTexture(map, x, y, resolution) {
+  renderMap(map) {
 
     let gl = this.gl;
 
     let ii = 0;
 
-    let width  = ((map.size.x * DIMENSION) * resolution) << 0;
-    let height = ((map.size.y * DIMENSION) * resolution) << 0;
+    let camera = this.instance.camera;
+
+    let x = camera.position.x;
+    let y = camera.position.y;
+
+    let width  = ((map.size.x * DIMENSION) * camera.resolution) << 0;
+    let height = ((map.size.y * DIMENSION) * camera.resolution) << 0;
 
     for (; ii < 6; ++ii) {
-      this.spritepos[2 * ii]     = ((x << 0) + width / 2) << 0;
-      this.spritepos[2 * ii + 1] = ((y << 0) + height / 2) << 0;
+      this.spritePos[2 * ii]     = ((x << 0) + width / 2) << 0;
+      this.spritePos[2 * ii + 1] = ((y << 0) + height / 2) << 0;
     };
 
     gl.uniform2f(
-      gl.getUniformLocation(this.spriteShader, "uEntityScale"),
+      gl.getUniformLocation(this.shader, "uEntityScale"),
       width, height
     );
 
@@ -219,14 +255,14 @@ export default class WGL_Renderer {
     gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
-    this.setAttribute(this.spriteShader, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
-    this.setAttribute(this.spriteShader, this.idxbuffer, "aIdx", 6, 1);
+    this.setAttribute(this.shader, this.posBuffer, "aObjCen", 6, 2, this.spritePos);
+    this.setAttribute(this.shader, this.idxBuffer, "aIdx", 6, 1, this.EMPTY_ARRAY);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 
   }
 
   /**
-   * Draw map texture
+   * Render a entity
    * @param {Object} entity
    * @param {Number} ii
    * @param {Number} x
@@ -234,7 +270,7 @@ export default class WGL_Renderer {
    * @param {Number} width
    * @param {Number} height
    */
-  drawTexture(entity, ii, x, y, width, height) {
+  renderEntity(entity, ii, x, y, width, height) {
 
     let loc = null;
 
@@ -243,56 +279,57 @@ export default class WGL_Renderer {
     let jj = 0;
 
     for (jj = 0; jj < 6; ++jj) {
-      this.spritepos[12 * ii + 2 * jj] = x + (width / 2);
-      this.spritepos[12 * ii + 2 * jj + 1] = y + (height / 2);
+      this.spritePos[12 * ii + 2 * jj] = x + (width / 2);
+      this.spritePos[12 * ii + 2 * jj + 1] = y + (height / 2);
+      this.spriteRot[6 * ii + jj] = entity.r;
     };
 
-    this.setAttribute(this.spriteShader, this.posbuffer, "aObjCen", 6, 2, this.spritepos);
-    this.setAttribute(this.spriteShader, this.idxbuffer, "aIdx", 6, 1);
+    this.setAttribute(this.shader, this.posBuffer, "aObjCen", 6, 2, this.spritePos);
+    this.setAttribute(this.shader, this.rotBuffer, "aObjRot", 6, 1, this.spriteRot);
+    this.setAttribute(this.shader, this.idxBuffer, "aIdx", 6, 1, this.EMPTY_ARRAY);
 
-    let resolution = this.instance.camera.resolution;
+    let camera = this.instance.camera;
+    let resolution = camera.resolution;
 
-    let camX = this.instance.camera.position.x;
-    let camY = this.instance.camera.position.y;
+    /*loc = gl.getUniformLocation(this.shader, "hasNormal");
+    gl.uniform1f(loc, entity.name === "Lantern" ? 1.0 : 0.0);*/
 
-    if (entity.isLight === true) {
-      loc = gl.getUniformLocation(this.spriteShader, "LightSize");
-      gl.uniform1f(loc, resolution);
-    } else {
-      loc = gl.getUniformLocation(this.spriteShader, "LightSize");
-      gl.uniform1f(loc, 0.0);
-    }
+    let light = window.game.engine.getEntityByProperty("light188", "name");
 
-    this.lightPos[0] = 2.0;
-    this.lightPos[1] = 2.0;
+    this.lightPos[0] = camera.x * resolution;
+    this.lightPos[1] = camera.y * resolution;
 
-    loc = gl.getUniformLocation(this.spriteShader, "hasNormal");
-    gl.uniform1f(loc, entity.name === "Lantern" ? 1.0 : 0.0);
+    loc = gl.getUniformLocation(this.shader, "LightSize");
+    gl.uniform1f(loc, this.lightSize * resolution);
 
     gl.uniform2f(
-      gl.getUniformLocation(this.spriteShader, "uEntityScale"),
+      gl.getUniformLocation(this.shader, "uNormRes"),
+      width, height
+    );
+    gl.uniform2f(
+      gl.getUniformLocation(this.shader, "uEntityScale"),
       width, height
     );
     gl.uniform4fv(
-      gl.getUniformLocation(this.spriteShader, "AmbientColor"),
+      gl.getUniformLocation(this.shader, "AmbientColor"),
       this.ambientColor
     );
     gl.uniform3fv(
-      gl.getUniformLocation(this.spriteShader, "LightPos"),
+      gl.getUniformLocation(this.shader, "LightPos"),
       this.lightPos
     );
     gl.uniform3fv(
-      gl.getUniformLocation(this.spriteShader, "Falloff"),
+      gl.getUniformLocation(this.shader, "Falloff"),
       this.falloff
     );
     gl.uniform4fv(
-      gl.getUniformLocation(this.spriteShader, "LightColor"),
+      gl.getUniformLocation(this.shader, "LightColor"),
       this.lightColor
     );
 
     /** Normal */
     gl.activeTexture(gl.TEXTURE1);
-    if (entity.hasNormalMap) {
+    if (entity.hasNormalMap === true && entity.normal !== null) {
       gl.bindTexture(gl.TEXTURE_2D, entity.normal[entity.sFrame]);
     } else {
       gl.bindTexture(gl.TEXTURE_2D, entity.glTexture[entity.sFrame]);
@@ -386,11 +423,11 @@ export default class WGL_Renderer {
   /**
    * Gl attribute set
    * @param {Object} program
-   * @param {[type]} buffer
-   * @param {[type]} varname
-   * @param {[type]} numitems
-   * @param {[type]} itemsize
-   * @param {[type]} values
+   * @param {Object} buffer
+   * @param {String} varname
+   * @param {Number} numitems
+   * @param {Number} itemsize
+   * @param {Array}  values
    */
   setAttribute(program, buffer, varname, numitems, itemsize, values) {
 
@@ -401,7 +438,7 @@ export default class WGL_Renderer {
     gl.enableVertexAttribArray(attribute);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
-    if (values) {
+    if (values.length > 0) {
       gl.bufferData(gl.ARRAY_BUFFER, values, gl.DYNAMIC_DRAW);
     }
 

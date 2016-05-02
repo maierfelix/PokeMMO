@@ -68,14 +68,8 @@ export function jumping() {
     this.shadow.scale.set(0, 0);
 
     if (this.isLocalPlayer === true) {
-      let ii = 0;
-      for (let entity of game.engine.currentMap.entities) {
-        ++ii;
-        if (entity.id === this.id) continue;
-        setTimeout(function() {
-          entity.jump();
-        }, ii * 25);
-      };
+      this.instance.engine.everythingJump();
+      this.instance.engine.everythingRotate(1);
     }
 
   }

@@ -65,42 +65,44 @@ export const spritefs = `
   varying vec2 uv;
 
   uniform float LightSize;
-  uniform float hasNormal;
 
   void main() {
 
     vec4 DiffuseColor = texture2D(u_texture0, uv);
     vec3 NormalMap = texture2D(u_normals, uv).rgb;
 
-    vec3 Sum = vec3(0.0);
+    vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / uScale.xy), LightPos.z);
 
-    vec3 LightDir = vec3(uv.xy - (gl_FragCoord.xy / uScale.xy), LightPos.z);
+    LightDir.x *= uScale.x / uScale.y;
 
-    LightDir.x *= LightSize;
-    LightDir.y *= LightSize;
-
-    float D = 0.0;
-
-    if (hasNormal == 1.0) {
-      D = length(LightDir);
-    } else {
-      D = 2.0;
-    }
+    float D = length(LightDir);
 
     vec3 N = normalize(NormalMap * 2.0 - 1.0);
     vec3 L = normalize(LightDir);
 
-    vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0.0);
+    N = mix(N, vec3(0), 0.5);
+
+    float df = max(dot(N, L), 0.0);
+
+    vec3 Diffuse = (LightColor.rgb * LightColor.a) * df;
 
     vec3 Ambient = AmbientColor.rgb * AmbientColor.a;
 
     float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );
 
+    if (Attenuation < STEP_A)
+      Attenuation = 0.0;
+    else if (Attenuation < STEP_B)
+      Attenuation = STEP_B;
+    else if (Attenuation < STEP_C)
+      Attenuation = STEP_C;
+    else
+      Attenuation = STEP_D;
+
     vec3 Intensity = Ambient + Diffuse * Attenuation;
     vec3 FinalColor = DiffuseColor.rgb * Intensity;
-    Sum += FinalColor;
 
-    gl_FragColor = vec4(Sum, DiffuseColor.a);
+    gl_FragColor = vec4(FinalColor, DiffuseColor.a);
     if (gl_FragColor.a < 0.5) discard;
 
   }

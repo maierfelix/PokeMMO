@@ -82,6 +82,9 @@ export function cloneEntity(entity) {
       clone.noiseSrcPath = entity.noiseSrcPath;
       clone.noise = clone.noiseSrcPath;
     }
+    if (entity.normal) {
+      clone.normal = entity.normal;
+    }
   } else {
     clone = tmp;
   }

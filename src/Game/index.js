@@ -45,46 +45,42 @@ export default class Game {
 
     switch (++stage) {
       case 1:
-        this.addWorld(() => this.setup(stage));
-      return void 0;
-      case 2:
-        this.addMap(() => this.setup(stage));
-      return void 0;
-      case 3:
-        this.addEntities(() => this.setup(stage));
-      return void 0;
-      case 4:
         this.engine.renderer = new Renderer(this.engine);
+        window.rAF(() => this.engine.renderer.render());
         this.setup(stage);
       return void 0;
+      case 2:
+        this.addWorld(() => this.setup(stage));
+      return void 0;
+      case 3:
+        this.addMap(() => this.setup(stage));
+      return void 0;
+      case 4:
+        this.addEntities(() => this.setup(stage));
+      return void 0;
       case 5:
-        this.animateNPC();
         this.setup(stage);
       return void 0;
       case 6:
+        this.animateNPC();
+        this.setup(stage);
+      return void 0;
+      case 7:
         /** Instant focus local player */
         this.engine.camera.focus(this.engine.getEntityByProperty("Felix", "name"), true);
         this.setup(stage);
       return void 0;
-      case 7:
+      case 8:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
-      case 8:
+      case 9:
         if (!OFFLINE_MODE) {
           this.engine.connection = new Connection(
             this,
             `${CONNECTION_URL}:${CONNECTION_PORT}`
           );
         }
-        this.setup(stage);
-      return void 0;
-      case 9:
-        window.rAF(() => this.engine.renderer.render());
-        this.setup(stage);
-      return void 0;
-      case 10:
-        this.engine.currentMap.glTexture = this.engine.renderer.glRenderer.bufferTexture([this.engine.currentMap.mainBuffer]);
         this.setup(stage);
       return void 0;
     };

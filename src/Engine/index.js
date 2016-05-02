@@ -184,14 +184,6 @@ export default class Engine extends DisplayObject {
       this.initScenes();
       this.camera.scale = cfg.MIN_SCALE;
 
-      /**
-       * Disable debug mode in firefox
-       * for performance reasons
-       */
-      if (cfg.BROWSERS.Firefox) {
-        cfg.DEBUG_MODE = false;
-      }
-
       this.handleAdressBar();
 
       resolve();
@@ -228,8 +220,17 @@ export default class Engine extends DisplayObject {
 
     for (; ii < length; ++ii) {
       tmp = params[ii].split("=");
-      key = tmp[0];
+      /** Try uppercase */
+      key = tmp[0].toUpperCase();
       val = tmp[1] === void 0 ? null : tmp[1];
+      /** Try lowercase */
+      if (cfg[key] === void 0) {
+        key = tmp[0];
+      }
+      /**
+       * Config key doesn't exist |
+       * Value to write is null
+       */
       if (cfg[key] === void 0 || val === null) continue;
       val = parseString(val);
       if (val === null) continue;
@@ -434,6 +435,34 @@ export default class Engine extends DisplayObject {
     return (
       this.getString(str).toUpperCase()
     );
+  }
+
+  /**
+   * Let all entities expect local jump
+   * @param {Number} amount
+   */
+  everythingJump() {
+    let ii = 0;
+    for (let entity of game.engine.currentMap.entities) {
+      ++ii;
+      if (entity.id === this.localEntity.id) continue;
+      setTimeout(function() {
+        entity.jump();
+      }, ii * 25);
+    };
+  }
+
+  /**
+   * Rotate all entities expect local
+   * @param {Number} amount
+   */
+  everythingRotate(amount) {
+    let ii = 0;
+    for (let entity of game.engine.currentMap.entities) {
+      ++ii;
+      if (entity.id === this.localEntity.id) continue;
+      entity.rotate(amount);
+    };
   }
 
 }

@@ -57,10 +57,11 @@ export default class Entity extends DisplayObject {
      * @type {Object}
      */
     this.STATES = {
-      JUMPING: false,
-      LOCK:    false,
-      EDITING: false,
-      NOISE:   false
+      JUMPING:  false,
+      ROTATING: false,
+      LOCK:     false,
+      EDITING:  false,
+      NOISE:    false
     };
 
     /**
@@ -80,6 +81,12 @@ export default class Entity extends DisplayObject {
      * @type {Boolean}
      */
     this.jumpable = obj.jumpable === void 0 ? true : obj.jumpable;
+
+    /**
+     * Rotatable
+     * @type {Boolean}
+     */
+    this.rotatable = obj.rotatable === void 0 ? true : obj.rotatable;
 
     /**
      * Life time
@@ -525,6 +532,9 @@ export default class Entity extends DisplayObject {
       }
       if (WGL_SUPPORT === true) {
         this.glTexture = Maps[this.map].instance.renderer.glRenderer.bufferTexture(this.texture.effect_sprites);
+        if (this.hasShadow === true) {
+          this.shadow.glTexture = Maps[this.map].instance.renderer.glRenderer.bufferTexture(this.shadow.sprites);
+        }
       }
       /** Normal map texture */
       if (this.hasNormalMap === true) {
@@ -532,10 +542,14 @@ export default class Entity extends DisplayObject {
           let split = this.sprite.split(".");
           this.normalSprite = split[0] + "_normal." + split[1];
         }
-        getSprite(this.normalSprite, this.width, this.height, this::function(texture) {
-          this.normal = Maps[this.map].instance.renderer.glRenderer.bufferTexture(texture.sprites);
+        if (WGL_SUPPORT === true) {
+          getSprite(this.normalSprite, this.width, this.height, this::function(texture) {
+            this.normal = Maps[this.map].instance.renderer.glRenderer.bufferTexture(texture.sprites);
+            this.setup();
+          });
+        } else {
           this.setup();
-        });
+        }
       } else {
         this.setup();
       }
@@ -606,6 +620,7 @@ export default class Entity extends DisplayObject {
    */
   refreshState() {
     this.STATES.JUMPING = this.z !== 0;
+    this.STATES.ROTATING = this.r !== 0;
   }
 
   /**
@@ -766,6 +781,45 @@ export default class Entity extends DisplayObject {
       }
       this.stopAnimation();
     }
+
+  }
+
+  /**
+   * Rotate
+   * @param {Number} amount -1 ^= Infinite
+   */
+  rotate(amount) {
+
+    if (this.rotatable === false) return void 0;
+
+    this.animations.push({
+      type: "rotation",
+      rotations: amount || -1,
+      rotationAmount: 0
+    });
+  }
+
+  /**
+   * Rotate animation
+   * @param {Object} entity
+   * @param {Number} amount
+   */
+  rotation(animation) {
+
+    this.r += 1 * (Math.PI/180);
+
+    if (this.r >= (Math.PI/2) * 4) {
+      animation.rotationAmount++;
+      this.r = .0;
+      /** Finite rotation */
+      if (animation.rotations !== -1) {
+        if (animation.rotationAmount >= animation.rotations) {
+          this.stopAnimation();
+        }
+      }
+    }
+
+    this.refreshState();
 
   }
 

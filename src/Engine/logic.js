@@ -10,6 +10,9 @@ export function logic() {
 
   if (this.currentMap === null) return void 0;
 
+  /** Depth sort entities */
+  this.sort();
+
   let ii = 0;
   let length = 0;
 

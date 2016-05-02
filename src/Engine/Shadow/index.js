@@ -39,6 +39,12 @@ export default class Shadow extends DisplayObject {
     this.texture = null;
 
     /**
+     * GL texture
+     * @type {Object}
+     */
+    this.glTexture = null;
+
+    /**
      * Splitted sprites
      * @type {Array}
      */
