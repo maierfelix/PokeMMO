@@ -291,21 +291,28 @@ export default class WGL_Renderer {
     let camera = this.instance.camera;
     let resolution = camera.resolution;
 
-    /*loc = gl.getUniformLocation(this.shader, "hasNormal");
-    gl.uniform1f(loc, entity.name === "Lantern" ? 1.0 : 0.0);*/
+    let light = this.instance.instance.getEntityByProperty("light188", "name");
 
-    let light = window.game.engine.getEntityByProperty("light188", "name");
+    let camX = camera.x;
+    let camY = camera.y;
 
-    this.lightPos[0] = camera.x * resolution;
-    this.lightPos[1] = camera.y * resolution;
+    let xx = camX + (light.x * resolution);
+    let yy = camY + (light.y * resolution);
+
+    let w = light.width * resolution;
+    let h = light.height * resolution;
+
+    xx = xx / w;
+    yy = yy / h;
+
+    this.lightPos[0] = xx;
+    this.lightPos[1] = yy;
+
+    let selection = this.instance.instance.editor.entitySelection;
 
     loc = gl.getUniformLocation(this.shader, "LightSize");
     gl.uniform1f(loc, this.lightSize * resolution);
 
-    gl.uniform2f(
-      gl.getUniformLocation(this.shader, "uNormRes"),
-      width, height
-    );
     gl.uniform2f(
       gl.getUniformLocation(this.shader, "uEntityScale"),
       width, height

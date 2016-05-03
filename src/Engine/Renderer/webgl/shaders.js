@@ -13,11 +13,6 @@ export const spritevs = `
   attribute float aIdx;
   varying vec2 uv;
 
-  attribute vec2 TexCoord0;
-  varying vec2 vTexCoord0;
-
-  attribute vec2 TexCoord;
-
   void main(void) {
     if (aIdx == 0.0) {
       uv = vec2(0.0,0.0);
@@ -55,25 +50,26 @@ export const spritefs = `
   uniform sampler2D u_texture0;
   uniform sampler2D u_normals;
 
-  uniform vec2 uScale;
-  uniform vec2 uEntityScale;
-
   uniform vec4 AmbientColor;
   uniform vec3 LightPos;
   uniform vec4 LightColor;
   uniform vec3 Falloff;
-  varying vec2 uv;
 
+  varying vec2 uv;
+  uniform vec2 uScale;
+  uniform vec2 uEntityScale;
   uniform float LightSize;
 
   void main() {
 
     vec4 DiffuseColor = texture2D(u_texture0, uv);
+
     vec3 NormalMap = texture2D(u_normals, uv).rgb;
 
-    vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / uScale.xy), LightPos.z);
+    vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / uEntityScale.xy), LightPos.z);
 
-    LightDir.x *= uScale.x / uScale.y;
+    LightDir.x /= (LightSize / uEntityScale.x);
+    LightDir.y /= (LightSize / uEntityScale.y);
 
     float D = length(LightDir);
 
@@ -101,10 +97,45 @@ export const spritefs = `
 
     vec3 Intensity = Ambient + Diffuse * Attenuation;
     vec3 FinalColor = DiffuseColor.rgb * Intensity;
-
     gl_FragColor = vec4(FinalColor, DiffuseColor.a);
     if (gl_FragColor.a < 0.5) discard;
 
   }
+
+`;
+
+export const outlinefs = `
+
+  #define PI 3.14159265359
+  #define WIDTH 3.0
+  #define COLOR vec4(0.0,0.0,0.0,1.0)
+  #define NUM_FRAMES 6.0
+
+  varying vec2 uv;
+  uniform vec2 uScale;
+  uniform vec2 uEntityScale;
+  uniform float LightSize;
+
+  uniform float hasOutline;
+
+  if (hasOutline == 1.0) {
+    float outlineAlpha = 0.0;
+    float angle = 0.0;
+
+    vec2 point = vec2( (WIDTH/uEntityScale.x)*cos(PI), (WIDTH/uEntityScale.y)*sin(PI));
+    point = clamp(uv + point, vec2(0.0), vec4(uEntityScale.xy, uEntityScale.xy).zw );
+    float sampledAlpha = texture2D(u_texture0,  point).a;
+    outlineAlpha = max(outlineAlpha, sampledAlpha);
+
+    gl_FragColor = mix(vec4(0.0), COLOR, outlineAlpha);
+
+    vec4 tex0 = texture2D(u_texture0, uv);
+    gl_FragColor = mix(gl_FragColor, tex0, tex0.a);
+
+  } else {
+    gl_FragColor = vec4(FinalColor, Color.a);
+  }
+
+  //if (gl_FragColor.a < 0.5) discard;
 
 `;
