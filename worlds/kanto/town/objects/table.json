@@ -1,6 +1,7 @@
 {
   "name"   : "Table",
   "sprite" : "table.png",
+  "normal": true,
   "width"  : 16,
   "height" : 16,
   "scale"  : 1,

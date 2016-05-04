@@ -96,7 +96,7 @@ export let DEV_MODE = true;
  * Debug mode
  * @type {Boolean}
  */
-export let DEBUG_MODE = true;
+export let DEBUG_MODE = false;
 
 /**
  * Offline mode

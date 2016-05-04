@@ -49,7 +49,6 @@ export class Light extends MapEntity {
    */
   processColor(color) {
     let cString = color[0] === "#" ? color.substr(1) : color;
-    console.log(cString);
     return (
       math.hexToRGB(cString)
     );

@@ -127,7 +127,7 @@ export default class Game {
       map: "Town",
       x: 168, y: 96,
       width: 32, height: 32,
-      soft: false,
+      soft: true,
       color: "#FFFFFF"
     }));
 
@@ -141,7 +141,7 @@ export default class Game {
       }
     }));
 
-    this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 160, y: 144, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+    this.engine.addEntity(new player({ name: "Merlin", map: "Town", x: 160, y: 144, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3, normal: true,
       onAction: {
         EngelScript: `
           if (trigger.facing == 2 || trigger.facing == 3) {
@@ -155,7 +155,7 @@ export default class Game {
       }
     }));
 
-    this.engine.addEntity(new player({ name: "Merlin2", map: "Town", x: 136, y: 120, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3,
+    this.engine.addEntity(new player({ name: "Merlin2", map: "Town", x: 136, y: 120, sprite: "assets/img/85.png", width: 16, height: 16, collidable: true, shadowY: -3, normal: true,
       onCollide: {
         EngelScript: `
           kernel.notify(this, trigger.name);
@@ -182,7 +182,8 @@ export default class Game {
           kernel.notify(this, ":p");
           trigger.leader.faceEntity(trigger);
         `
-      }
+      },
+      normal: true
     }));
 
     this.engine.addEntity(new player({
@@ -195,7 +196,7 @@ export default class Game {
 
     if (OFFLINE_MODE) {
       this.engine.addEntity(new player({
-        name: "Felix", map: "Town", x: 144, y: 152, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true,
+        name: "Felix", map: "Town", x: 144, y: 152, sprite: "assets/img/0.png", width: 16, height: 16, isLocalPlayer: true, collidable: true, normal: true,
         onJump: (entity, map) => {
           if (entity.leader) {
             setTimeout(() => map.instance.notify(entity.leader, " :3 "), 250);
