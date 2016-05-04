@@ -1,6 +1,7 @@
 {
   "name"   : "Charizard",
   "sprite" : "charizard.png",
+  "normal": true,
   "width"  : 32,
   "height" : 40,
   "scale"  : 1,

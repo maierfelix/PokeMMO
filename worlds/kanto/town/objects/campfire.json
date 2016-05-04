@@ -1,6 +1,7 @@
 {
   "name"   : "CampFire",
   "sprite" : "campfire.png",
+  "normal": true,
   "width"  : 8,
   "height" : 8,
   "scale"  : 1,
