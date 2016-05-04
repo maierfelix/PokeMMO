@@ -292,6 +292,26 @@ export default class Mathematical {
   }
 
   /**
+   * Hex to rgb
+   * @param  {Number} hex
+   * @return {Array}
+   */
+  static hexToRGB(hex) {
+
+    let hx = parseInt(hex, 16);
+
+    let r = hx >> 16;
+    let g = hx >> 8 & 0xFF;
+    let b = hx & 0xFF;
+
+    let rr = parseInt(r, 16) / 255;
+    let gg = parseInt(g, 16) / 255;
+    let bb = parseInt(b, 16) / 255;
+
+    return ([rr / 2, gg / 2, bb / 2, 1.0]);
+  }
+
+  /**
    * Get tile position
    * @param {Number} x
    * @param {Number} y

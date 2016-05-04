@@ -36,6 +36,23 @@ export class Light extends MapEntity {
 
     this.hasShadow = false;
 
+    this.soft = obj.soft === void 0 ? true : obj.soft;
+
+    this.color = this.processColor(obj.color);
+
+  }
+
+  /**
+   * Process hex color
+   * @param  {String} color
+   * @return {Array}
+   */
+  processColor(color) {
+    let cString = color[0] === "#" ? color.substr(1) : color;
+    console.log(cString);
+    return (
+      math.hexToRGB(cString)
+    );
   }
 
 }

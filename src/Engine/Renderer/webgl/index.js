@@ -89,7 +89,13 @@ export default class WGL_Renderer {
    */
   init() {
 
-    this.buildShader(shaders.spritevs, shaders.spritefs);
+    let gl = this.gl;
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+    gl.disable(gl.BLEND);
+
+    this.buildShader();
 
     this.ready = true;
 
@@ -100,7 +106,7 @@ export default class WGL_Renderer {
   /**
    * Build a shader
    */
-  buildShader(vs, fs) {
+  buildShader() {
 
     let gl = this.gl;
 
@@ -113,18 +119,15 @@ export default class WGL_Renderer {
     let vshaderid = gl.createShader(gl.VERTEX_SHADER);
     let fshaderid = gl.createShader(gl.FRAGMENT_SHADER);
 
-    this.compileShader(0, vshaderid, vs);
-    this.compileShader(1, fshaderid, fs);
+    this.compileShader(0, vshaderid, shaders.spritevs);
+    this.compileShader(1, fshaderid, shaders.spritefs);
 
     shader = gl.createProgram();
 
     gl.attachShader(shader, vshaderid);
     gl.attachShader(shader, fshaderid);
-    gl.linkProgram(shader);
 
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.CULL_FACE);
-    gl.disable(gl.BLEND);
+    gl.linkProgram(shader);
 
     this.shader = shader;
 
@@ -180,6 +183,44 @@ export default class WGL_Renderer {
   }
 
   /**
+   * Render a map
+   * @param {Object} map
+   */
+  renderMap(map) {
+
+    let gl = this.gl;
+
+    let ii = 0;
+
+    let camera = this.instance.camera;
+
+    let x = camera.position.x;
+    let y = camera.position.y;
+
+    let width  = ((map.size.x * DIMENSION) * camera.resolution) << 0;
+    let height = ((map.size.y * DIMENSION) * camera.resolution) << 0;
+
+    for (; ii < 6; ++ii) {
+      this.spritePos[2 * ii]     = ((x << 0) + width / 2) << 0;
+      this.spritePos[2 * ii + 1] = ((y << 0) + height / 2) << 0;
+    };
+
+    gl.uniform2f(
+      gl.getUniformLocation(this.shader, "uEntityScale"),
+      width, height
+    );
+
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
+    this.setAttribute(this.shader, this.idxBuffer, "aIdx", 6, 1, this.EMPTY_ARRAY);
+    this.setAttribute(this.shader, this.posBuffer, "aObjCen", 6, 2, this.spritePos);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+  }
+
+  /**
    * Render entities
    * @param {Number} lowest
    */
@@ -224,44 +265,6 @@ export default class WGL_Renderer {
   }
 
   /**
-   * Render a map
-   * @param {Object} map
-   */
-  renderMap(map) {
-
-    let gl = this.gl;
-
-    let ii = 0;
-
-    let camera = this.instance.camera;
-
-    let x = camera.position.x;
-    let y = camera.position.y;
-
-    let width  = ((map.size.x * DIMENSION) * camera.resolution) << 0;
-    let height = ((map.size.y * DIMENSION) * camera.resolution) << 0;
-
-    for (; ii < 6; ++ii) {
-      this.spritePos[2 * ii]     = ((x << 0) + width / 2) << 0;
-      this.spritePos[2 * ii + 1] = ((y << 0) + height / 2) << 0;
-    };
-
-    gl.uniform2f(
-      gl.getUniformLocation(this.shader, "uEntityScale"),
-      width, height
-    );
-
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, map.glTexture[0]);
-    this.setAttribute(this.shader, this.posBuffer, "aObjCen", 6, 2, this.spritePos);
-    this.setAttribute(this.shader, this.idxBuffer, "aIdx", 6, 1, this.EMPTY_ARRAY);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-  }
-
-  /**
    * Render a entity
    * @param {Object} entity
    * @param {Number} ii
@@ -284,35 +287,33 @@ export default class WGL_Renderer {
       this.spriteRot[6 * ii + jj] = entity.r;
     };
 
+    this.setAttribute(this.shader, this.idxBuffer, "aIdx", 6, 1, this.EMPTY_ARRAY);
     this.setAttribute(this.shader, this.posBuffer, "aObjCen", 6, 2, this.spritePos);
     this.setAttribute(this.shader, this.rotBuffer, "aObjRot", 6, 1, this.spriteRot);
-    this.setAttribute(this.shader, this.idxBuffer, "aIdx", 6, 1, this.EMPTY_ARRAY);
 
     let camera = this.instance.camera;
     let resolution = camera.resolution;
 
     let light = this.instance.instance.getEntityByProperty("light188", "name");
 
-    let camX = camera.x;
-    let camY = camera.y;
+    let lightX = camera.position.x + ((light.position.x + DIMENSION / 2) * resolution);
+    let lightY = camera.position.y + ((light.position.y + DIMENSION / 2) * resolution);
 
-    let xx = camX + (light.x * resolution);
-    let yy = camY + (light.y * resolution);
+    this.lightPos[0] = lightX / camera.size.x;
+    this.lightPos[1] = 1.0 - lightY / camera.size.y;
 
-    let w = light.width * resolution;
-    let h = light.height * resolution;
-
-    xx = xx / w;
-    yy = yy / h;
-
-    this.lightPos[0] = xx;
-    this.lightPos[1] = yy;
-
-    let selection = this.instance.instance.editor.entitySelection;
-
-    loc = gl.getUniformLocation(this.shader, "LightSize");
-    gl.uniform1f(loc, this.lightSize * resolution);
-
+    gl.uniform2f(
+      gl.getUniformLocation(this.shader, "Resolution"),
+      camera.width, camera.height
+    );
+    gl.uniform1f(
+      gl.getUniformLocation(this.shader, "SoftLight"),
+      light.soft
+    );
+    gl.uniform1f(
+      gl.getUniformLocation(this.shader, "LightSize"),
+      this.lightSize * resolution
+    );
     gl.uniform2f(
       gl.getUniformLocation(this.shader, "uEntityScale"),
       width, height
@@ -331,7 +332,7 @@ export default class WGL_Renderer {
     );
     gl.uniform4fv(
       gl.getUniformLocation(this.shader, "LightColor"),
-      this.lightColor
+      light.color
     );
 
     /** Normal */

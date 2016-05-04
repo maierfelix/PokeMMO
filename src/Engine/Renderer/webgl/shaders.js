@@ -60,16 +60,22 @@ export const spritefs = `
   uniform vec2 uEntityScale;
   uniform float LightSize;
 
+  uniform bool SoftLight;
+
+  uniform vec2 Resolution;
+
   void main() {
+
+    vec3 Sum = vec3(0.0);
 
     vec4 DiffuseColor = texture2D(u_texture0, uv);
 
     vec3 NormalMap = texture2D(u_normals, uv).rgb;
 
-    vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / uEntityScale.xy), LightPos.z);
+    vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);
 
-    LightDir.x /= (LightSize / uEntityScale.x);
-    LightDir.y /= (LightSize / uEntityScale.y);
+    LightDir.x /= (LightSize / Resolution.x);
+    LightDir.y /= (LightSize / Resolution.y);
 
     float D = length(LightDir);
 
@@ -86,18 +92,24 @@ export const spritefs = `
 
     float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );
 
-    if (Attenuation < STEP_A)
-      Attenuation = 0.0;
-    else if (Attenuation < STEP_B)
-      Attenuation = STEP_B;
-    else if (Attenuation < STEP_C)
-      Attenuation = STEP_C;
-    else
-      Attenuation = STEP_D;
+    if (SoftLight == false) {
+      if (Attenuation < STEP_A) Attenuation = 0.0;
+      else if (Attenuation < STEP_B) Attenuation = STEP_B;
+      else if (Attenuation < STEP_C) Attenuation = STEP_C;
+      else Attenuation = STEP_D;
+    }
 
     vec3 Intensity = Ambient + Diffuse * Attenuation;
     vec3 FinalColor = DiffuseColor.rgb * Intensity;
-    gl_FragColor = vec4(FinalColor, DiffuseColor.a);
+
+    Sum += FinalColor;
+
+    if (SoftLight == false) {
+      gl_FragColor = vec4(Sum, DiffuseColor.a);
+    } else {
+      gl_FragColor = vec4(FinalColor, DiffuseColor.a);
+    }
+
     if (gl_FragColor.a < 0.5) discard;
 
   }
@@ -106,36 +118,33 @@ export const spritefs = `
 
 export const outlinefs = `
 
+  precision lowp float;
+
   #define PI 3.14159265359
-  #define WIDTH 3.0
+  #define WIDTH 10.0
   #define COLOR vec4(0.0,0.0,0.0,1.0)
   #define NUM_FRAMES 6.0
+
+  uniform sampler2D u_texture0;
 
   varying vec2 uv;
   uniform vec2 uScale;
   uniform vec2 uEntityScale;
-  uniform float LightSize;
 
-  uniform float hasOutline;
-
-  if (hasOutline == 1.0) {
-    float outlineAlpha = 0.0;
-    float angle = 0.0;
+  void main() {
 
     vec2 point = vec2( (WIDTH/uEntityScale.x)*cos(PI), (WIDTH/uEntityScale.y)*sin(PI));
     point = clamp(uv + point, vec2(0.0), vec4(uEntityScale.xy, uEntityScale.xy).zw );
     float sampledAlpha = texture2D(u_texture0,  point).a;
-    outlineAlpha = max(outlineAlpha, sampledAlpha);
+    float outlineAlpha = max(0.0, sampledAlpha);
 
     gl_FragColor = mix(vec4(0.0), COLOR, outlineAlpha);
 
     vec4 tex0 = texture2D(u_texture0, uv);
     gl_FragColor = mix(gl_FragColor, tex0, tex0.a);
 
-  } else {
-    gl_FragColor = vec4(FinalColor, Color.a);
-  }
+    if (gl_FragColor.a < 0.5) discard;
 
-  //if (gl_FragColor.a < 0.5) discard;
+  }
 
 `;

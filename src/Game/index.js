@@ -126,7 +126,9 @@ export default class Game {
       sprite: "assets/img/light.png",
       map: "Town",
       x: 168, y: 96,
-      width: 32, height: 32
+      width: 32, height: 32,
+      soft: false,
+      color: "#FFFFFF"
     }));
 
     this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 96, y: 144, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,
