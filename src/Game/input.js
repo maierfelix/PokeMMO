@@ -78,6 +78,13 @@ export const keys = [
       this.action("F4");
     }
   },
+  {
+    name: "F6",
+    spam: false,
+    fire: function() {
+      this.action("F6");
+    }
+  },
   /** BUGGY, KEY COMBOS DONT WORK WITHOUT THIS */
   {
     name: "Y",

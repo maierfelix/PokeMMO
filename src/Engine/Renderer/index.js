@@ -61,12 +61,6 @@ export default class Renderer {
     this.glNode = instance.glNode;
 
     /**
-     * Interface node ref
-     * @type {Object}
-     */
-    this.uiNode = instance.uiNode;
-
-    /**
      * Context ref
      * @type {Object}
      */
@@ -214,9 +208,6 @@ export default class Renderer {
     this.camera.height = this.height;
     this.instance.width = this.width;
     this.instance.height = this.height;
-    this.uiNode.width = this.width;
-    this.uiNode.height = this.height;
-    this.instance.resizeScenes();
     if (cfg.RENDER_MODE === cfg.WGL) {
       this.glNode.width = this.width;
       this.glNode.height = this.height;

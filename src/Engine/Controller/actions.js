@@ -91,15 +91,12 @@ actions["F4"] = {
   rule: () => cfg.DEBUG_MODE
 };
 
-actions["ESCAPE"] = {
+actions["F6"] = {
   action: function() {
-    if (this.engine.scenes.Pause.active) {
-      this.engine.scenes.Pause.hide();
-    } else {
-      this.engine.scenes.Pause.show();
-    }
+    cfg.MINI_MAP = cfg.MINI_MAP ? false : true;
+    cfg.TILESET_MODE = !cfg.MINI_MAP;
   },
-  rule: () => true
+  rule: () => cfg.DEBUG_MODE
 };
 
 actions["B"] = {
@@ -136,9 +133,7 @@ actions["X_LEAVE"] = {
 actions["C"] = {
   action: function() {
     let local = this.engine.localEntity;
-    if (!this.engine.activeScene) {
-      local.jump();
-    }
+    local.jump();
   },
   rule: function() { return (this.engine.localEntity !== null); }
 };
@@ -146,9 +141,7 @@ actions["C"] = {
 actions["←"] = {
   action: function() {
     let local = this.engine.localEntity;
-    if (!this.engine.activeScene) {
-      local.move(cfg.LEFT);
-    }
+    local.move(cfg.LEFT);
   },
   rule: function() { return (this.engine.localEntity !== null); }
 };
@@ -156,9 +149,7 @@ actions["←"] = {
 actions["→"] = {
   action: function() {
     let local = this.engine.localEntity;
-    if (!this.engine.activeScene) {
-      local.move(cfg.RIGHT);
-    }
+    local.move(cfg.RIGHT);
   },
   rule: function() { return (this.engine.localEntity !== null); }
 };
@@ -166,9 +157,7 @@ actions["→"] = {
 actions["↑"] = {
   action: function() {
     let local = this.engine.localEntity;
-    if (!this.engine.activeScene) {
-      local.move(cfg.UP);
-    }
+    local.move(cfg.UP);
   },
   rule: function() { return (this.engine.localEntity !== null); }
 };
@@ -176,9 +165,7 @@ actions["↑"] = {
 actions["↓"] = {
   action: function() {
     let local = this.engine.localEntity;
-    if (!this.engine.activeScene) {
-      local.move(cfg.DOWN);
-    }
+    local.move(cfg.DOWN);
   },
   rule: function() { return (this.engine.localEntity !== null); }
 };

@@ -6,7 +6,8 @@ import {
   DISPLAY_SHADOWS, SHADOW_X, SHADOW_Y,
   RENDER_MODE, CANVAS, WGL,
   MINI_MAP,
-  TYPES
+  TYPES,
+  TILESET_MODE
 } from "../../cfg";
 
 import math from "../../Math";
@@ -87,7 +88,8 @@ export function draw() {
       this.dimension,
       this.camera.resolution * GRID_WIDTH,
       .05,
-      "#FFF"
+      "#FFF",
+      0, 0
     );
     if (EDIT_MODE === true) {
       this.instance.editor.renderEditorMode();
@@ -106,7 +108,37 @@ export function draw() {
     }
   }
 
+  if (TILESET_MODE === true) {
+    this.drawTileset(this.instance.currentMap.texture);
+  }
+
   return void 0;
+
+}
+
+/**
+ * Draw a tileset
+ * @param  {Object} texture
+ */
+export function drawTileset(texture) {
+
+  drawGrid(
+    this.context,
+    texture.width, texture.height,
+    texture.width, texture.height,
+    DIMENSION * 2,
+    GRID_WIDTH,
+    .5,
+    "#000",
+    this.camera.width - texture.width - (DIMENSION + GRID_WIDTH + 1),
+    -GRID_WIDTH * 2
+  );
+
+  this.context.drawImage(
+    texture.texture.canvas,
+    this.camera.width - texture.width, 0,
+    texture.width, texture.height
+  );
 
 }
 
@@ -277,22 +309,13 @@ export function renderEntity(entity, x, y, width, height, eWidth, eHeight) {
   }
 
   if (entity.type === TYPES.Notification) {
-    let padding = (
-      (
-        (
-          (Math.max(entity.follow.size.x, entity.size.x / 2) / 2) - entity.follow.size.x / 2
-        )
-        - entity.follow.xMargin - (entity.size.x === entity.follow.size.x ? DIMENSION : 0)
-      )
-      * resolution
-    );
     this.context.drawImage(
       entity.texture.canvas,
       0, 0,
       /** Scale */
       eWidth, eHeight,
-      entity.absolute === true ? entity.position.x : x - padding,
-      entity.absolute === true ? entity.position.y : y - (entity.size.y * resolution),
+      entity.absolute === true ? entity.position.x : x - (entity.xPadding * resolution),
+      entity.absolute === true ? entity.position.y : y - (entity.yPadding * resolution),
       entity.absolute === true ? width  / resolution : width,
       entity.absolute === true ? height / resolution : height
     );

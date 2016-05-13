@@ -81,10 +81,10 @@ export function getLocalHost() {
  */
 export function getWGLContext(canvas) {
   let options = {
-    alpha: true,
+    alpha: false,
     antialias: false,
-    premultipliedAlpha: true,
-    stencil: true,
+    premultipliedAlpha: false,
+    stencil: false,
     preserveDrawingBuffer: false
   };
   return (

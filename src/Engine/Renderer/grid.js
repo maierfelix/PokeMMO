@@ -10,24 +10,24 @@
  * @param {Number} ln
  * @param {String} color
  */
-export function drawGrid(ctx, x, y, width, height, dim, scale, ln, color) {
+export function drawGrid(ctx, x, y, width, height, dim, scale, ln, color, xPad, yPad) {
 
-  var ww = dim * scale;
-  var hh = dim * scale;
+  let ww = dim * scale;
+  let hh = dim * scale;
 
-  var xx = x % ww;
-  var yy = y % hh;
+  let xx = x % ww;
+  let yy = y % hh;
 
   ctx.beginPath();
 
   for (; xx < width; xx += ww) {
-    ctx.moveTo(xx - ln, 0);
-    ctx.lineTo(xx - ln, height);
+    ctx.moveTo((xx - ln) + xPad, yPad);
+    ctx.lineTo((xx - ln) + xPad, height + yPad);
   };
 
   for (; yy < height; yy += hh) {
-    ctx.moveTo(0, yy + ln);
-    ctx.lineTo(width, yy + ln);
+    ctx.moveTo(xPad, (yy + ln) + yPad);
+    ctx.lineTo(width + xPad, (yy + ln) + yPad);
   };
 
   ctx.strokeStyle = color;

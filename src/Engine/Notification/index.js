@@ -124,10 +124,23 @@ export default class Notification extends Entity {
     this.z = 0;
 
     /**
+     * Padding
+     * @type {Number}
+     */
+    this.xPadding = 0;
+    this.yPadding = 0;
+
+    /**
      * Sprite frame
      * @type {Number}
      */
     this.sFrame = 0;
+
+    /**
+     * To calc sprite frame
+     * @type {Number}
+     */
+    this.facing = 0;
 
     /**
      * Absolute position
@@ -249,7 +262,10 @@ export default class Notification extends Entity {
       this.drawMessageBox();
     }
 
-    this.glTexture = window.game.engine.renderer.glRenderer.bufferTexture([this.texture]);
+    this.texture.xMul = 1;
+    this.texture.yMul = 1;
+
+    this.glTexture = this.instance.renderer.glRenderer.bufferTexture([this.texture]);
 
     return void 0;
 

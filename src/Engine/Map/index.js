@@ -355,18 +355,20 @@ export default class Map extends DisplayObject {
 
     for (; yy < outerLength; ++yy) {
       for (!(xx = x = 0) && (innerLength = layer[yy].length) > 0; xx < innerLength; ++xx) {
-        tile = layer[yy][xx] - 1;
-        buffer.drawImage(
-          tileset,
-          ((tile) % dim) * dim,
-          ((tile / dim) << 0) * dim,
-          dim,
-          dim,
-          x,
-          y,
-          dim,
-          dim
-        );
+        if (layer[yy][xx] > 0) {
+          tile = layer[yy][xx] - 1;
+          buffer.drawImage(
+            tileset,
+            ((tile) % dim) * dim,
+            ((tile / dim) << 0) * dim,
+            dim,
+            dim,
+            x,
+            y,
+            dim,
+            dim
+          );
+        }
         x += dim;
       };
       y += dim;

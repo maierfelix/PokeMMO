@@ -50,19 +50,18 @@ export const spritefs = `
   uniform sampler2D u_texture0;
   uniform sampler2D u_normals;
 
+  varying vec2 uv;
+
   uniform vec4 AmbientColor;
+  uniform vec2 Resolution;
+
+  uniform float Opacity;
+
+  uniform float LightSize;
+  uniform bool SoftLight;
   uniform vec3 LightPos;
   uniform vec4 LightColor;
   uniform vec3 Falloff;
-
-  varying vec2 uv;
-  uniform vec2 uScale;
-  uniform vec2 uEntityScale;
-  uniform float LightSize;
-
-  uniform bool SoftLight;
-
-  uniform vec2 Resolution;
 
   void main() {
 
@@ -105,12 +104,12 @@ export const spritefs = `
     Sum += FinalColor;
 
     if (SoftLight == false) {
-      gl_FragColor = vec4(Sum, DiffuseColor.a);
+      gl_FragColor = vec4(Sum, DiffuseColor.a * Opacity);
     } else {
-      gl_FragColor = vec4(FinalColor, DiffuseColor.a);
+      gl_FragColor = vec4(FinalColor, DiffuseColor.a * Opacity);
     }
 
-    if (gl_FragColor.a < 0.5) discard;
+    if (gl_FragColor.a < 0.1) discard;
 
   }
 

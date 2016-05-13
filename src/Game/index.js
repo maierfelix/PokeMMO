@@ -11,7 +11,6 @@ import Connection from "../Engine/Connection";
 
 import * as Events from "./input.js";
 import * as entities from "./entities";
-import * as scenes from "./scenes";
 
 /**
  * Game
@@ -25,13 +24,10 @@ export default class Game {
    */
   constructor() {
 
-    this.canvasNode = document.querySelector("#canvas");
     this.glNode = document.querySelector("#webgl");
-    this.uiNode = document.querySelector("#ui");
+    this.canvasNode = document.querySelector("#canvas");
 
     this.entities = entities;
-
-    this.scenes = scenes;
 
     this.engine = new Engine(this, () => this.setup());
 
@@ -59,22 +55,19 @@ export default class Game {
         this.addEntities(() => this.setup(stage));
       return void 0;
       case 5:
-        this.setup(stage);
-      return void 0;
-      case 6:
         this.animateNPC();
         this.setup(stage);
       return void 0;
-      case 7:
+      case 6:
         /** Instant focus local player */
         this.engine.camera.focus(this.engine.getEntityByProperty("Felix", "name"), true);
         this.setup(stage);
       return void 0;
-      case 8:
+      case 7:
         this.input = new Input(Events, this);
         this.setup(stage);
       return void 0;
-      case 9:
+      case 8:
         if (!OFFLINE_MODE) {
           this.engine.connection = new Connection(
             this,
@@ -127,8 +120,8 @@ export default class Game {
       map: "Town",
       x: 168, y: 96,
       width: 32, height: 32,
-      soft: true,
-      color: "#FFFFFF"
+      soft: false,
+      color: "#E6E6E6"
     }));
 
     this.engine.addEntity(new player({ name: "Joy", map: "Town", x: 96, y: 144, sprite: "assets/img/200.png", width: 16, height: 16, collidable: true,

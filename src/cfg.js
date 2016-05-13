@@ -124,6 +124,12 @@ export let EDIT_MODE = true;
 export let GOD_MODE = false;
 
 /**
+ * Tileset drawind mode
+ * @type {Boolean}
+ */
+export let TILESET_MODE = false;
+
+/**
  * Debug mode
  * @type {Boolean}
  */
@@ -263,7 +269,8 @@ export const TYPES = {
   Notification: 0,
   MapEntity:    1,
   Player:       2,
-  Ping:         3
+  Ping:         3,
+  Light:        4
 };
 
 /**

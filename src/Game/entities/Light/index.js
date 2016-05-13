@@ -1,7 +1,8 @@
 import {
   LEFT, RIGHT, UP, DOWN,
   OFFLINE_MODE,
-  DIMENSION, GRAVITY
+  DIMENSION, GRAVITY,
+  TYPES
 } from "../../../cfg";
 
 import math from "../../../Math";
@@ -36,9 +37,13 @@ export class Light extends MapEntity {
 
     this.hasShadow = false;
 
+    this.lightSize = obj.lightSize === void 0 ? 256 : obj.lightSize;
+
     this.soft = obj.soft === void 0 ? true : obj.soft;
 
     this.color = this.processColor(obj.color);
+
+    this.type = TYPES.Light;
 
   }
 

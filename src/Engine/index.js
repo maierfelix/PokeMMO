@@ -53,18 +53,6 @@ export default class Engine extends DisplayObject {
     this.currentMap = null;
 
     /**
-     * Active scene state
-     * @type {Boolean}
-     */
-    this.activeScene = false;
-
-    /**
-     * Scenes
-     * @type {Object}
-     */
-    this.scenes = {};
-
-    /**
      * Node
      * @type {Object}
      */
@@ -75,12 +63,6 @@ export default class Engine extends DisplayObject {
      * @type {Object}
      */
     this.glNode = this.instance.glNode;
-
-    /**
-     * Interface node
-     * @type {Object}
-     */
-    this.uiNode = this.instance.uiNode;
 
     /**
      * Context
@@ -181,7 +163,6 @@ export default class Engine extends DisplayObject {
       this.controller = new Controller(this);
       this.environment = new Environment(this);
 
-      this.initScenes();
       this.camera.scale = cfg.MIN_SCALE;
 
       this.handleAdressBar();
@@ -235,32 +216,6 @@ export default class Engine extends DisplayObject {
       val = parseString(val);
       if (val === null) continue;
       cfg[key] = val;
-    };
-
-  }
-
-  /**
-   * Initialise scenes
-   */
-  initScenes() {
-
-    for (let scene in this.instance.scenes) {
-      this.scenes[scene] = new this.instance.scenes[scene](this);
-    };
-
-  }
-
-  /**
-   * Resize scenes
-   */
-  resizeScenes() {
-
-    for (let scene in this.scenes) {
-      if (this.scenes[scene].active === true) {
-        this.scenes[scene].updatePositions();
-        this.scenes[scene].render();
-        this.scenes[scene].draw();
-      }
     };
 
   }

@@ -1,6 +1,7 @@
 import {
   DIMENSION,
-  GRAVITY
+  GRAVITY,
+  TYPES
 } from "../cfg";
 
 /**
@@ -25,6 +26,9 @@ export function logic() {
     entity = entities[ii];
     entity.idleTime++;
     entity.renderable = this.updateEntity(entity);
+    if (entity.type === TYPES.Notification) {
+      this.updateNotification(entity);
+    }
     if (entity.opacity < 0) {
       this.removeEntity(entity);
       --length;
@@ -36,6 +40,23 @@ export function logic() {
   };
 
   return void 0;
+
+}
+
+/**
+ * Update notification
+ * @param {Object} entity
+ */
+export function updateNotification(entity) {
+
+  entity.xPadding = (
+    (
+      (Math.max(entity.follow.size.x, entity.size.x / 2) / 2) - entity.follow.size.x / 2
+    )
+    - entity.follow.xMargin - (entity.size.x === entity.follow.size.x ? DIMENSION : 0)
+  );
+
+  entity.yPadding = entity.size.y;
 
 }
 

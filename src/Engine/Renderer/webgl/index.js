@@ -1,7 +1,8 @@
 /** Inspired by gles.js web demo */
 import {
   DIMENSION,
-  PIXEL_SCALE
+  PIXEL_SCALE,
+  TYPES
 } from "../../../cfg";
 
 import math from "../../../Math";
@@ -68,14 +69,12 @@ export default class WGL_Renderer {
 
     this.lightZ = 0.075;
 
-    this.lightSize = 256;
-
-    this.ambientColor = new Float32Array([0.8, 0.8, 0.8, 0.9]);
+    this.ambientColor = new Float32Array([1.0, 1.0, 1.0, 0.8]);
     this.lightColor = new Float32Array([1.0, 1.0, 1.0, 1.0]);
     this.falloff = new Float32Array([0.4, 7.0, 30.0]);
     this.lightPos = new Float32Array([0, 0, this.lightZ]);
 
-    this.spriteidx = null;
+    this.spriteIdx = null;
     this.spriteRot = null;
 
     this.EMPTY_ARRAY = new Float32Array(0);
@@ -132,7 +131,7 @@ export default class WGL_Renderer {
     this.shader = shader;
 
     this.spritePos = new Float32Array(length * 12);
-    this.spriteidx = new Float32Array(length * 6);
+    this.spriteIdx = new Float32Array(length * 6);
     this.spriteRot = new Float32Array(length * 6);
 
     this.posBuffer = gl.createBuffer();
@@ -140,15 +139,15 @@ export default class WGL_Renderer {
     this.idxBuffer = gl.createBuffer();
 
     for (var i = 0; i < length; i++) {
-      this.spriteidx[6 * i + 0] = 0;
-      this.spriteidx[6 * i + 1] = 1;
-      this.spriteidx[6 * i + 2] = 2;
-      this.spriteidx[6 * i + 3] = 1;
-      this.spriteidx[6 * i + 4] = 2;
-      this.spriteidx[6 * i + 5] = 3;
+      this.spriteIdx[6 * i + 0] = 0;
+      this.spriteIdx[6 * i + 1] = 1;
+      this.spriteIdx[6 * i + 2] = 2;
+      this.spriteIdx[6 * i + 3] = 1;
+      this.spriteIdx[6 * i + 4] = 2;
+      this.spriteIdx[6 * i + 5] = 3;
     };
 
-    this.setAttribute(this.shader, this.idxBuffer, "aIdx", length * 6, 1, this.spriteidx);
+    this.setAttribute(this.shader, this.idxBuffer, "aIdx", length * 6, 1, this.spriteIdx);
 
     gl.useProgram(this.shader);
 
@@ -171,14 +170,71 @@ export default class WGL_Renderer {
     if (map.renderable === false) return void 0;
 
     /** Set global size */
-    loc = gl.getUniformLocation(this.shader, "uScale");
-    gl.uniform2f(loc, this.instance.width, this.instance.height);
+    gl.uniform2f(
+      gl.getUniformLocation(this.shader, "uScale"),
+      this.instance.width, this.instance.height);
+
+    /** Set ambient color */
+    gl.uniform4fv(
+      gl.getUniformLocation(this.shader, "AmbientColor"),
+      this.ambientColor
+    );
+
+    /** Set global resolution */
+    gl.uniform2f(
+      gl.getUniformLocation(this.shader, "Resolution"),
+      this.instance.camera.width, this.instance.camera.height
+    );
+
+    this.updateLights();
 
     this.renderEntities(1);
     this.renderMap(map);
     this.renderEntities(0);
 
     return void 0;
+
+  }
+
+  /**
+   * Update lights
+   */
+  updateLights() {
+
+    let gl = this.gl;
+
+    let camera = this.instance.camera;
+    let resolution = this.instance.camera.resolution;
+
+    let light = this.instance.instance.getEntityByProperty("light183", "name");
+
+    let lightX = camera.position.x + ((light.position.x + DIMENSION / 2) * resolution);
+    let lightY = camera.position.y + ((light.position.y + DIMENSION / 2) * resolution);
+
+    this.lightPos[0] = lightX / camera.size.x;
+    this.lightPos[1] = 1.0 - lightY / camera.size.y;
+
+    /** Lights */
+    gl.uniform3fv(
+      gl.getUniformLocation(this.shader, "LightPos"),
+      this.lightPos
+    );
+    gl.uniform3fv(
+      gl.getUniformLocation(this.shader, "Falloff"),
+      this.falloff
+    );
+    gl.uniform4fv(
+      gl.getUniformLocation(this.shader, "LightColor"),
+      light.color
+    );
+    gl.uniform1f(
+      gl.getUniformLocation(this.shader, "SoftLight"),
+      light.soft
+    );
+    gl.uniform1f(
+      gl.getUniformLocation(this.shader, "LightSize"),
+      light.lightSize * resolution
+    );
 
   }
 
@@ -249,6 +305,7 @@ export default class WGL_Renderer {
 
     for (ii = 0; ii < length; ++ii) {
       entity = entities[ii];
+      if (entity.type === TYPES.Light) continue;
       if (lowest === 1) {
         if (entity.zIndex > 0) continue;
       } else {
@@ -281,6 +338,15 @@ export default class WGL_Renderer {
 
     let jj = 0;
 
+    let resolution = this.instance.camera.resolution;
+
+    if (entity.type === TYPES.Notification) {
+      x = entity.absolute === true ? entity.position.x : x - (entity.xPadding * resolution);
+      y = entity.absolute === true ? entity.position.y : y - (entity.yPadding * resolution);
+      width = entity.absolute === true ? width  / resolution : width;
+      height = entity.absolute === true ? height / resolution : height;
+    }
+
     for (jj = 0; jj < 6; ++jj) {
       this.spritePos[12 * ii + 2 * jj] = x + (width / 2);
       this.spritePos[12 * ii + 2 * jj + 1] = y + (height / 2);
@@ -291,49 +357,19 @@ export default class WGL_Renderer {
     this.setAttribute(this.shader, this.posBuffer, "aObjCen", 6, 2, this.spritePos);
     this.setAttribute(this.shader, this.rotBuffer, "aObjRot", 6, 1, this.spriteRot);
 
-    let camera = this.instance.camera;
-    let resolution = camera.resolution;
-
-    let light = this.instance.instance.getEntityByProperty("light188", "name");
-
-    let lightX = camera.position.x + ((light.position.x + DIMENSION / 2) * resolution);
-    let lightY = camera.position.y + ((light.position.y + DIMENSION / 2) * resolution);
-
-    this.lightPos[0] = lightX / camera.size.x;
-    this.lightPos[1] = 1.0 - lightY / camera.size.y;
-
-    gl.uniform2f(
-      gl.getUniformLocation(this.shader, "Resolution"),
-      camera.width, camera.height
-    );
-    gl.uniform1f(
-      gl.getUniformLocation(this.shader, "SoftLight"),
-      light.soft
-    );
-    gl.uniform1f(
-      gl.getUniformLocation(this.shader, "LightSize"),
-      this.lightSize * resolution
-    );
     gl.uniform2f(
       gl.getUniformLocation(this.shader, "uEntityScale"),
       width, height
     );
-    gl.uniform4fv(
-      gl.getUniformLocation(this.shader, "AmbientColor"),
-      this.ambientColor
-    );
-    gl.uniform3fv(
-      gl.getUniformLocation(this.shader, "LightPos"),
-      this.lightPos
-    );
-    gl.uniform3fv(
-      gl.getUniformLocation(this.shader, "Falloff"),
-      this.falloff
-    );
-    gl.uniform4fv(
-      gl.getUniformLocation(this.shader, "LightColor"),
-      light.color
-    );
+
+    let cOpacity = entity.customOpacity();
+
+    if (cOpacity === true) {
+      gl.uniform1f(
+        gl.getUniformLocation(this.shader, "Opacity"),
+        entity.opacity
+      );
+    }
 
     /** Normal */
     gl.activeTexture(gl.TEXTURE1);
@@ -348,6 +384,14 @@ export default class WGL_Renderer {
     gl.bindTexture(gl.TEXTURE_2D, entity.glTexture[entity.sFrame]);
 
     gl.drawArrays(gl.TRIANGLES, ii * 6, 6);
+
+    /** Reset ctx opacity */
+    if (cOpacity === true) {
+      gl.uniform1f(
+        gl.getUniformLocation(this.shader, "Opacity"),
+        1.0
+      );
+    }
 
     return void 0;
 
@@ -414,9 +458,9 @@ export default class WGL_Renderer {
    * @param {Number} height
    */
   resize(width, height) {
-
     this.gl.viewport(0, 0, width, height);
-
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
   }
 
   /**
