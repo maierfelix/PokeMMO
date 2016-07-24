@@ -9,6 +9,7 @@ import {
 import { inherit } from "../utils";
 
 import * as render from "./render";
+import * as tileset from "./tileset";
 
 import math from "../../Math";
 
@@ -106,6 +107,12 @@ export default class Editor {
      * @type {Object}
      */
     this.drag = new math.Point(0, 0);
+
+    /**
+     * Tileset position
+     * @type {Object}
+     */
+    this.tileset = new math.Point(0, 0);
 
     /**
      * Dragging
@@ -412,3 +419,4 @@ export default class Editor {
 }
 
 inherit(Editor, render);
+inherit(Editor, tileset);

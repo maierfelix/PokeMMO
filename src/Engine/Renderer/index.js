@@ -219,6 +219,7 @@ export default class Renderer {
     this.clear();
     this.imageSmoothingEnabled = this.imageSmoothing;
     this.instance.mini.resize();
+    this.instance.editor.updateTilesetPosition();
     this.draw();
   }
 

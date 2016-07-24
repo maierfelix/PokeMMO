@@ -192,6 +192,9 @@ actions["DBLCLICK"] = {
     if (!cfg.DEBUG_MODE) return void 0;
     cfg.FREE_CAMERA = false;
     if (cfg.EDIT_MODE) {
+      if (cfg.TILESET_MODE === true && this.engine.editor.clickedInsideTileset(x, y)) {
+        return void 0;
+      }
       if (!this.engine.editor.dragging) {
         let entity = this.engine.editor.getEntityByMouse(e.clientX, e.clientY);
         if (entity !== null) {
@@ -216,6 +219,10 @@ actions["LEFTCLICK"] = {
     let x = e.touches ? e.touches[0].clientX : e.clientX;
     let y = e.touches ? e.touches[0].clientY : e.clientY;
     e.preventDefault();
+    if (cfg.TILESET_MODE === true && this.engine.editor.clickedInsideTileset(x, y)) {
+      this.engine.editor.selectTile(x, y);
+      return void 0;
+    }
     if (this.input.KeyBoard.isKeyPressed("G")) {
       this.engine.ping(x, y, "notify");
       return void 0;

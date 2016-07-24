@@ -118,25 +118,27 @@ export function draw() {
 
 /**
  * Draw a tileset
- * @param  {Object} texture
+ * @param {Object} texture
  */
 export function drawTileset(texture) {
+
+  let tileset = this.instance.editor.tileset;
 
   drawGrid(
     this.context,
     texture.width, texture.height,
-    texture.width, texture.height,
+    texture.width + DIMENSION, texture.height + DIMENSION,
     DIMENSION * 2,
     GRID_WIDTH,
     .5,
     "#000",
-    this.camera.width - texture.width - (DIMENSION + GRID_WIDTH + 1),
-    -GRID_WIDTH * 2
+    tileset.x - DIMENSION * 2,
+    tileset.y + (-GRID_WIDTH * 2)
   );
 
   this.context.drawImage(
     texture.texture.canvas,
-    this.camera.width - texture.width, 0,
+    tileset.x - DIMENSION + 2, tileset.y,
     texture.width, texture.height
   );
 

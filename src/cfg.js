@@ -127,7 +127,7 @@ export let GOD_MODE = false;
  * Tileset drawind mode
  * @type {Boolean}
  */
-export let TILESET_MODE = false;
+export let TILESET_MODE = true;
 
 /**
  * Debug mode

@@ -155,6 +155,7 @@ export default class Map extends DisplayObject {
       this.renderable = true;
       this.loadMapFile(this::function() {
         if (resolve instanceof Function) resolve();
+        this.instance.editor.updateTilesetPosition();
       });
     });
 
