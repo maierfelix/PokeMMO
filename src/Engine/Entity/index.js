@@ -242,7 +242,7 @@ export default class Entity extends DisplayObject {
      * Entity has normal map
      * @type {Boolean}
      */
-    this.hasNormalMap = obj.normal === void 0 ? false : obj.normal;
+    this.hasNormalMap = obj.normal === void 0 ? false : true;
 
     /**
      * Animation index
