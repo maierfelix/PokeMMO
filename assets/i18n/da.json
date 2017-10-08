@@ -1,0 +1,33 @@
+{
+  "s_BrowserNotSupported": "Browser understøttes ikke.",
+  "s_days": [
+    "Søndag",
+    "Mandag",
+    "Tirsdag",
+    "Onsdag",
+    "Torsdag",
+    "Fredag",
+    "Lørdag"
+  ],
+  "s_months": [
+    "Januar",
+    "Februar",
+    "Marts",
+    "April",
+    "Maj",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "December"
+  ],
+  "s_German": "Tysk",
+  "s_English": "Engelsk",
+  "s_Settings": "Indstillinger",
+  "s_Objects": "Objekter",
+  "s_On": "Tænd",
+  "s_Off": "Sluk",
+  "s_ChangeLanguage": "Skift sprog",
+}
