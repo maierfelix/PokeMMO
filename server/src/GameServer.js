@@ -129,9 +129,9 @@ export default class GameServer {
    * New client connected
    * @param {Object} socket
    */
-  onConnection(socket) {
+  onConnection(socket, req) {
 
-    let ip = socket.upgradeReq.connection.remoteAddress;
+    let ip = req.connection.remoteAddress;
 
     console.log(`${ip} joined!`);
 
