@@ -253,23 +253,6 @@ export function parseArguments() {
 }
 
 /**
- * Parse brace body
- * { Body }
- * @return {Object}
- */
-export function parseBraceBody() {
-
-  let ast = null;
-
-  this.expect("LBRACE");
-  ast = this.parseBlockStatement();
-  this.expect("RBRACE");
-
-  return (ast);
-
-}
-
-/**
  * Parse parenthese expression
  * ( Expression )
  */
