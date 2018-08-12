@@ -129,7 +129,12 @@ export default class Language {
     }
 
     this.downloadPacket(name, () => {
-      this.activePacket = this.packets[name];
+      if (this.packets[name] !== void 0) {
+        this.activePacket = this.packets[name];
+      } else {
+        this.activePacket = this.packets[this.defaultLanguage];
+      }
+      
       return (resolve && resolve());
     });
 
